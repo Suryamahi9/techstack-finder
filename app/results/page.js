@@ -1,0 +1,240 @@
+'use client';
+import { Suspense, useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import SearchBar from '../../components/SearchBar';
+import Skeleton from '../../components/Skeleton';
+import SiteIdentity from '../../components/SiteIdentity';
+import CompanyProfile from '../../components/CompanyProfile';
+import PageMetadata from '../../components/PageMetadata';
+import SeoAnalysis from '../../components/SeoAnalysis';
+import PerformanceInsights from '../../components/PerformanceInsights';
+import SecurityHeaders from '../../components/SecurityHeaders';
+import CategorySection from '../../components/CategorySection';
+import DownloadPdfButton from '../../components/DownloadPdfButton';
+
+function ResultsContent() {
+  const searchParams = useSearchParams();
+  const site = searchParams.get('site');
+
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const customHeaders = searchParams.get('headers');
+  const customCookies = searchParams.get('cookies');
+
+  useEffect(() => {
+    if (!site) {
+      setError('No site specified.');
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setData(null);
+
+    const body = { url: site };
+    if (customHeaders) body.headers = customHeaders;
+    if (customCookies) body.cookies = customCookies;
+
+    fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(async (r) => {
+        const json = await r.json();
+        if (!r.ok || !json.success) {
+          throw new Error(json.error || `Scan failed (HTTP ${r.status})`);
+        }
+        return json;
+      })
+      .then((result) => {
+        if (cancelled) return;
+        setData(result);
+
+        try {
+          const history = JSON.parse(localStorage.getItem('tsf-history') || '[]');
+          const filtered = history.filter(
+            (h) => h.domain !== result.site.domain
+          );
+          filtered.unshift({
+            domain: result.site.domain,
+            url: result.site.url,
+            favicon: result.site.favicon,
+            scannedAt: result.site.scannedAt,
+            total: result.summary.total,
+          });
+          localStorage.setItem('tsf-history', JSON.stringify(filtered.slice(0, 5)));
+          window.dispatchEvent(new Event('tsf-history-updated'));
+        } catch {}
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message || 'Failed to scan site.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [site, customHeaders, customCookies]);
+
+  return (
+    <div className="relative min-h-screen">
+      <Header />
+
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="dot-grid-bg absolute inset-0" />
+        <div className="gradient-mesh absolute inset-0" />
+        <div className="light-bg-art"><div className="art-blob" /><div className="art-blob" /><div className="art-blob" /></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
+      </div>
+
+      <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-8 max-w-2xl">
+          <SearchBar initialValue={site || ''} size="small" />
+        </div>
+
+        {loading && <Skeleton />}
+
+        {!loading && error && (
+          <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">
+            <div className="mx-auto max-w-md text-center">
+              <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-bg">
+                <svg
+                  className="h-5 w-5 text-muted"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v4M12 16h.01" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold">Scan failed</h2>
+              <p className="mt-2 text-sm text-muted">{error}</p>
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <a
+                  href={`/results?site=${encodeURIComponent(site || '')}`}
+                  className="rounded-lg border border-border bg-bg px-4 py-2 text-sm font-medium hover:border-border-strong"
+                >
+                  Try again
+                </a>
+                <a href="/" className="text-xs text-muted hover:text-fg">
+                  ← Back to home
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && data && (
+          <div className="animate-fade-in">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start">
+              <div className="min-w-0 flex-1">
+                <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
+              </div>
+              <div className="shrink-0">
+                <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
+              </div>
+            </div>
+
+            {data.company && <div className="mt-8"><CompanyProfile company={data.company} /></div>}
+
+            {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
+
+            {data.seo && <div className="mt-8"><SeoAnalysis seo={data.seo} /></div>}
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {data.performance && <PerformanceInsights performance={data.performance} />}
+              {data.security && <SecurityHeaders security={data.security} />}
+            </div>
+
+            {data.summary.total === 0 ? (
+              <div className="mt-12 rounded-2xl border border-border bg-elevated p-12 text-center">
+                <h3 className="text-lg font-semibold">No technologies detected</h3>
+                <p className="mt-2 text-sm text-muted">
+                  The site may render entirely client-side, block automated requests, or use
+                  technologies outside our rule set.
+                </p>
+                {data.responseHeaders.server && (
+                  <p className="mt-4 font-mono text-xs text-faint">
+                    Server: {data.responseHeaders.server}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="mt-8">
+                {data.categories.map((cat, i) => (
+                  <CategorySection
+                    key={cat.category}
+                    category={cat.category}
+                    technologies={cat.technologies}
+                    index={i}
+                  />
+                ))}
+              </div>
+            )}
+
+            {(data.responseHeaders.server ||
+              data.responseHeaders.poweredBy ||
+              data.responseHeaders.generator) && (
+              <div className="mt-12 rounded-xl border border-border bg-elevated/40 p-5">
+                <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">
+                  Response signals
+                </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
+                  {data.responseHeaders.server && (
+                    <div>
+                      <span className="text-faint">Server:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.server}</span>
+                    </div>
+                  )}
+                  {data.responseHeaders.poweredBy && (
+                    <div>
+                      <span className="text-faint">X-Powered-By:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.poweredBy}</span>
+                    </div>
+                  )}
+                  {data.responseHeaders.generator && (
+                    <div>
+                      <span className="text-faint">Generator:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.generator}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div>
+          <Header />
+          <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+            <Skeleton />
+          </main>
+          <Footer />
+        </div>
+      }
+    >
+      <ResultsContent />
+    </Suspense>
+  );
+}
