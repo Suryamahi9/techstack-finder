@@ -20,12 +20,12 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - `POST /api/scan` — `{ url: string, headers?: string (JSON), cookies?: string, timeout?: number }` → `{ success, site, summary, categories, techByType, company?, pageMetadata?, seo?, performance?, security?, responseHeaders?, cached? }`
 - Returns `429` (rate limit: 10 req/min/IP), `400` (bad input), `500` (scan failure)
 - In-memory TTL cache: 10 min, max 2000 entries
-- `maxDuration = 15` (Vercel serverless timeout)
+- `maxDuration = 30` (Vercel serverless timeout)
 - `GET /api/scan` returns usage info
 
 ## Scan flow (results page)
 1. Client reads `?site=` via `useSearchParams`. Optional `?headers=` (JSON) and `?cookies=` for auth. POSTs `/api/scan`.
-2. Server normalizes URL (auto-prepends `https://`), checks cache, rate-limits by IP, fetches HTML (12s default timeout, Cheerio — no browser JS), runs rule engine.
+2. Server normalizes URL (auto-prepends `https://`), checks cache, rate-limits by IP, fetches HTML (15s default timeout, Cheerio — no browser JS), runs rule engine.
 3. Returns categorized tech lists. Client saves to localStorage `tsf-history` (max 5), dispatches `tsf-history-updated` event.
 
 ## Gotchas

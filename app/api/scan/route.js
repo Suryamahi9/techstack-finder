@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { detectTechnologies } from '../../../lib/detect';
 
 export const runtime = 'nodejs';
-export const maxDuration = 15;
+export const maxDuration = 30;
 
 const ipHits = new Map();
 const scanCache = new Map(); // { key: { result, expires } }
