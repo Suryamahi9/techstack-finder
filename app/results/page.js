@@ -33,7 +33,14 @@ import StackVisualization from '../../components/StackVisualization';
 import TechTimeline from '../../components/TechTimeline';
 import TechVersionInfo from '../../components/TechVersionInfo';
 import TechDependencyTree from '../../components/TechDependencyTree';
+import TechRadar from '../../components/TechRadar';
 import BadgeDisplay from '../../components/BadgeDisplay';
+import EmbedWidget from '../../components/EmbedWidget';
+import MultiPageScan from '../../components/MultiPageScan';
+import WebhookPanel from '../../components/WebhookPanel';
+import WhiteLabelPdf from '../../components/WhiteLabelPdf';
+import TechStackGenerator from '../../components/TechStackGenerator';
+import ReverseLookup from '../../components/ReverseLookup';
 import { saveScanTrend } from '../trends/page';
 import { saveScanSnapshot } from '../../lib/scan-history';
 
@@ -265,7 +272,12 @@ function ResultsContent() {
             </div>
 
             <div className="mt-8">
+              <TechRadar categories={data.categories} />
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
               <BadgeDisplay domain={data.site?.domain} />
+              <EmbedWidget domain={data.site?.domain} />
             </div>
 
             <div className="mt-8">
@@ -326,6 +338,20 @@ function ResultsContent() {
 
             <div className="mt-8">
               <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <MultiPageScan domain={data.site?.domain} />
+              <WhiteLabelPdf data={data} />
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <TechStackGenerator />
+              <ReverseLookup />
+            </div>
+
+            <div className="mt-8">
+              <WebhookPanel data={data} />
             </div>
 
             {(data.responseHeaders.server ||
