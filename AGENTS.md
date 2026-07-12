@@ -10,11 +10,12 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 
 ## Architecture
 - **Next.js 14 App Router** (no TypeScript) — home at `/app/page.js`, results at `/app/results/page.js`, API at `/app/api/scan/route.js`
-- **633 detection rules** in `/lib/detect.js` across **55 categories** (24 frontend, 18 backend, 13 infra). `CATEGORY_TYPES` map at line 2141 tags each as `frontend`/`backend`/`infra`.
+- **844 detection rules** in `/lib/detect.js` across **55 categories** (24 frontend, 18 backend, 13 infra). `CATEGORY_TYPES` map tags each as `frontend`/`backend`/`infra`. Default fetch timeout: 25s. Pattern types: `html`, `header`, `script_src`, `meta_generator`, `cookie`, `css_class`, `link_tag`.
 - **16 client components** in `/components/`, all `'use client'`
 - **CSS variables** in `globals.css` (`:root` dark, `[data-theme='light']` light) referenced in `tailwind.config.js` via `var(--*)`. Never hardcode hex colors.
 - **jsconfig.json** maps `@/*` → `./*`
 - **Theme** stored in localStorage key `tsf-theme`, default dark. Toggle via `ThemeToggle.js`.
+- **Utility hook**: `lib/useInView.js` — IntersectionObserver wrapper used by homepage sections for scroll-triggered animations.
 
 ## API
 - `POST /api/scan` — `{ url: string, headers?: string (JSON), cookies?: string, timeout?: number }` → `{ success, site, summary, categories, techByType, company?, pageMetadata?, seo?, performance?, security?, responseHeaders?, cached? }`
@@ -35,5 +36,6 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **Animations** defined in `tailwind.config.js`: `animate-fade-up`, `animate-fade-in`, `animate-shimmer`, `animate-pulse-glow`, etc. Components set per-item `animationDelay` via inline style.
 - **Fonts**: Space Grotesk (UI, `font-sans`) + JetBrains Mono (code, `font-mono`) loaded from Google Fonts in `globals.css`.
 - **`next.config.js`** has `reactStrictMode: true`.
+- **`layout.js` uses `suppressHydrationWarning`** on `<html>` because an inline `<script>` sets `data-theme` from localStorage before React hydrates. The `<html>` default is `data-theme="dark"` — if you change the default, both the inline script and the ThemeToggle.js `useState('dark')` must match.
 - **Decorative CSS classes** (pure visual, no functional impact): `.noise-overlay`, `.glow-orb`, `.grid-bg`, `.dot-grid-bg`, `.gradient-mesh`, `.scan-line`, `.scanner-ring`, `.scanner-sweep`, `.pulse-ring`, `.card-shimmer`, `.typewriter-cursor`, `.spotlight-card`, `.counter-number`.
 - **Reusable utility class**: `.card-hover` for hover transitions on cards.
