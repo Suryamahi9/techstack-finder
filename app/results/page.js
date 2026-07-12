@@ -151,7 +151,7 @@ function ResultsContent() {
               <SitePreview url={data.site.url} domain={data.site.domain} />
             </div>
 
-            {data.company && <div className="mt-8"><CompanyProfile company={data.company} /></div>}
+            {data.company && <div className="mt-8"><CompanyProfile company={data.company} summary={data.summary} /></div>}
 
             {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
 
@@ -217,6 +217,10 @@ function ResultsContent() {
                 </div>
               </div>
             )}
+
+            <div className="mt-12 flex justify-center">
+              <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
+            </div>
           </div>
         )}
       </main>
