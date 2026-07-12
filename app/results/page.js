@@ -15,6 +15,8 @@ import SecurityHeaders from '../../components/SecurityHeaders';
 import PageWeightAnalysis from '../../components/PageWeightAnalysis';
 import CoreWebVitals from '../../components/CoreWebVitals';
 import AccessibilityReport from '../../components/AccessibilityReport';
+import StackPopularity from '../../components/StackPopularity';
+import IndustryBenchmark from '../../components/IndustryBenchmark';
 import CategorySection from '../../components/CategorySection';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
@@ -231,6 +233,11 @@ function ResultsContent() {
 
             <div className="mt-8">
               <CoreWebVitals url={data.site?.url} />
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <StackPopularity categories={data.categories} />
+              <IndustryBenchmark domain={data.site?.domain} categories={data.categories} />
             </div>
 
             <div className="mt-10">
