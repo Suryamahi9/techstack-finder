@@ -138,13 +138,8 @@ function ResultsContent() {
 
         {!loading && !error && data && (
           <div className="animate-fade-in">
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="min-w-0 flex-1">
-                <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
-              </div>
-              <div className="shrink-0">
-                <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
-              </div>
+            <div className="mb-6">
+              <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
             </div>
 
             <div className="mt-6">

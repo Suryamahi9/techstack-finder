@@ -38,7 +38,7 @@ export default function CompanyProfile({ company, summary }) {
 
   return (
     <section className="animate-fade-up overflow-hidden rounded-2xl border border-border bg-elevated p-6 sm:p-8">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
             <path d="M2 20V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" />
@@ -47,13 +47,13 @@ export default function CompanyProfile({ company, summary }) {
           <span className="font-mono text-sm uppercase tracking-wider text-faint">Company Profile</span>
         </div>
         {summary && (
-          <div className="flex items-center gap-4 rounded-xl border border-border bg-bg/50 px-5 py-2.5">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-bg/50 px-5 py-3">
+            <div className="flex items-baseline gap-2">
               <span className="font-mono text-2xl font-bold text-accent">{summary.total}</span>
-              <span className="text-xs text-muted">technologies</span>
+              <span className="text-xs text-muted">technologies detected</span>
             </div>
             <div className="h-6 w-px bg-border" />
-            <div className="flex items-center gap-3 text-[11px]">
+            <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-sky-400" />
                 <span className="text-faint">{summary.frontend} frontend</span>
@@ -71,9 +71,9 @@ export default function CompanyProfile({ company, summary }) {
         )}
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+      <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-6">
         {company.logo && (
-          <div className="shrink-0">
+          <div className="flex justify-center sm:justify-start">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={company.logo}
@@ -84,7 +84,7 @@ export default function CompanyProfile({ company, summary }) {
           </div>
         )}
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0">
           {company.name && (
             <h3 className="break-words text-2xl font-bold tracking-tight">{company.name}</h3>
           )}
@@ -112,7 +112,7 @@ export default function CompanyProfile({ company, summary }) {
           </div>
 
           {(company.email || company.phone || company.address) && (
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
               {company.email && (
                 <a href={`mailto:${company.email}`} className="flex items-center gap-2 text-muted hover:text-accent">
                   <svg className="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
