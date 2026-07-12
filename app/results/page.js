@@ -17,6 +17,9 @@ import CoreWebVitals from '../../components/CoreWebVitals';
 import AccessibilityReport from '../../components/AccessibilityReport';
 import StackPopularity from '../../components/StackPopularity';
 import IndustryBenchmark from '../../components/IndustryBenchmark';
+import AiStackSummary from '../../components/AiStackSummary';
+import StackRecommendations from '../../components/StackRecommendations';
+import AutoCategorization from '../../components/AutoCategorization';
 import CategorySection from '../../components/CategorySection';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
@@ -217,6 +220,11 @@ function ResultsContent() {
 
             {data.company && <div className="mt-8"><CompanyProfile company={data.company} summary={data.summary} categories={data.categories} /></div>}
 
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <AiStackSummary domain={data.site?.domain} categories={data.categories} summary={data.summary} company={data.company} />
+              <AutoCategorization domain={data.site?.domain} categories={data.categories} summary={data.summary} />
+            </div>
+
             {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
 
             {data.seo && <div className="mt-8"><SeoAnalysis seo={data.seo} /></div>}
@@ -255,6 +263,10 @@ function ResultsContent() {
 
             <div className="mt-8">
               <BadgeDisplay domain={data.site?.domain} />
+            </div>
+
+            <div className="mt-8">
+              <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
             </div>
 
             {data.summary.total === 0 ? (
