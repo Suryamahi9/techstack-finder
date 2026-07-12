@@ -17,6 +17,7 @@ import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
 import BookmarkButton from '../../components/BookmarkButton';
 import ShareButton from '../../components/ShareButton';
+import StackScore from '../../components/StackScore';
 import { saveScanTrend } from '../trends/page';
 
 function ResultsContent() {
@@ -26,6 +27,33 @@ function ResultsContent() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [excludedCategories, setExcludedCategories] = useState(new Set());
+
+  const toggleCategory = (cat) => {
+    setExcludedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
+
+  const filteredData = data
+    ? {
+        ...data,
+        categories: data.categories.filter((c) => !excludedCategories.has(c.category)),
+        summary: {
+          ...data.summary,
+          categories: data.categories.filter((c) => !excludedCategories.has(c.category)).length,
+          total: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.length, 0),
+          frontend: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'frontend').length, 0),
+          backend: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'backend').length, 0),
+          infra: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'infra').length, 0),
+        },
+      }
+    : null;
+
+  const allCategoryNames = data ? data.categories.map((c) => c.category) : [];
 
   const customHeaders = searchParams.get('headers');
   const customCookies = searchParams.get('cookies');
@@ -170,6 +198,10 @@ function ResultsContent() {
               <SitePreview url={data.site.url} domain={data.site.domain} />
             </div>
 
+            <div className="mt-8">
+              <StackScore seo={data.seo} performance={data.performance} security={data.security} />
+            </div>
+
             {data.company && <div className="mt-8"><CompanyProfile company={data.company} summary={data.summary} categories={data.categories} /></div>}
 
             {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
@@ -196,7 +228,28 @@ function ResultsContent() {
               </div>
             ) : (
               <div className="mt-8">
-                {data.categories.map((cat, i) => (
+                {allCategoryNames.length > 1 && (
+                  <div className="mb-6 flex flex-wrap items-center gap-2">
+                    <span className="mr-1 font-mono text-xs uppercase tracking-wider text-faint">Filter:</span>
+                    {allCategoryNames.map((cat) => {
+                      const active = !excludedCategories.has(cat);
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => toggleCategory(cat)}
+                          className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                            active
+                              ? 'border-accent/30 bg-accent/10 text-accent'
+                              : 'border-border bg-elevated text-faint hover:border-border-strong hover:text-muted'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {filteredData && filteredData.categories.map((cat, i) => (
                   <CategorySection
                     key={cat.category}
                     category={cat.category}
@@ -240,8 +293,8 @@ function ResultsContent() {
             <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <BookmarkButton data={data} />
               <ShareButton site={site} />
-              <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
-              <ExportButtons data={data} fileName={data.site?.domain || 'report'} />
+              <DownloadPdfButton data={filteredData || data} fileName={data.site?.domain || 'report'} />
+              <ExportButtons data={filteredData || data} fileName={data.site?.domain || 'report'} />
             </div>
           </div>
         )}

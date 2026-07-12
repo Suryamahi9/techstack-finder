@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import HistoryList from '../components/HistoryList';
+import PopularScans from '../components/PopularScans';
 import useInView from '../lib/useInView';
 
 const EXAMPLE_SITES = [
@@ -427,6 +428,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Popular / Recent scans */}
+        <AnimatedSection delay={0.1} className="mt-20 sm:mt-28">
+          <PopularScans />
+        </AnimatedSection>
 
         {/* History */}
         <AnimatedSection delay={0.1} className="mt-20 w-full sm:mt-28">

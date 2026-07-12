@@ -17,12 +17,19 @@ const TYPE_COLORS = {
   infra: { bg: '#fef3c7', text: '#b45309', bar: '#f59e0b' },
 };
 
+const TYPE_COLORS_DARK = {
+  frontend: { bg: '#1e3a5f', text: '#60a5fa', bar: '#3b82f6' },
+  backend: { bg: '#064e3b', text: '#34d399', bar: '#10b981' },
+  infra: { bg: '#451a03', text: '#fbbf24', bar: '#f59e0b' },
+};
+
 const CAT_COLORS = [
   '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899',
   '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#e11d48', '#84cc16',
 ];
 
-function buildPdfHtml(data) {
+function buildPdfHtml(data, theme = 'light') {
+  const isDark = theme === 'dark';
   const total = data.summary?.total || 0;
   const fe = data.summary?.frontend || 0;
   const be = data.summary?.backend || 0;
@@ -38,20 +45,21 @@ function buildPdfHtml(data) {
     .sort((a, b) => b.count - a.count);
 
   const maxCatCount = catStats.length > 0 ? catStats[0].count : 1;
+  const tcMap = isDark ? TYPE_COLORS_DARK : TYPE_COLORS;
 
   const techCards = (data.categories || []).flatMap((cat) =>
     (cat.technologies || []).map((t) => {
-      const tc = TYPE_COLORS[t.type] || TYPE_COLORS.frontend;
+      const tc = tcMap[t.type] || tcMap.frontend;
       return `
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;page-break-inside:avoid">
+        <div style="background:${isDark ? '#1e293b' : '#fff'};border:1px solid ${isDark ? '#334155' : '#e5e7eb'};border-radius:10px;padding:14px 16px;page-break-inside:avoid">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="font-size:14px;font-weight:700;color:#111">${escapeXml(t.name)}${t.version ? ` <span style="font-size:11px;font-weight:400;color:#9ca3af">v${escapeXml(t.version)}</span>` : ''}</div>
+            <div style="font-size:14px;font-weight:700;color:${isDark ? '#f1f5f9' : '#111'}">${escapeXml(t.name)}${t.version ? ` <span style="font-size:11px;font-weight:400;color:${isDark ? '#64748b' : '#9ca3af'}">v${escapeXml(t.version)}</span>` : ''}</div>
             <span style="display:inline-block;background:${tc.bg};color:${tc.text};font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:3px 8px;border-radius:4px">${t.type}</span>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7280">
-            <span style="background:#f3f4f6;padding:2px 6px;border-radius:3px;font-weight:500">${escapeXml(cat.category)}</span>
-            <span style="color:#9ca3af">via</span>
-            <span style="color:#374151">${escapeXml(t.detectedVia)}</span>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${isDark ? '#94a3b8' : '#6b7280'}">
+            <span style="background:${isDark ? '#0f172a' : '#f3f4f6'};padding:2px 6px;border-radius:3px;font-weight:500">${escapeXml(cat.category)}</span>
+            <span style="color:${isDark ? '#475569' : '#9ca3af'}">via</span>
+            <span style="color:${isDark ? '#cbd5e1' : '#374151'}">${escapeXml(t.detectedVia)}</span>
           </div>
         </div>`;
     })
@@ -61,11 +69,20 @@ function buildPdfHtml(data) {
   const perfData = data.performance;
   const secData = data.security;
 
+  const fg = isDark ? '#f1f5f9' : '#111';
+  const fgMuted = isDark ? '#94a3b8' : '#6b7280';
+  const fgDim = isDark ? '#64748b' : '#9ca3af';
+  const bgCard = isDark ? '#1e293b' : '#fff';
+  const bgPage = isDark ? '#0f172a' : '#fff';
+  const bgSection = isDark ? '#1e293b' : '#f8fafc';
+  const border = isDark ? '#334155' : '#e5e7eb';
+  const borderLight = isDark ? '#1e293b' : '#f1f5f9';
+
   return `
-  <div style="font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#111;line-height:1.6;-webkit-font-smoothing:antialiased">
+  <div style="font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:${fg};line-height:1.6;-webkit-font-smoothing:antialiased;background:${bgPage}">
 
     <!-- COVER SECTION -->
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%);padding:56px 48px 48px;color:#fff;position:relative;overflow:hidden">
+    <div style="background:linear-gradient(135deg,${isDark ? '#020617' : '#0f172a'} 0%,${isDark ? '#0f172a' : '#1e293b'} 50%,${isDark ? '#1e293b' : '#334155'} 100%);padding:56px 48px 48px;color:#fff;position:relative;overflow:hidden">
       <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(59,130,246,0.15)"></div>
       <div style="position:absolute;bottom:-60px;left:30%;width:160px;height:160px;border-radius:50%;background:rgba(16,185,129,0.1)"></div>
       <div style="position:relative;z-index:1">
@@ -75,45 +92,45 @@ function buildPdfHtml(data) {
         </div>
         <h1 style="font-size:36px;font-weight:800;letter-spacing:-1px;margin:0 0 6px;line-height:1.1">Technology Report</h1>
         <p style="font-size:16px;color:#cbd5e1;margin:0 0 4px;font-weight:500">${escapeXml(data.site?.domain || '')}</p>
-        <p style="font-size:12px;color:#64748b;margin:0">${formatDate(data.site?.scannedAt)} &middot; HTTP ${data.site?.statusCode || '—'}</p>
+        <p style="font-size:12px;color:#64748b;margin:0">${formatDate(data.site?.scannedAt)} &middot; HTTP ${data.site?.statusCode || '—'} &middot; ${isDark ? 'Dark' : 'Light'} theme</p>
       </div>
     </div>
 
     <!-- STAT CARDS -->
     <div style="padding:0 48px;margin-top:-24px;position:relative;z-index:2">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
-          <div style="font-size:32px;font-weight:800;color:#111">${total}</div>
-          <div style="font-size:11px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Technologies</div>
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
+          <div style="font-size:32px;font-weight:800;color:${fg}">${total}</div>
+          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Technologies</div>
         </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
-          <div style="font-size:32px;font-weight:800;color:#111">${cats}</div>
-          <div style="font-size:11px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Categories</div>
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
+          <div style="font-size:32px;font-weight:800;color:${fg}">${cats}</div>
+          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Categories</div>
         </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
           <div style="font-size:32px;font-weight:800;color:#3b82f6">${fePct}%</div>
-          <div style="font-size:11px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Frontend</div>
+          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Frontend</div>
         </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
           <div style="font-size:32px;font-weight:800;color:#10b981">${bePct + infPct}%</div>
-          <div style="font-size:11px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Backend + Infra</div>
+          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Backend + Infra</div>
         </div>
       </div>
     </div>
 
     <!-- DISTRIBUTION BAR -->
     <div style="padding:28px 48px 0">
-      <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:20px">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;font-weight:700;margin-bottom:12px">Stack Distribution</div>
-        <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#e5e7eb">
+      <div style="background:${bgSection};border:1px solid ${border};border-radius:12px;padding:20px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:${fgDim};font-weight:700;margin-bottom:12px">Stack Distribution</div>
+        <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:${isDark ? '#334155' : '#e5e7eb'}">
           ${fePct > 0 ? `<div style="width:${fePct}%;background:#3b82f6"></div>` : ''}
           ${bePct > 0 ? `<div style="width:${bePct}%;background:#10b981"></div>` : ''}
           ${infPct > 0 ? `<div style="width:${infPct}%;background:#f59e0b"></div>` : ''}
         </div>
         <div style="display:flex;gap:20px;margin-top:10px">
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#374151"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6"></span> Frontend ${fePct}% (${fe})</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#374151"><span style="width:10px;height:10px;border-radius:3px;background:#10b981"></span> Backend ${bePct}% (${be})</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#374151"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b"></span> Infra ${infPct}% (${inf})</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6"></span> Frontend ${fePct}% (${fe})</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#10b981"></span> Backend ${bePct}% (${be})</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b"></span> Infra ${infPct}% (${inf})</div>
         </div>
       </div>
     </div>
@@ -121,7 +138,7 @@ function buildPdfHtml(data) {
     <!-- CATEGORY BREAKDOWN -->
     ${catStats.length > 0 ? `
     <div style="padding:24px 48px 0">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#3b82f6;border-radius:2px;display:inline-block"></span>
         Category Breakdown
       </h2>
@@ -130,14 +147,14 @@ function buildPdfHtml(data) {
           const pct = Math.round((c.count / total) * 100);
           const color = CAT_COLORS[i % CAT_COLORS.length];
           return `
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #f1f5f9">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${bgSection};border-radius:8px;border:1px solid ${borderLight}">
               <div style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0"></div>
               <div style="flex:1;min-width:0">
                 <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeXml(c.name)}</span>
-                  <span style="font-size:11px;color:#6b7280;font-weight:600;margin-left:8px;flex-shrink:0">${c.count}</span>
+                  <span style="font-size:12px;font-weight:600;color:${fg};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeXml(c.name)}</span>
+                  <span style="font-size:11px;color:${fgMuted};font-weight:600;margin-left:8px;flex-shrink:0">${c.count}</span>
                 </div>
-                <div style="height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+                <div style="height:5px;background:${isDark ? '#334155' : '#e5e7eb'};border-radius:3px;overflow:hidden">
                   <div style="height:100%;width:${pct}%;background:${color};border-radius:3px"></div>
                 </div>
               </div>
@@ -148,37 +165,37 @@ function buildPdfHtml(data) {
 
     <!-- TECH GRID -->
     <div style="padding:28px 48px 0">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#10b981;border-radius:2px;display:inline-block"></span>
         All Technologies
       </h2>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        ${techCards || '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#9ca3af;font-size:13px">No technologies detected</div>'}
+        ${techCards || `<div style="grid-column:1/-1;text-align:center;padding:24px;color:${fgDim};font-size:13px">No technologies detected</div>`}
       </div>
     </div>
 
     <!-- COMPANY -->
     ${data.company?.name ? `
     <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#8b5cf6;border-radius:2px;display:inline-block"></span>
         Company Profile
       </h2>
-      <div style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+      <div style="background:linear-gradient(135deg,${isDark ? '#1e293b' : '#f8fafc'},${isDark ? '#0f172a' : '#f1f5f9'});border:1px solid ${border};border-radius:12px;padding:24px">
         <div style="display:flex;align-items:flex-start;gap:16px">
-          ${data.company.logo ? `<img src="${escapeXml(data.company.logo)}" style="width:56px;height:56px;border-radius:12px;border:1px solid #e5e7eb;object-fit:contain;background:#fff;padding:4px" onerror="this.style.display='none'" />` : ''}
+          ${data.company.logo ? `<img src="${escapeXml(data.company.logo)}" style="width:56px;height:56px;border-radius:12px;border:1px solid ${border};object-fit:contain;background:${isDark ? '#0f172a' : '#fff'};padding:4px" onerror="this.style.display='none'" />` : ''}
           <div style="flex:1">
-            <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px">${escapeXml(data.company.name)}</div>
-            ${data.company.description ? `<div style="font-size:12px;color:#6b7280;margin-bottom:10px;line-height:1.5">${escapeXml(data.company.description)}</div>` : ''}
-            <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:11px;color:#6b7280">
-              ${data.company.industry ? `<span><span style="color:#94a3b8">Industry:</span> ${escapeXml(data.company.industry)}</span>` : ''}
-              ${data.company.foundingDate ? `<span><span style="color:#94a3b8">Founded:</span> ${escapeXml(data.company.foundingDate)}</span>` : ''}
-              ${data.company.employeeCount ? `<span><span style="color:#94a3b8">Employees:</span> ${escapeXml(data.company.employeeCount)}</span>` : ''}
+            <div style="font-size:18px;font-weight:700;color:${fg};margin-bottom:4px">${escapeXml(data.company.name)}</div>
+            ${data.company.description ? `<div style="font-size:12px;color:${fgMuted};margin-bottom:10px;line-height:1.5">${escapeXml(data.company.description)}</div>` : ''}
+            <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:11px;color:${fgMuted}">
+              ${data.company.industry ? `<span><span style="color:${fgDim}">Industry:</span> ${escapeXml(data.company.industry)}</span>` : ''}
+              ${data.company.foundingDate ? `<span><span style="color:${fgDim}">Founded:</span> ${escapeXml(data.company.foundingDate)}</span>` : ''}
+              ${data.company.employeeCount ? `<span><span style="color:${fgDim}">Employees:</span> ${escapeXml(data.company.employeeCount)}</span>` : ''}
             </div>
           </div>
-          <div style="text-align:center;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 18px;flex-shrink:0">
+          <div style="text-align:center;background:${isDark ? '#0f172a' : '#fff'};border:1px solid ${border};border-radius:10px;padding:12px 18px;flex-shrink:0">
             <div style="font-size:28px;font-weight:800;color:#3b82f6">${total}</div>
-            <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">techs</div>
+            <div style="font-size:10px;color:${fgMuted};text-transform:uppercase;letter-spacing:0.5px;font-weight:600">techs</div>
           </div>
         </div>
       </div>
@@ -187,32 +204,32 @@ function buildPdfHtml(data) {
     <!-- SEO -->
     ${seoData ? `
     <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#f59e0b;border-radius:2px;display:inline-block"></span>
         SEO Analysis
       </h2>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center">
-          <div style="font-size:32px;font-weight:800;color:#111">${seoData.score || '—'}<span style="font-size:14px;font-weight:400;color:#9ca3af">/100</span></div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;margin-top:2px;font-weight:600">Score</div>
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:32px;font-weight:800;color:${fg}">${seoData.score || '—'}<span style="font-size:14px;font-weight:400;color:${fgDim}">/100</span></div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Score</div>
         </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center">
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
           <div style="font-size:32px;font-weight:800;color:${seoData.score >= 80 ? '#10b981' : seoData.score >= 50 ? '#f59e0b' : '#ef4444'}">${seoData.grade || '—'}</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;margin-top:2px;font-weight:600">Grade</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Grade</div>
         </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center">
-          <div style="font-size:14px;font-weight:700;color:#111">H1: ${seoData.headings?.h1 || 0} · H2: ${seoData.headings?.h2 || 0}</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;margin-top:2px;font-weight:600">Headings</div>
+        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:14px;font-weight:700;color:${fg}">H1: ${seoData.headings?.h1 || 0} · H2: ${seoData.headings?.h2 || 0}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Headings</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:12px">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;font-weight:600;margin-bottom:4px">Title</div>
-          <div style="font-size:12px;color:#374151;word-break:break-word">${escapeXml(seoData.title?.text) || '<span style="color:#d1d5db">Missing</span>'}</div>
+        <div style="background:${bgSection};border:1px solid ${borderLight};border-radius:8px;padding:12px">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">Title</div>
+          <div style="font-size:12px;color:${fg};word-break:break-word">${escapeXml(seoData.title?.text) || `<span style="color:${fgDim}">Missing</span>`}</div>
         </div>
-        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:12px">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;font-weight:600;margin-bottom:4px">Description</div>
-          <div style="font-size:12px;color:#374151;word-break:break-word">${escapeXml(seoData.description?.text) || '<span style="color:#d1d5db">Missing</span>'}</div>
+        <div style="background:${bgSection};border:1px solid ${borderLight};border-radius:8px;padding:12px">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">Description</div>
+          <div style="font-size:12px;color:${fg};word-break:break-word">${escapeXml(seoData.description?.text) || `<span style="color:${fgDim}">Missing</span>`}</div>
         </div>
       </div>
     </div>` : ''}
@@ -220,7 +237,7 @@ function buildPdfHtml(data) {
     <!-- PERFORMANCE -->
     ${perfData ? `
     <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#10b981;border-radius:2px;display:inline-block"></span>
         Performance
       </h2>
@@ -233,9 +250,9 @@ function buildPdfHtml(data) {
           ['Keep-Alive', perfData.keepAlive],
           ['Alt-Svc', perfData.altSvc],
         ].filter(i => i[1]).map(([label, value, color]) => `
-          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
-            <div style="font-size:13px;font-weight:600;color:${color || '#111'}">${escapeXml(value)}</div>
+          <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:14px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
+            <div style="font-size:13px;font-weight:600;color:${color || fg}">${escapeXml(value)}</div>
           </div>
         `).join('')}
       </div>
@@ -244,7 +261,7 @@ function buildPdfHtml(data) {
     <!-- SECURITY -->
     ${secData ? `
     <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:#111;display:flex;align-items:center;gap:8px">
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
         <span style="width:3px;height:18px;background:#ef4444;border-radius:2px;display:inline-block"></span>
         Security Headers
       </h2>
@@ -259,9 +276,9 @@ function buildPdfHtml(data) {
           ['X-XSS-Protection', secData.xssProtection],
           ['CORS', secData.cors?.allowOrigin],
         ].filter(i => i[1]).map(([label, value]) => `
-          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
-            <div style="font-size:11px;color:#374151;word-break:break-all;font-weight:500">${escapeXml(value)}</div>
+          <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:14px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
+            <div style="font-size:11px;color:${fg};word-break:break-all;font-weight:500">${escapeXml(value)}</div>
           </div>
         `).join('')}
       </div>
@@ -269,14 +286,14 @@ function buildPdfHtml(data) {
 
     <!-- FOOTER -->
     <div style="padding:40px 48px 48px;margin-top:32px">
-      <div style="border-top:1px solid #e5e7eb;padding-top:20px;display:flex;justify-content:space-between;align-items:center">
+      <div style="border-top:1px solid ${border};padding-top:20px;display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:12px;font-weight:700;color:#111">TechStack Finder</div>
-          <div style="font-size:10px;color:#94a3b8;margin-top:2px">Full-stack technology detection engine</div>
+          <div style="font-size:12px;font-weight:700;color:${fg}">TechStack Finder</div>
+          <div style="font-size:10px;color:${fgDim};margin-top:2px">Full-stack technology detection engine</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:10px;color:#94a3b8">Generated ${formatDate(new Date().toISOString())}</div>
-          <div style="font-size:10px;color:#cbd5e1;margin-top:2px">techstack-finder.vercel.app</div>
+          <div style="font-size:10px;color:${fgDim}">Generated ${formatDate(new Date().toISOString())} &middot; ${isDark ? 'Dark' : 'Light'} theme</div>
+          <div style="font-size:10px;color:${fgDim};margin-top:2px">techstack-finder.vercel.app</div>
         </div>
       </div>
     </div>
@@ -286,6 +303,7 @@ function buildPdfHtml(data) {
 
 export default function DownloadPdfButton({ data, fileName = 'report' }) {
   const [generating, setGenerating] = useState(false);
+  const [pdfTheme, setPdfTheme] = useState('dark');
 
   const handleDownload = async () => {
     if (!data || generating) return;
@@ -298,16 +316,17 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       ]);
 
       const container = document.createElement('div');
-      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#fff;padding:0;font-family:Segoe UI,system-ui,-apple-system,sans-serif;color:#111;line-height:1.6;z-index:99999;';
+      const isDark = pdfTheme === 'dark';
+      container.style.cssText = `position:fixed;left:-9999px;top:0;width:800px;background:${isDark ? '#0f172a' : '#fff'};padding:0;font-family:Segoe UI,system-ui,-apple-system,sans-serif;color:${isDark ? '#f1f5f9' : '#111'};line-height:1.6;z-index:99999;`;
 
-      container.innerHTML = buildPdfHtml(data);
+      container.innerHTML = buildPdfHtml(data, pdfTheme);
 
       document.body.appendChild(container);
 
       const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: isDark ? '#0f172a' : '#ffffff',
         logging: false,
         width: 800,
       });
@@ -333,7 +352,7 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         heightLeft -= pageH;
       }
 
-      pdf.save(`${fileName.replace(/[^a-z0-9]/gi, '-')}-techstack-report.pdf`);
+      pdf.save(`${fileName.replace(/[^a-z0-9]/gi, '-')}-techstack-report-${pdfTheme}.pdf`);
     } catch (err) {
       console.error('PDF generation failed:', err);
     } finally {
@@ -342,26 +361,44 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
   };
 
   return (
-    <button
-      onClick={handleDownload}
-      disabled={generating || !data}
-      className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-6 py-3 font-mono text-sm font-semibold text-accent hover:bg-accent/20 hover:border-accent/50 transition-all duration-300 disabled:opacity-40"
-    >
-      {generating ? (
-        <>
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
-          Generating PDF…
-        </>
-      ) : (
-        <>
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
+    <div className="flex items-center gap-2">
+      <button
+        onClick={handleDownload}
+        disabled={generating || !data}
+        className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-6 py-3 font-mono text-sm font-semibold text-accent hover:bg-accent/20 hover:border-accent/50 transition-all duration-300 disabled:opacity-40"
+      >
+        {generating ? (
+          <>
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
+            Generating PDF…
+          </>
+        ) : (
+          <>
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download PDF
+          </>
+        )}
+      </button>
+      <button
+        onClick={() => setPdfTheme(pdfTheme === 'dark' ? 'light' : 'dark')}
+        className="flex items-center gap-1.5 rounded-lg border border-border bg-elevated px-3 py-3 text-xs text-muted hover:border-border-strong hover:text-fg transition-colors"
+        title={`Switch to ${pdfTheme === 'dark' ? 'light' : 'dark'} theme PDF`}
+      >
+        {pdfTheme === 'dark' ? (
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <circle cx="12" cy="12" r="5" />
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
           </svg>
-          Download PDF Report
-        </>
-      )}
-    </button>
+        ) : (
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        )}
+      </button>
+    </div>
   );
 }
