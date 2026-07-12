@@ -12,6 +12,9 @@ import PageMetadata from '../../components/PageMetadata';
 import SeoAnalysis from '../../components/SeoAnalysis';
 import PerformanceInsights from '../../components/PerformanceInsights';
 import SecurityHeaders from '../../components/SecurityHeaders';
+import PageWeightAnalysis from '../../components/PageWeightAnalysis';
+import CoreWebVitals from '../../components/CoreWebVitals';
+import AccessibilityReport from '../../components/AccessibilityReport';
 import CategorySection from '../../components/CategorySection';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
@@ -219,6 +222,15 @@ function ResultsContent() {
             <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
               {data.performance && <PerformanceInsights performance={data.performance} />}
               {data.security && <SecurityHeaders security={data.security} />}
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <PageWeightAnalysis pageMetadata={data.pageMetadata} categories={data.categories} seo={data.seo} />
+              {data.a11y && <AccessibilityReport a11y={data.a11y} />}
+            </div>
+
+            <div className="mt-8">
+              <CoreWebVitals url={data.site?.url} />
             </div>
 
             <div className="mt-10">
