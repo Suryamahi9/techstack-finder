@@ -65,7 +65,7 @@ export default function TechTimeline({ categories }) {
         <div className="space-y-0.5">
           {filtered.map((tech, i) => {
             const color = TYPE_COLORS[tech.type] || '#8b5cf6';
-            const confPct = Math.round(tech.confidence * 100);
+            const confPct = Math.round((tech.confidence || 0.9) * 100);
             return (
               <div
                 key={tech.name}
