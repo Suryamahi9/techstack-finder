@@ -10,7 +10,8 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 
 ## Architecture
 - **Next.js 14 App Router** (no TypeScript) — home at `/app/page.js`, results at `/app/results/page.js`, API at `/app/api/scan/route.js`
-- **844 detection rules** in `/lib/detect.js` across **55 categories** (24 frontend, 18 backend, 13 infra). `CATEGORY_TYPES` map tags each as `frontend`/`backend`/`infra`. Default fetch timeout: 25s. Pattern types: `html`, `header`, `script_src`, `meta_generator`, `cookie`, `css_class`, `link_tag`.
+- **928 detection rules** in `/lib/detect.js` across **55 categories** (24 frontend, 18 backend, 13 infra). `CATEGORY_TYPES` map tags each as `frontend`/`backend`/`infra`. Default fetch timeout: 25s. Pattern types: `html`, `header`, `script_src`, `meta_generator`, `cookie`, `css_class`, `link_tag`, `css_content`, `js_content`, `path_probe`, `browser`, `browser_var`, `browser_network`, `browser_cookie`.
+- **Deep scan** in `/lib/deep-scan.js` — fetches CSS/JS files, probes 35+ common paths, and uses Playwright headless browser when DOM is thin (<50 elements). Browser captures globals, network requests, localStorage, cookies.
 - **16 client components** in `/components/`, all `'use client'`
 - **CSS variables** in `globals.css` (`:root` dark, `[data-theme='light']` light) referenced in `tailwind.config.js` via `var(--*)`. Never hardcode hex colors.
 - **jsconfig.json** maps `@/*` → `./*`
