@@ -1,6 +1,6 @@
 export default function SiteIdentity({ site, summary, cached }) {
   return (
-    <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-5 sm:p-6">
+    <div className="animate-fade-up overflow-hidden rounded-2xl border border-border bg-elevated p-5 sm:p-6">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="relative shrink-0">

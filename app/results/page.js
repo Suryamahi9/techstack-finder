@@ -97,7 +97,7 @@ function ResultsContent() {
         <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
         <div className="mb-8 max-w-2xl">
           <SearchBar initialValue={site || ''} size="small" />
         </div>

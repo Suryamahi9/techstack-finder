@@ -7,7 +7,7 @@ export default function CategorySection({ category, technologies, index }) {
       className="border-t border-border py-8 animate-fade-up"
       style={{ animationDelay: `${index * 80}ms` }}
     >
-      <div className="grid gap-6 sm:grid-cols-[220px_1fr] sm:gap-10">
+      <div className="grid gap-6 sm:grid-cols-[200px_1fr] sm:gap-8">
         <div className="sticky top-20 self-start">
           <div className="flex items-center gap-2.5">
             <span className="text-accent">
@@ -20,7 +20,7 @@ export default function CategorySection({ category, technologies, index }) {
             <span>{technologies.length === 1 ? 'technology' : 'technologies'} detected</span>
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {technologies.map((tech, i) => (
             <TechCard key={tech.name} tech={tech} index={i} />
           ))}

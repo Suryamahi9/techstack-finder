@@ -37,7 +37,7 @@ export default function CompanyProfile({ company }) {
   if (!hasAny) return null;
 
   return (
-    <section className="animate-fade-up rounded-2xl border border-border bg-elevated p-5 sm:p-6">
+    <section className="animate-fade-up overflow-hidden rounded-2xl border border-border bg-elevated p-5 sm:p-6">
       <div className="mb-4 flex items-center gap-2">
         <svg className="h-4 w-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
           <path d="M2 20V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" />
@@ -61,11 +61,11 @@ export default function CompanyProfile({ company }) {
 
         <div className="min-w-0 flex-1">
           {company.name && (
-            <h3 className="text-lg font-semibold tracking-tight">{company.name}</h3>
+            <h3 className="break-words text-lg font-semibold tracking-tight">{company.name}</h3>
           )}
 
           {company.description && (
-            <p className="mt-1.5 max-w-2xl text-sm text-muted leading-relaxed">{company.description}</p>
+            <p className="mt-1.5 max-w-2xl text-sm text-muted leading-relaxed break-words">{company.description}</p>
           )}
 
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted">
