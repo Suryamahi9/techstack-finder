@@ -14,6 +14,10 @@ import PerformanceInsights from '../../components/PerformanceInsights';
 import SecurityHeaders from '../../components/SecurityHeaders';
 import CategorySection from '../../components/CategorySection';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
+import ExportButtons from '../../components/ExportButtons';
+import BookmarkButton from '../../components/BookmarkButton';
+import ShareButton from '../../components/ShareButton';
+import { saveScanTrend } from '../trends/page';
 
 function ResultsContent() {
   const searchParams = useSearchParams();
@@ -70,8 +74,28 @@ function ResultsContent() {
             scannedAt: result.site.scannedAt,
             total: result.summary.total,
           });
-          localStorage.setItem('tsf-history', JSON.stringify(filtered.slice(0, 5)));
+          localStorage.setItem('tsf-history', JSON.stringify(filtered.slice(0, 20)));
           window.dispatchEvent(new Event('tsf-history-updated'));
+
+          const techBreakdown = {};
+          const categoryBreakdown = {};
+          (result.categories || []).forEach((cat) => {
+            categoryBreakdown[cat.category] = cat.technologies.length;
+            cat.technologies.forEach((t) => {
+              techBreakdown[t.name] = (techBreakdown[t.name] || 0) + 1;
+            });
+          });
+          saveScanTrend({
+            domain: result.site.domain,
+            url: result.site.url,
+            scannedAt: result.site.scannedAt,
+            total: result.summary.total,
+            frontend: result.summary.frontend || 0,
+            backend: result.summary.backend || 0,
+            infra: result.summary.infra || 0,
+            techBreakdown,
+            categoryBreakdown,
+          });
         } catch {}
       })
       .catch((err) => {
@@ -213,8 +237,11 @@ function ResultsContent() {
               </div>
             )}
 
-            <div className="mt-12 flex justify-center">
+            <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <BookmarkButton data={data} />
+              <ShareButton site={site} />
               <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
+              <ExportButtons data={data} fileName={data.site?.domain || 'report'} />
             </div>
           </div>
         )}
