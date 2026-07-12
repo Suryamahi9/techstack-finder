@@ -5,7 +5,7 @@ export default function SitePreview({ url, domain }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
-  const screenshotUrl = `https://image.thum.io/get/width/800/crop/500/noanimate/${url}`;
+  const screenshotUrl = `/api/screenshot?url=${encodeURIComponent(url)}`;
 
   return (
     <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-5 sm:p-6">
