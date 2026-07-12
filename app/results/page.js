@@ -18,6 +18,10 @@ import ExportButtons from '../../components/ExportButtons';
 import BookmarkButton from '../../components/BookmarkButton';
 import ShareButton from '../../components/ShareButton';
 import StackScore from '../../components/StackScore';
+import StackVisualization from '../../components/StackVisualization';
+import StackWordCloud from '../../components/StackWordCloud';
+import TechTimeline from '../../components/TechTimeline';
+import BadgeDisplay from '../../components/BadgeDisplay';
 import { saveScanTrend } from '../trends/page';
 
 function ResultsContent() {
@@ -211,6 +215,20 @@ function ResultsContent() {
             <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
               {data.performance && <PerformanceInsights performance={data.performance} />}
               {data.security && <SecurityHeaders security={data.security} />}
+            </div>
+
+            {/* Interactive Visuals */}
+            <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <StackVisualization categories={data.categories} />
+              <StackWordCloud categories={data.categories} />
+            </div>
+
+            <div className="mt-8">
+              <TechTimeline categories={data.categories} />
+            </div>
+
+            <div className="mt-8">
+              <BadgeDisplay domain={data.site?.domain} />
             </div>
 
             {data.summary.total === 0 ? (

@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import MergedPdfButton from '../../components/MergedPdfButton';
 import Skeleton from '../../components/Skeleton';
 
 async function scan(url) {
@@ -278,7 +279,7 @@ export default function CompareContent() {
                   <span className="text-lg font-extrabold text-fg">{similarity}%</span>
                 </div>
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-base font-bold text-fg">Stack Similarity</h3>
                 <p className="mt-1 text-sm text-muted">
                   {similarity >= 70
@@ -291,6 +292,7 @@ export default function CompareContent() {
                   {sharedCount} of {totalUnique} technologies are shared
                 </p>
               </div>
+              <MergedPdfButton dataA={dataA} dataB={dataB} />
             </div>
 
             <div className="flex items-center justify-between text-xs text-muted mb-3">
