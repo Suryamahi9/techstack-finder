@@ -20,8 +20,12 @@ import ShareButton from '../../components/ShareButton';
 import StackScore from '../../components/StackScore';
 import StackVisualization from '../../components/StackVisualization';
 import TechTimeline from '../../components/TechTimeline';
+import TechVersionInfo from '../../components/TechVersionInfo';
+import TechDependencyTree from '../../components/TechDependencyTree';
+import DependencyGraph from '../../components/DependencyGraph';
 import BadgeDisplay from '../../components/BadgeDisplay';
 import { saveScanTrend } from '../trends/page';
+import { saveScanSnapshot } from '../../lib/scan-history';
 
 function ResultsContent() {
   const searchParams = useSearchParams();
@@ -127,6 +131,8 @@ function ResultsContent() {
             techBreakdown,
             categoryBreakdown,
           });
+
+          try { saveScanSnapshot(result); } catch {}
         } catch {}
       })
       .catch((err) => {
@@ -222,6 +228,15 @@ function ResultsContent() {
 
             <div className="mt-8">
               <TechTimeline categories={data.categories} />
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <TechVersionInfo categories={data.categories} />
+              <TechDependencyTree categories={data.categories} />
+            </div>
+
+            <div className="mt-8">
+              <DependencyGraph categories={data.categories} />
             </div>
 
             <div className="mt-8">
