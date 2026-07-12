@@ -7,6 +7,13 @@ const TYPE_COLORS = {
   infra: '#f59e0b',
 };
 
+const CONF_MAP = { high: 0.95, medium: 0.7, low: 0.4 };
+
+function toNum(c) {
+  if (typeof c === 'number') return c;
+  return CONF_MAP[c] || 0.7;
+}
+
 export default function TechTimeline({ categories }) {
   const [selectedType, setSelectedType] = useState('all');
 
@@ -19,7 +26,7 @@ export default function TechTimeline({ categories }) {
           name: tech.name,
           type: tech.type,
           category: cat.category,
-          confidence: tech.confidence || 0.9,
+          confidence: toNum(tech.confidence),
           detectedVia: tech.detectedVia,
           version: tech.version,
         });
@@ -65,7 +72,7 @@ export default function TechTimeline({ categories }) {
         <div className="space-y-0.5">
           {filtered.map((tech, i) => {
             const color = TYPE_COLORS[tech.type] || '#8b5cf6';
-            const confPct = Math.round((tech.confidence || 0.9) * 100);
+            const confPct = Math.round(tech.confidence * 100);
             return (
               <div
                 key={tech.name}
