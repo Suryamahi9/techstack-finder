@@ -193,26 +193,43 @@ function ResultsContent() {
 
         {!loading && !error && data && (
           <div className="animate-fade-in">
-            {/* ── TOP: Identity + Health Score ── */}
-            <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+            <div className="mb-6">
               <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
+            </div>
+
+            <div className="mt-6">
+              <SitePreview url={data.site.url} domain={data.site.domain} />
+            </div>
+
+            <div className="mt-8">
               <StackScore seo={data.seo} performance={data.performance} security={data.security} />
             </div>
 
-            {/* ── SCREENSHOTS ── */}
-            <SitePreview url={data.site.url} domain={data.site.domain} />
-
-            {/* ── COMPANY ── */}
             {data.company && <div className="mt-8"><CompanyProfile company={data.company} summary={data.summary} categories={data.categories} /></div>}
 
-            {/* ── INTERACTIVE GRAPH ── */}
+            {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
+
+            {data.seo && <div className="mt-8"><SeoAnalysis seo={data.seo} /></div>}
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {data.performance && <PerformanceInsights performance={data.performance} />}
+              {data.security && <SecurityHeaders security={data.security} />}
+            </div>
+
             <div className="mt-10">
               <StackVisualization categories={data.categories} />
             </div>
 
-            {/* ── TECHNOLOGIES ── */}
+            <div className="mt-8">
+              <TechTimeline categories={data.categories} />
+            </div>
+
+            <div className="mt-8">
+              <BadgeDisplay domain={data.site?.domain} />
+            </div>
+
             {data.summary.total === 0 ? (
-              <div className="mt-10 rounded-2xl border border-border bg-elevated p-12 text-center">
+              <div className="mt-12 rounded-2xl border border-border bg-elevated p-12 text-center">
                 <h3 className="text-lg font-semibold">No technologies detected</h3>
                 <p className="mt-2 text-sm text-muted">
                   The site may render entirely client-side, block automated requests, or use
@@ -225,7 +242,7 @@ function ResultsContent() {
                 )}
               </div>
             ) : (
-              <div className="mt-10">
+              <div className="mt-8">
                 {allCategoryNames.length > 1 && (
                   <div className="mb-6 flex flex-wrap items-center gap-2">
                     <span className="mr-1 font-mono text-xs uppercase tracking-wider text-faint">Filter:</span>
@@ -258,70 +275,36 @@ function ResultsContent() {
               </div>
             )}
 
-            {/* ── ANALYSIS: SEO + Performance + Security ── */}
-            <div className="mt-12">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="h-px flex-1 bg-border" />
-                <span className="font-mono text-[10px] uppercase tracking-widest text-faint">Analysis</span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-              {data.seo && <div className="mb-6"><SeoAnalysis seo={data.seo} /></div>}
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                {data.performance && <PerformanceInsights performance={data.performance} />}
-                {data.security && <SecurityHeaders security={data.security} />}
-              </div>
-            </div>
-
-            {/* ── TIMELINE ── */}
-            <div className="mt-10">
-              <TechTimeline categories={data.categories} />
-            </div>
-
-            {/* ── METADATA ── */}
-            {(data.pageMetadata || data.responseHeaders.server || data.responseHeaders.poweredBy || data.responseHeaders.generator) && (
-              <div className="mt-10">
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="h-px flex-1 bg-border" />
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-faint">Metadata</span>
-                  <span className="h-px flex-1 bg-border" />
+            {(data.responseHeaders.server ||
+              data.responseHeaders.poweredBy ||
+              data.responseHeaders.generator) && (
+              <div className="mt-12 rounded-xl border border-border bg-elevated/40 p-5">
+                <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">
+                  Response signals
                 </div>
-                {data.pageMetadata && <PageMetadata metadata={data.pageMetadata} />}
-                {(data.responseHeaders.server || data.responseHeaders.poweredBy || data.responseHeaders.generator) && (
-                  <div className="mt-4 rounded-xl border border-border bg-elevated/40 p-5">
-                    <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">
-                      Response signals
+                <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
+                  {data.responseHeaders.server && (
+                    <div>
+                      <span className="text-faint">Server:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.server}</span>
                     </div>
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
-                      {data.responseHeaders.server && (
-                        <div>
-                          <span className="text-faint">Server:</span>{' '}
-                          <span className="text-muted">{data.responseHeaders.server}</span>
-                        </div>
-                      )}
-                      {data.responseHeaders.poweredBy && (
-                        <div>
-                          <span className="text-faint">X-Powered-By:</span>{' '}
-                          <span className="text-muted">{data.responseHeaders.poweredBy}</span>
-                        </div>
-                      )}
-                      {data.responseHeaders.generator && (
-                        <div>
-                          <span className="text-faint">Generator:</span>{' '}
-                          <span className="text-muted">{data.responseHeaders.generator}</span>
-                        </div>
-                      )}
+                  )}
+                  {data.responseHeaders.poweredBy && (
+                    <div>
+                      <span className="text-faint">X-Powered-By:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.poweredBy}</span>
                     </div>
-                  </div>
-                )}
+                  )}
+                  {data.responseHeaders.generator && (
+                    <div>
+                      <span className="text-faint">Generator:</span>{' '}
+                      <span className="text-muted">{data.responseHeaders.generator}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* ── BADGE ── */}
-            <div className="mt-10">
-              <BadgeDisplay domain={data.site?.domain} />
-            </div>
-
-            {/* ── ACTIONS ── */}
             <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <BookmarkButton data={data} />
               <ShareButton site={site} />
