@@ -20,6 +20,9 @@ import IndustryBenchmark from '../../components/IndustryBenchmark';
 import AiStackSummary from '../../components/AiStackSummary';
 import StackRecommendations from '../../components/StackRecommendations';
 import AutoCategorization from '../../components/AutoCategorization';
+import StackAsCode from '../../components/StackAsCode';
+import DesignTokens from '../../components/DesignTokens';
+import ThirdPartyAnalysis from '../../components/ThirdPartyAnalysis';
 import CategorySection from '../../components/CategorySection';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
@@ -269,6 +272,11 @@ function ResultsContent() {
               <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
             </div>
 
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <StackAsCode categories={data.categories} />
+              <DesignTokens categories={data.categories} pageMetadata={data.pageMetadata} />
+            </div>
+
             {data.summary.total === 0 ? (
               <div className="mt-12 rounded-2xl border border-border bg-elevated p-12 text-center">
                 <h3 className="text-lg font-semibold">No technologies detected</h3>
@@ -315,6 +323,10 @@ function ResultsContent() {
                 ))}
               </div>
             )}
+
+            <div className="mt-8">
+              <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
+            </div>
 
             {(data.responseHeaders.server ||
               data.responseHeaders.poweredBy ||
