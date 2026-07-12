@@ -6,6 +6,7 @@ import Footer from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
 import Skeleton from '../../components/Skeleton';
 import SiteIdentity from '../../components/SiteIdentity';
+import SitePreview from '../../components/SitePreview';
 import CompanyProfile from '../../components/CompanyProfile';
 import PageMetadata from '../../components/PageMetadata';
 import SeoAnalysis from '../../components/SeoAnalysis';
@@ -144,6 +145,10 @@ function ResultsContent() {
               <div className="shrink-0">
                 <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
               </div>
+            </div>
+
+            <div className="mt-6">
+              <SitePreview url={data.site.url} domain={data.site.domain} />
             </div>
 
             {data.company && <div className="mt-8"><CompanyProfile company={data.company} /></div>}
