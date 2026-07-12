@@ -31,10 +31,24 @@ const SOCIAL_ICONS = {
   ),
 };
 
-export default function CompanyProfile({ company, summary }) {
+export default function CompanyProfile({ company, summary, categories }) {
   const hasAny = company.name || company.description || company.socialLinks?.length > 0 || company.email || company.phone || company.address || company.foundingDate || company.employeeCount || company.industry;
 
   if (!hasAny) return null;
+
+  const total = summary?.total || 0;
+
+  const catStats = (categories || [])
+    .map((c) => ({ category: c.category, count: c.technologies.length }))
+    .filter((c) => c.count > 0)
+    .sort((a, b) => b.count - a.count);
+
+  const topCategory = catStats[0] || null;
+  const topPct = total > 0 ? Math.round((topCategory.count / total) * 100) : 0;
+
+  const fePct = total > 0 ? Math.round(((summary?.frontend || 0) / total) * 100) : 0;
+  const bePct = total > 0 ? Math.round(((summary?.backend || 0) / total) * 100) : 0;
+  const inPct = total > 0 ? Math.round(((summary?.infra || 0) / total) * 100) : 0;
 
   return (
     <section className="animate-fade-up overflow-hidden rounded-2xl border border-border bg-elevated p-6 sm:p-8">
@@ -56,20 +70,48 @@ export default function CompanyProfile({ company, summary }) {
             <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-sky-400" />
-                <span className="text-faint">{summary.frontend} frontend</span>
+                <span className="text-faint">{summary.frontend} ({fePct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="text-faint">{summary.backend} backend</span>
+                <span className="text-faint">{summary.backend} ({bePct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-amber-400" />
-                <span className="text-faint">{summary.infra} infra</span>
+                <span className="text-faint">{summary.infra} ({inPct}%)</span>
               </span>
             </div>
           </div>
         )}
       </div>
+
+      {total > 0 && (
+        <div className="mb-6 rounded-xl border border-border bg-bg/30 p-4">
+          <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">Technology Breakdown</div>
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-border/30">
+            {fePct > 0 && (
+              <div className="bg-sky-400 transition-all duration-500" style={{ width: `${fePct}%` }} title={`Frontend ${fePct}%`} />
+            )}
+            {bePct > 0 && (
+              <div className="bg-emerald-400 transition-all duration-500" style={{ width: `${bePct}%` }} title={`Backend ${bePct}%`} />
+            )}
+            {inPct > 0 && (
+              <div className="bg-amber-400 transition-all duration-500" style={{ width: `${inPct}%` }} title={`Infra ${inPct}%`} />
+            )}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">
+            {fePct > 0 && <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-sky-400" /> Frontend {fePct}%</span>}
+            {bePct > 0 && <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Backend {bePct}%</span>}
+            {inPct > 0 && <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" /> Infra {inPct}%</span>}
+          </div>
+          {topCategory && (
+            <div className="mt-3 border-t border-border pt-3 text-xs text-muted">
+              Most used category: <span className="font-mono font-semibold text-fg">{topCategory.category}</span>{' '}
+              <span className="text-faint">({topCategory.count} techs, {topPct}% of total)</span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-6">
         {company.logo && (
