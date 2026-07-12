@@ -348,3 +348,14 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 639px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+  pre, code {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+}

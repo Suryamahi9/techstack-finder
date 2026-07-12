@@ -128,7 +128,7 @@ export default function ApiKeysPage() {
         {/* Usage example */}
         <div className="mb-8 rounded-2xl border border-border bg-elevated p-5">
           <h3 className="mb-3 text-sm font-semibold text-fg">Quick Start</h3>
-          <div className="rounded-lg bg-bg p-4 font-mono text-xs leading-relaxed">
+          <div className="overflow-x-auto rounded-lg bg-bg p-4 font-mono text-xs leading-relaxed">
             <span className="text-faint">curl</span>{' '}
             <span className="text-muted">-X POST</span>{' '}
             <span className="text-emerald-400">https://techstack-finder.vercel.app/api/scan</span>{'\n'}

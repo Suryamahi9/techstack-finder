@@ -272,7 +272,7 @@ export default function Home() {
         <div className="glow-orb h-[350px] w-[350px] animate-orb-drift-2" style={{ bottom: '-50px', right: '10%', background: 'var(--accent)', opacity: 0.035 }} />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-32 pt-24 sm:px-6 sm:pt-28 lg:pb-48 lg:pt-36">
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-32 pt-20 sm:px-6 sm:pt-28 lg:pb-48 lg:pt-36">
         {/* Hero */}
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-20">
           <div className="w-full shrink-0 space-y-6 lg:w-[58%] lg:pr-8">
@@ -286,7 +286,7 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection delay={0.06}>
-              <h1 className="text-5xl font-bold leading-[1.0] tracking-tighter sm:text-7xl lg:text-8xl">
+              <h1 className="text-4xl font-bold leading-[1.0] tracking-tighter sm:text-7xl lg:text-8xl">
                 What&apos;s it
                 <br />
                 <span className="relative">

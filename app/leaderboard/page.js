@@ -80,7 +80,7 @@ export default function LeaderboardPage() {
               ))}
             </div>
 
-            <div className="mb-4 flex gap-1.5">
+            <div className="mb-4 flex flex-wrap gap-1.5">
               {[
                 { id: 'techs', label: 'Top Technologies' },
                 { id: 'sites', label: 'Most Scanned Sites' },

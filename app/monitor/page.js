@@ -152,13 +152,13 @@ export default function MonitorPage() {
                       {lastDiff.added.length > 0 && (
                         <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1">
                           <span className="text-[10px] font-semibold text-emerald-400">+{lastDiff.added.length} added</span>
-                          <span className="ml-1 text-[10px] text-muted">{lastDiff.added.join(', ')}</span>
+                          <span className="ml-1 text-[10px] text-muted break-words">{lastDiff.added.join(', ')}</span>
                         </div>
                       )}
                       {lastDiff.removed.length > 0 && (
                         <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-2.5 py-1">
                           <span className="text-[10px] font-semibold text-red-400">-{lastDiff.removed.length} removed</span>
-                          <span className="ml-1 text-[10px] text-muted">{lastDiff.removed.join(', ')}</span>
+                          <span className="ml-1 text-[10px] text-muted break-words">{lastDiff.removed.join(', ')}</span>
                         </div>
                       )}
                       {lastDiff.added.length === 0 && lastDiff.removed.length === 0 && (

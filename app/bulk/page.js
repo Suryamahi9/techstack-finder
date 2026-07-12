@@ -100,7 +100,7 @@ export default function BulkScanPage() {
             className="w-full rounded-xl border border-border bg-bg px-4 py-3 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 resize-none disabled:opacity-50"
           />
 
-          <div className="mt-4 flex items-center gap-4">
+          <div className="mt-4 flex flex-wrap items-center gap-3 sm:gap-4">
             <button
               onClick={startBulk}
               disabled={urls.length === 0 || scanning}

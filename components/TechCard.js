@@ -78,25 +78,25 @@ export default function TechCard({ tech, index = 0 }) {
 
   return (
     <div
-      className="card-hover group relative flex flex-col gap-4 rounded-2xl border border-border bg-elevated p-5 sm:p-6 animate-fade-up"
+      className="card-hover group relative flex flex-col gap-3 rounded-2xl border border-border bg-elevated p-4 sm:p-5 sm:gap-4 animate-fade-up"
       style={{ animationDelay: `${index * 40}ms` }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2.5 min-w-0">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           <span className={`${color} shrink-0 opacity-80`}>
-            <CategoryIcon category={tech.category} className="h-5 w-5" />
+            <CategoryIcon category={tech.category} className="h-4 w-4 sm:h-5 sm:w-5" />
           </span>
-          <h4 className="break-words font-mono text-base font-semibold tracking-tight">
+          <h4 className="break-words font-mono text-sm font-semibold tracking-tight sm:text-base">
             {tech.name}
           </h4>
           {tech.version && (
-            <span className="shrink-0 rounded-md border border-accent/20 bg-accent/8 px-2 py-0.5 font-mono text-[11px] text-accent">
+            <span className="shrink-0 rounded-md border border-accent/20 bg-accent/8 px-1.5 py-0.5 font-mono text-[10px] text-accent sm:px-2 sm:text-[11px]">
               v{tech.version}
             </span>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <span className={`${typeColor} rounded-md border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider`}>
+        <div className="flex shrink-0 items-center gap-1.5 self-start">
+          <span className={`${typeColor} rounded-md border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider sm:px-2 sm:text-[10px]`}>
             {tech.type}
           </span>
           <span
@@ -105,7 +105,7 @@ export default function TechCard({ tech, index = 0 }) {
             }`}
             title={`${tech.confidence} confidence`}
           />
-          <span className={`${confColor} rounded-md px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider`}>
+          <span className={`${confColor} rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider sm:px-2 sm:text-[10px]`}>
             {tech.confidence}
           </span>
         </div>

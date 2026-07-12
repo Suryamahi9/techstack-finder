@@ -261,7 +261,7 @@ export default function CompareContent() {
         {dataA && dataB && (
           <div className="mb-8 rounded-2xl border border-border bg-elevated p-5 animate-fade-up">
             {/* Similarity score */}
-            <div className="mb-5 flex items-center gap-6">
+            <div className="mb-5 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div className="relative shrink-0">
                 <svg width="80" height="80" viewBox="0 0 80 80">
                   <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" strokeWidth="6" />
