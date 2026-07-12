@@ -3,11 +3,19 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const maxDuration = 15;
 
-const THUM_BASE = 'https://image.thum.io/get/width/800/crop/500/noanimate/';
+const VIEWPORTS = {
+  mobile: { width: 375, height: 667 },
+  tablet: { width: 768, height: 1024 },
+  desktop: { width: 1280, height: 800 },
+};
+
+const THUM_BASE = 'https://image.thum.io/get/width/';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
+  const viewport = searchParams.get('viewport') || 'desktop';
+  const width = parseInt(searchParams.get('width')) || null;
 
   if (!url || typeof url !== 'string') {
     return NextResponse.json({ error: 'url query param required' }, { status: 400 });
@@ -24,7 +32,10 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Invalid hostname' }, { status: 400 });
   }
 
-  const screenshotUrl = THUM_BASE + parsed.href;
+  const vp = VIEWPORTS[viewport] || VIEWPORTS.desktop;
+  const w = width || vp.width;
+  const crop = Math.round(w * 0.625);
+  const screenshotUrl = `${THUM_BASE}${w}/crop/${crop}/noanimate/${parsed.href}`;
 
   try {
     const controller = new AbortController();
@@ -49,6 +60,7 @@ export async function GET(request) {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=86400, s-maxage=604800',
         'X-Proxy': 'techstack-finder',
+        'X-Viewport': viewport,
       },
     });
   } catch (err) {

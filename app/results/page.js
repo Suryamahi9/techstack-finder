@@ -6,7 +6,7 @@ import Footer from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
 import Skeleton from '../../components/Skeleton';
 import SiteIdentity from '../../components/SiteIdentity';
-import SitePreview from '../../components/SitePreview';
+import SitePreview from '../../components/ScreenshotGallery';
 import CompanyProfile from '../../components/CompanyProfile';
 import PageMetadata from '../../components/PageMetadata';
 import SeoAnalysis from '../../components/SeoAnalysis';

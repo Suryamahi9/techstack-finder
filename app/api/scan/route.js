@@ -5,11 +5,24 @@ export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 const ipHits = new Map();
-const scanCache = new Map(); // { key: { result, expires } }
+const keyHits = new Map();
+const scanCache = new Map();
 
-function rateLimited(ip) {
+const API_KEY_STORE = new Map();
+
+function rateLimited(ip, apiKey) {
   const now = Date.now();
   const windowMs = 60_000;
+
+  if (apiKey) {
+    const max = 100;
+    const hits = (keyHits.get(apiKey) || []).filter((t) => now - t < windowMs);
+    if (hits.length >= max) return true;
+    hits.push(now);
+    keyHits.set(apiKey, hits);
+    return false;
+  }
+
   const max = 10;
   const hits = (ipHits.get(ip) || []).filter((t) => now - t < windowMs);
   if (hits.length >= max) return true;
@@ -54,9 +67,11 @@ export async function POST(request) {
     request.headers.get('x-real-ip') ||
     'unknown';
 
-  if (rateLimited(ip)) {
+  const apiKey = request.headers.get('x-api-key') || null;
+
+  if (rateLimited(ip, apiKey)) {
     return NextResponse.json(
-      { success: false, error: 'Too many scans. Please wait a minute and try again.' },
+      { success: false, error: 'Too many scans. Please wait a minute and try again.', rateLimit: { limit: apiKey ? 100 : 10, window: '1m' } },
       { status: 429 }
     );
   }
@@ -102,5 +117,10 @@ export async function GET() {
   return NextResponse.json({
     name: 'TechStack Finder API',
     usage: 'POST { "url": "example.com", "headers": {}, "cookies": "a=b; c=d", "timeout": 8000 }',
+    rateLimits: {
+      anonymous: '10 requests/minute by IP',
+      authenticated: '100 requests/minute with x-api-key header',
+    },
+    docs: 'Send x-api-key header for higher rate limits. Generate keys at /api-keys',
   });
 }

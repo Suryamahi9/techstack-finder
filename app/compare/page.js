@@ -213,6 +213,7 @@ export default function CompareContent() {
   const uniqueA = allTechsA.size - sharedCount;
   const uniqueB = allTechsB.size - sharedCount;
   const totalUnique = allTechsA.size + allTechsB.size - sharedCount;
+  const similarity = totalUnique > 0 ? Math.round((sharedCount / totalUnique) * 100) : 0;
 
   const showResults = dataA || dataB || loadingA || loadingB;
 
@@ -258,6 +259,40 @@ export default function CompareContent() {
         {/* Diff summary */}
         {dataA && dataB && (
           <div className="mb-8 rounded-2xl border border-border bg-elevated p-5 animate-fade-up">
+            {/* Similarity score */}
+            <div className="mb-5 flex items-center gap-6">
+              <div className="relative shrink-0">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" strokeWidth="6" />
+                  <circle
+                    cx="40" cy="40" r="34" fill="none"
+                    stroke={similarity >= 70 ? '#10b981' : similarity >= 40 ? '#f59e0b' : '#ef4444'}
+                    strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 34}
+                    strokeDashoffset={2 * Math.PI * 34 * (1 - similarity / 100)}
+                    transform="rotate(-90 40 40)"
+                    style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-extrabold text-fg">{similarity}%</span>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-fg">Stack Similarity</h3>
+                <p className="mt-1 text-sm text-muted">
+                  {similarity >= 70
+                    ? 'These sites share a very similar tech stack.'
+                    : similarity >= 40
+                    ? 'Moderate overlap — some shared technologies.'
+                    : 'Very different tech stacks.'}
+                </p>
+                <p className="mt-1 text-xs text-faint">
+                  {sharedCount} of {totalUnique} technologies are shared
+                </p>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between text-xs text-muted mb-3">
               <span className="text-accent">{uniqueA} unique to A</span>
               <span className="text-sky-400">{sharedCount} shared</span>
