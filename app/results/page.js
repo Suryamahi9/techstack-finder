@@ -280,7 +280,6 @@ function ResultsContent() {
                     <StackVisualization categories={filteredData?.categories || data.categories} />
 
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                      {filteredData?.categories || data.categories} 
                       {(filteredData?.categories || data.categories).map((cat, i) => (
                         <CategorySection
                           key={cat.category}
