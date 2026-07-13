@@ -1,5 +1,5 @@
 'use client';
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -41,6 +41,7 @@ import WebhookPanel from '../../components/WebhookPanel';
 import WhiteLabelPdf from '../../components/WhiteLabelPdf';
 import TechStackGenerator from '../../components/TechStackGenerator';
 import ReverseLookup from '../../components/ReverseLookup';
+import ResultsTabs from '../../components/ResultsTabs';
 import { saveScanTrend } from '../trends/page';
 import { saveScanSnapshot } from '../../lib/scan-history';
 
@@ -52,6 +53,7 @@ function ResultsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [excludedCategories, setExcludedCategories] = useState(new Set());
+  const [activeTab, setActiveTab] = useState('overview');
 
   const toggleCategory = (cat) => {
     setExcludedCategories((prev) => {
@@ -176,7 +178,7 @@ function ResultsContent() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
-        <div className="mb-8 max-w-2xl">
+        <div className="mb-6 max-w-2xl">
           <SearchBar initialValue={site || ''} size="small" />
         </div>
 
@@ -186,13 +188,7 @@ function ResultsContent() {
           <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">
             <div className="mx-auto max-w-md text-center">
               <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-bg">
-                <svg
-                  className="h-5 w-5 text-muted"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                >
+                <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 8v4M12 16h.01" />
                 </svg>
@@ -200,15 +196,8 @@ function ResultsContent() {
               <h2 className="text-xl font-semibold">Scan failed</h2>
               <p className="mt-2 text-sm text-muted">{error}</p>
               <div className="mt-6 flex flex-col items-center gap-3">
-                <a
-                  href={`/results?site=${encodeURIComponent(site || '')}`}
-                  className="rounded-lg border border-border bg-bg px-4 py-2 text-sm font-medium hover:border-border-strong"
-                >
-                  Try again
-                </a>
-                <a href="/" className="text-xs text-muted hover:text-fg">
-                  ← Back to home
-                </a>
+                <a href={`/results?site=${encodeURIComponent(site || '')}`} className="rounded-lg border border-border bg-bg px-4 py-2 text-sm font-medium hover:border-border-strong">Try again</a>
+                <a href="/" className="text-xs text-muted hover:text-fg">&larr; Back to home</a>
               </div>
             </div>
           </div>
@@ -216,180 +205,178 @@ function ResultsContent() {
 
         {!loading && !error && data && (
           <div className="animate-fade-in">
-            <div className="mb-6">
+            {/* Site header — always visible */}
+            <div className="mb-4">
               <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
             </div>
 
-            <div className="mt-6">
-              <SitePreview url={data.site.url} domain={data.site.domain} />
-            </div>
+            <SitePreview url={data.site.url} domain={data.site.domain} />
 
-            <div className="mt-8">
-              <StackScore seo={data.seo} performance={data.performance} security={data.security} />
-            </div>
+            {/* Tabs */}
+            <ResultsTabs active={activeTab} onChange={setActiveTab} summary={data.summary} />
 
-            {data.company && <div className="mt-8"><CompanyProfile company={data.company} summary={data.summary} categories={data.categories} /></div>}
+            {/* ═══ Overview Tab ═══ */}
+            {activeTab === 'overview' && (
+              <div className="space-y-8">
+                <StackScore seo={data.seo} performance={data.performance} security={data.security} />
 
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <AiStackSummary domain={data.site?.domain} categories={data.categories} summary={data.summary} company={data.company} />
-              <AutoCategorization domain={data.site?.domain} categories={data.categories} summary={data.summary} />
-            </div>
+                {data.company && (
+                  <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />
+                )}
 
-            {data.pageMetadata && <div className="mt-8"><PageMetadata metadata={data.pageMetadata} /></div>}
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <AiStackSummary domain={data.site?.domain} categories={data.categories} summary={data.summary} company={data.company} />
+                  <AutoCategorization domain={data.site?.domain} categories={data.categories} summary={data.summary} />
+                </div>
 
-            {data.seo && <div className="mt-8"><SeoAnalysis seo={data.seo} /></div>}
+                {data.pageMetadata && <PageMetadata metadata={data.pageMetadata} />}
 
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              {data.performance && <PerformanceInsights performance={data.performance} />}
-              {data.security && <SecurityHeaders security={data.security} />}
-            </div>
+                <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
 
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <PageWeightAnalysis pageMetadata={data.pageMetadata} categories={data.categories} seo={data.seo} />
-              {data.a11y && <AccessibilityReport a11y={data.a11y} />}
-            </div>
+                <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                  <BookmarkButton data={data} />
+                  <ShareButton site={site} />
+                  <DownloadPdfButton data={filteredData || data} fileName={data.site?.domain || 'report'} />
+                  <ExportButtons data={filteredData || data} fileName={data.site?.domain || 'report'} />
+                </div>
+              </div>
+            )}
 
-            <div className="mt-8">
-              <CoreWebVitals url={data.site?.url} />
-            </div>
+            {/* ═══ Technologies Tab ═══ */}
+            {activeTab === 'tech' && (
+              <div className="space-y-8">
+                {data.summary.total === 0 ? (
+                  <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+                    <h3 className="text-lg font-semibold">No technologies detected</h3>
+                    <p className="mt-2 text-sm text-muted">The site may render entirely client-side, block automated requests, or use technologies outside our rule set.</p>
+                    {data.responseHeaders.server && (
+                      <p className="mt-4 font-mono text-xs text-faint">Server: {data.responseHeaders.server}</p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {allCategoryNames.length > 1 && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="mr-1 font-mono text-xs uppercase tracking-wider text-faint">Filter:</span>
+                        {allCategoryNames.map((cat) => {
+                          const active = !excludedCategories.has(cat);
+                          return (
+                            <button
+                              key={cat}
+                              onClick={() => toggleCategory(cat)}
+                              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                                active
+                                  ? 'border-accent/30 bg-accent/10 text-accent'
+                                  : 'border-border bg-elevated text-faint hover:border-border-strong hover:text-muted'
+                              }`}
+                            >
+                              {cat}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
 
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <StackPopularity categories={data.categories} />
-              <IndustryBenchmark domain={data.site?.domain} categories={data.categories} />
-            </div>
+                    <StackVisualization categories={filteredData?.categories || data.categories} />
 
-            <div className="mt-10">
-              <StackVisualization categories={data.categories} />
-            </div>
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                      {filteredData?.categories || data.categories} 
+                      {(filteredData?.categories || data.categories).map((cat, i) => (
+                        <CategorySection
+                          key={cat.category}
+                          category={cat.category}
+                          technologies={cat.technologies}
+                          index={i}
+                        />
+                      ))}
+                    </div>
 
-            <div className="mt-8">
-              <TechTimeline categories={data.categories} />
-            </div>
+                    <TechTimeline categories={data.categories} />
 
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <TechVersionInfo categories={data.categories} />
-              <TechDependencyTree categories={data.categories} />
-            </div>
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                      <TechVersionInfo categories={data.categories} />
+                      <TechDependencyTree categories={data.categories} />
+                    </div>
 
-            <div className="mt-8">
-              <TechRadar categories={data.categories} />
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <BadgeDisplay domain={data.site?.domain} />
-              <EmbedWidget domain={data.site?.domain} />
-            </div>
-
-            <div className="mt-8">
-              <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <StackAsCode categories={data.categories} />
-              <DesignTokens categories={data.categories} pageMetadata={data.pageMetadata} />
-            </div>
-
-            {data.summary.total === 0 ? (
-              <div className="mt-12 rounded-2xl border border-border bg-elevated p-12 text-center">
-                <h3 className="text-lg font-semibold">No technologies detected</h3>
-                <p className="mt-2 text-sm text-muted">
-                  The site may render entirely client-side, block automated requests, or use
-                  technologies outside our rule set.
-                </p>
-                {data.responseHeaders.server && (
-                  <p className="mt-4 font-mono text-xs text-faint">
-                    Server: {data.responseHeaders.server}
-                  </p>
+                    <TechRadar categories={data.categories} />
+                  </>
                 )}
               </div>
-            ) : (
-              <div className="mt-8">
-                {allCategoryNames.length > 1 && (
-                  <div className="mb-6 flex flex-wrap items-center gap-2">
-                    <span className="mr-1 font-mono text-xs uppercase tracking-wider text-faint">Filter:</span>
-                    {allCategoryNames.map((cat) => {
-                      const active = !excludedCategories.has(cat);
-                      return (
-                        <button
-                          key={cat}
-                          onClick={() => toggleCategory(cat)}
-                          className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                            active
-                              ? 'border-accent/30 bg-accent/10 text-accent'
-                              : 'border-border bg-elevated text-faint hover:border-border-strong hover:text-muted'
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      );
-                    })}
+            )}
+
+            {/* ═══ Analysis Tab ═══ */}
+            {activeTab === 'analysis' && (
+              <div className="space-y-8">
+                {data.seo && <SeoAnalysis seo={data.seo} />}
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.performance && <PerformanceInsights performance={data.performance} />}
+                  {data.security && <SecurityHeaders security={data.security} />}
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <PageWeightAnalysis pageMetadata={data.pageMetadata} categories={data.categories} seo={data.seo} />
+                  {data.a11y && <AccessibilityReport a11y={data.a11y} />}
+                </div>
+
+                <CoreWebVitals url={data.site?.url} />
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <StackPopularity categories={data.categories} />
+                  <IndustryBenchmark domain={data.site?.domain} categories={data.categories} />
+                </div>
+
+                <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
+
+                {(data.responseHeaders.server || data.responseHeaders.poweredBy || data.responseHeaders.generator) && (
+                  <div className="rounded-xl border border-border bg-elevated/40 p-5">
+                    <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">Response signals</div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
+                      {data.responseHeaders.server && (
+                        <div><span className="text-faint">Server:</span> <span className="text-muted">{data.responseHeaders.server}</span></div>
+                      )}
+                      {data.responseHeaders.poweredBy && (
+                        <div><span className="text-faint">X-Powered-By:</span> <span className="text-muted">{data.responseHeaders.poweredBy}</span></div>
+                      )}
+                      {data.responseHeaders.generator && (
+                        <div><span className="text-faint">Generator:</span> <span className="text-muted">{data.responseHeaders.generator}</span></div>
+                      )}
+                    </div>
                   </div>
                 )}
-                {filteredData && filteredData.categories.map((cat, i) => (
-                  <CategorySection
-                    key={cat.category}
-                    category={cat.category}
-                    technologies={cat.technologies}
-                    index={i}
-                  />
-                ))}
               </div>
             )}
 
-            <div className="mt-8">
-              <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <MultiPageScan domain={data.site?.domain} />
-              <WhiteLabelPdf data={data} />
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <TechStackGenerator />
-              <ReverseLookup />
-            </div>
-
-            <div className="mt-8">
-              <WebhookPanel data={data} />
-            </div>
-
-            {(data.responseHeaders.server ||
-              data.responseHeaders.poweredBy ||
-              data.responseHeaders.generator) && (
-              <div className="mt-12 rounded-xl border border-border bg-elevated/40 p-5">
-                <div className="mb-3 font-mono text-xs uppercase tracking-wider text-faint">
-                  Response signals
+            {/* ═══ Code Tab ═══ */}
+            {activeTab === 'code' && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <StackAsCode categories={data.categories} />
+                  <DesignTokens categories={data.categories} pageMetadata={data.pageMetadata} />
                 </div>
-                <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
-                  {data.responseHeaders.server && (
-                    <div>
-                      <span className="text-faint">Server:</span>{' '}
-                      <span className="text-muted">{data.responseHeaders.server}</span>
-                    </div>
-                  )}
-                  {data.responseHeaders.poweredBy && (
-                    <div>
-                      <span className="text-faint">X-Powered-By:</span>{' '}
-                      <span className="text-muted">{data.responseHeaders.poweredBy}</span>
-                    </div>
-                  )}
-                  {data.responseHeaders.generator && (
-                    <div>
-                      <span className="text-faint">Generator:</span>{' '}
-                      <span className="text-muted">{data.responseHeaders.generator}</span>
-                    </div>
-                  )}
-                </div>
+
+                <TechStackGenerator />
               </div>
             )}
 
-            <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <BookmarkButton data={data} />
-              <ShareButton site={site} />
-              <DownloadPdfButton data={filteredData || data} fileName={data.site?.domain || 'report'} />
-              <ExportButtons data={filteredData || data} fileName={data.site?.domain || 'report'} />
-            </div>
+            {/* ═══ Tools Tab ═══ */}
+            {activeTab === 'tools' && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <BadgeDisplay domain={data.site?.domain} />
+                  <EmbedWidget domain={data.site?.domain} />
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <MultiPageScan domain={data.site?.domain} />
+                  <WhiteLabelPdf data={data} />
+                </div>
+
+                <ReverseLookup />
+
+                <WebhookPanel data={data} />
+              </div>
+            )}
           </div>
         )}
       </main>
