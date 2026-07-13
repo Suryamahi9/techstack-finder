@@ -31,7 +31,7 @@ export default function Header() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 640) setOpen(false);
+      if (window.innerWidth >= 1024) setOpen(false);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -39,10 +39,10 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed left-0 right-0 top-0 z-50 sm:left-1/2 sm:top-4 sm:w-auto sm:-translate-x-1/2">
-        {/* Desktop nav — pill bar */}
-        <nav className="hidden sm:flex w-max max-w-[calc(100vw-2rem)] items-center gap-4 overflow-x-auto rounded-full border border-white/10 bg-bg/70 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl lg:gap-5 lg:px-5">
-          <Link href="/" className="group mr-1 flex items-center gap-2">
+      <header className="fixed left-0 right-0 top-0 z-50 lg:left-1/2 lg:top-4 lg:w-auto lg:-translate-x-1/2">
+        {/* Desktop nav — pill bar (lg+ only) */}
+        <nav className="hidden lg:flex w-max max-w-[calc(100vw-2rem)] items-center gap-2 overflow-x-auto rounded-full border border-white/10 bg-bg/70 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl xl:gap-3 xl:px-5">
+          <Link href="/" className="group mr-1 flex shrink-0 items-center gap-2">
             <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
               <span className="absolute inset-0 rounded-md bg-accent/15" />
               <svg viewBox="0 0 24 24" className="relative h-4 w-4 text-accent" fill="none" stroke="currentColor" strokeWidth="2">
@@ -50,7 +50,7 @@ export default function Header() {
                 <path d="M4 12l8 4 8-4M4 17l8 4 8-4" opacity="0.5" />
               </svg>
             </span>
-            <span className="hidden lg:inline text-[15px] font-semibold tracking-tight">
+            <span className="text-[15px] font-semibold tracking-tight">
               TechStack<span className="text-accent">Finder</span>
             </span>
           </Link>
@@ -59,7 +59,7 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-3 py-1 text-xs font-medium text-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-accent/20 hover:text-fg active:scale-[0.97]"
+              className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-accent/20 hover:text-fg active:scale-[0.97]"
             >
               {item.label}
             </Link>
@@ -69,15 +69,15 @@ export default function Header() {
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-3 py-1 text-xs font-medium text-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-accent/20 hover:text-fg active:scale-[0.97]"
+            className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-accent/20 hover:text-fg active:scale-[0.97]"
           >
             Source
           </a>
           <ThemeToggle />
         </nav>
 
-        {/* Mobile nav — slim bar with hamburger */}
-        <div className="flex sm:hidden items-center justify-between border-b border-white/[0.06] bg-bg/80 px-4 py-2.5 backdrop-blur-2xl">
+        {/* Mobile + tablet nav — slim bar with hamburger */}
+        <div className="flex lg:hidden items-center justify-between border-b border-white/[0.06] bg-bg/80 px-4 py-2.5 backdrop-blur-2xl">
           <Link href="/" className="flex items-center gap-2">
             <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
               <span className="absolute inset-0 rounded-md bg-accent/15" />
@@ -113,7 +113,7 @@ export default function Header() {
 
       {/* Mobile menu overlay */}
       {open && (
-        <div className="fixed inset-0 z-40 sm:hidden">
+        <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="absolute left-0 right-0 top-[52px] max-h-[calc(100vh-52px)] overflow-y-auto border-b border-white/[0.06] bg-bg/95 px-4 py-4 backdrop-blur-2xl">
             <div className="space-y-1">
