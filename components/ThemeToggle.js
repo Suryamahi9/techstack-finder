@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ThemePicker from './ThemePicker';
 
 const ICONS = {
@@ -37,6 +37,7 @@ const ICONS = {
 export default function ThemeToggle() {
   const [theme, setTheme] = useState('dark');
   const [open, setOpen] = useState(false);
+  const justOpened = useRef(false);
 
   useEffect(() => {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -51,10 +52,19 @@ export default function ThemeToggle() {
     } catch {}
   };
 
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    if (!open) {
+      justOpened.current = true;
+      setTimeout(() => { justOpened.current = false; }, 100);
+    }
+    setOpen(!open);
+  };
+
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={handleToggle}
         aria-label="Change theme"
         className="group relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-elevated text-fg transition-colors hover:border-border-strong"
         title="Change theme"
@@ -67,6 +77,7 @@ export default function ThemeToggle() {
           currentTheme={theme}
           onSelect={select}
           onClose={() => setOpen(false)}
+          justOpened={justOpened}
         />
       )}
     </>

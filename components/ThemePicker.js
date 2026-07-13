@@ -19,7 +19,7 @@ const THEMES = [
   { id: 'light', name: 'Light', bg: '#faf9f4', fg: '#0a0a0b', accent: '#4d7a00', desc: 'Clean light' },
 ];
 
-export default function ThemePicker({ currentTheme, onSelect, onClose }) {
+export default function ThemePicker({ currentTheme, onSelect, onClose, justOpened }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -30,11 +30,12 @@ export default function ThemePicker({ currentTheme, onSelect, onClose }) {
 
   useEffect(() => {
     const onClick = (e) => {
+      if (justOpened?.current) return;
       if (ref.current && !ref.current.contains(e.target)) onClose();
     };
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
-  }, [onClose]);
+  }, [onClose, justOpened]);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24" style={{ animation: 'fadeIn 0.15s ease' }}>
