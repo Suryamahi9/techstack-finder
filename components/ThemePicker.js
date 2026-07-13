@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const THEMES = [
   { id: 'dark', name: 'Midnight', bg: '#08080a', fg: '#f4f4ee', accent: '#c5fb45', desc: 'Default dark' },
@@ -37,7 +38,12 @@ export default function ThemePicker({ currentTheme, onSelect, onClose, justOpene
     return () => document.removeEventListener('mousedown', onClick);
   }, [onClose, justOpened]);
 
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24" style={{ animation: 'fadeIn 0.15s ease' }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div
@@ -83,7 +89,7 @@ export default function ThemePicker({ currentTheme, onSelect, onClose, justOpene
           ))}
         </div>
       </div>
-
-    </div>
+    </div>,
+    document.body
   );
 }
