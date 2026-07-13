@@ -23,17 +23,13 @@ import AutoCategorization from '../../components/AutoCategorization';
 import StackAsCode from '../../components/StackAsCode';
 import DesignTokens from '../../components/DesignTokens';
 import ThirdPartyAnalysis from '../../components/ThirdPartyAnalysis';
-import CategorySection from '../../components/CategorySection';
+import TechTab from '../../components/TechTab';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
 import ExportButtons from '../../components/ExportButtons';
 import BookmarkButton from '../../components/BookmarkButton';
 import ShareButton from '../../components/ShareButton';
 import StackScore from '../../components/StackScore';
-import StackVisualization from '../../components/StackVisualization';
-import TechTimeline from '../../components/TechTimeline';
-import TechVersionInfo from '../../components/TechVersionInfo';
-import TechDependencyTree from '../../components/TechDependencyTree';
-import TechRadar from '../../components/TechRadar';
+
 import BadgeDisplay from '../../components/BadgeDisplay';
 import EmbedWidget from '../../components/EmbedWidget';
 import MultiPageScan from '../../components/MultiPageScan';
@@ -52,34 +48,7 @@ function ResultsContent() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [excludedCategories, setExcludedCategories] = useState(new Set());
   const [activeTab, setActiveTab] = useState('overview');
-
-  const toggleCategory = (cat) => {
-    setExcludedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(cat)) next.delete(cat);
-      else next.add(cat);
-      return next;
-    });
-  };
-
-  const filteredData = data
-    ? {
-        ...data,
-        categories: data.categories.filter((c) => !excludedCategories.has(c.category)),
-        summary: {
-          ...data.summary,
-          categories: data.categories.filter((c) => !excludedCategories.has(c.category)).length,
-          total: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.length, 0),
-          frontend: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'frontend').length, 0),
-          backend: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'backend').length, 0),
-          infra: data.categories.filter((c) => !excludedCategories.has(c.category)).reduce((s, c) => s + c.technologies.filter((t) => t.type === 'infra').length, 0),
-        },
-      }
-    : null;
-
-  const allCategoryNames = data ? data.categories.map((c) => c.category) : [];
 
   const customHeaders = searchParams.get('headers');
   const customCookies = searchParams.get('cookies');
@@ -236,71 +205,15 @@ function ResultsContent() {
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                   <BookmarkButton data={data} />
                   <ShareButton site={site} />
-                  <DownloadPdfButton data={filteredData || data} fileName={data.site?.domain || 'report'} />
-                  <ExportButtons data={filteredData || data} fileName={data.site?.domain || 'report'} />
+                  <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
+                  <ExportButtons data={data} fileName={data.site?.domain || 'report'} />
                 </div>
               </div>
             )}
 
             {/* ═══ Technologies Tab ═══ */}
             {activeTab === 'tech' && (
-              <div className="space-y-8">
-                {data.summary.total === 0 ? (
-                  <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
-                    <h3 className="text-lg font-semibold">No technologies detected</h3>
-                    <p className="mt-2 text-sm text-muted">The site may render entirely client-side, block automated requests, or use technologies outside our rule set.</p>
-                    {data.responseHeaders.server && (
-                      <p className="mt-4 font-mono text-xs text-faint">Server: {data.responseHeaders.server}</p>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    {allCategoryNames.length > 1 && (
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="mr-1 font-mono text-xs uppercase tracking-wider text-faint">Filter:</span>
-                        {allCategoryNames.map((cat) => {
-                          const active = !excludedCategories.has(cat);
-                          return (
-                            <button
-                              key={cat}
-                              onClick={() => toggleCategory(cat)}
-                              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                                active
-                                  ? 'border-accent/30 bg-accent/10 text-accent'
-                                  : 'border-border bg-elevated text-faint hover:border-border-strong hover:text-muted'
-                              }`}
-                            >
-                              {cat}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    <StackVisualization categories={filteredData?.categories || data.categories} />
-
-                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                      {(filteredData?.categories || data.categories).map((cat, i) => (
-                        <CategorySection
-                          key={cat.category}
-                          category={cat.category}
-                          technologies={cat.technologies}
-                          index={i}
-                        />
-                      ))}
-                    </div>
-
-                    <TechTimeline categories={data.categories} />
-
-                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                      <TechVersionInfo categories={data.categories} />
-                      <TechDependencyTree categories={data.categories} />
-                    </div>
-
-                    <TechRadar categories={data.categories} />
-                  </>
-                )}
-              </div>
+              <TechTab data={data} />
             )}
 
             {/* ═══ Analysis Tab ═══ */}
