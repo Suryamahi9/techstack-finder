@@ -41,7 +41,7 @@ export default function Header() {
     <>
       <header className="fixed left-0 right-0 top-0 z-50 sm:left-1/2 sm:top-4 sm:w-auto sm:-translate-x-1/2">
         {/* Desktop nav — pill bar */}
-        <nav className="hidden sm:flex w-max items-center gap-4 rounded-full border border-white/10 bg-bg/70 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl lg:gap-5 lg:px-5">
+        <nav className="hidden sm:flex w-max max-w-[calc(100vw-2rem)] items-center gap-4 overflow-x-auto rounded-full border border-white/10 bg-bg/70 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl lg:gap-5 lg:px-5">
           <Link href="/" className="group mr-1 flex items-center gap-2">
             <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
               <span className="absolute inset-0 rounded-md bg-accent/15" />
