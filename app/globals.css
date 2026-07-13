@@ -237,6 +237,116 @@
     radial-gradient(ellipse 40% 50% at 80% 70%, rgba(140, 100, 220, 0.03) 0%, transparent 50%);
 }
 
+/* Ember theme */
+[data-theme='ember'] {
+  --bg: #140800;
+  --elevated: #1e0e04;
+  --fg: #ffeedd;
+  --muted: #c08050;
+  --faint: #6b3a1a;
+  --border: rgba(255, 120, 40, 0.1);
+  --border-strong: rgba(255, 120, 40, 0.2);
+  --accent: #ff6a1a;
+  --accent-soft: rgba(255, 106, 26, 0.1);
+  --accent-glow: rgba(255, 106, 26, 0.35);
+}
+[data-theme='ember'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(255, 120, 40, 0.04) 1px, transparent 1px);
+}
+[data-theme='ember'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255, 106, 26, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(255, 80, 20, 0.03) 0%, transparent 50%);
+}
+
+/* Arctic theme */
+[data-theme='arctic'] {
+  --bg: #e8f0f8;
+  --elevated: #ffffff;
+  --fg: #0a1a2a;
+  --muted: #507090;
+  --faint: #90b0cc;
+  --border: rgba(80, 140, 200, 0.12);
+  --border-strong: rgba(80, 140, 200, 0.22);
+  --accent: #2090d0;
+  --accent-soft: rgba(32, 144, 208, 0.1);
+  --accent-glow: rgba(32, 144, 208, 0.25);
+}
+[data-theme='arctic'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(80, 140, 200, 0.06) 1px, transparent 1px);
+}
+[data-theme='arctic'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(32, 144, 208, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(80, 180, 240, 0.04) 0%, transparent 50%);
+}
+
+/* Crimson theme */
+[data-theme='crimson'] {
+  --bg: #120408;
+  --elevated: #1c0a10;
+  --fg: #ffe8ec;
+  --muted: #b06070;
+  --faint: #6a2838;
+  --border: rgba(220, 50, 80, 0.1);
+  --border-strong: rgba(220, 50, 80, 0.2);
+  --accent: #e03060;
+  --accent-soft: rgba(224, 48, 96, 0.1);
+  --accent-glow: rgba(224, 48, 96, 0.35);
+}
+[data-theme='crimson'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(220, 50, 80, 0.04) 1px, transparent 1px);
+}
+[data-theme='crimson'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(224, 48, 96, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(200, 40, 80, 0.03) 0%, transparent 50%);
+}
+
+/* Mint theme */
+[data-theme='mint'] {
+  --bg: #041210;
+  --elevated: #081e1a;
+  --fg: #d8f8ee;
+  --muted: #60b89a;
+  --faint: #2a6858;
+  --border: rgba(60, 200, 160, 0.1);
+  --border-strong: rgba(60, 200, 160, 0.2);
+  --accent: #3cdca0;
+  --accent-soft: rgba(60, 220, 160, 0.1);
+  --accent-glow: rgba(60, 220, 160, 0.3);
+}
+[data-theme='mint'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(60, 200, 160, 0.04) 1px, transparent 1px);
+}
+[data-theme='mint'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(60, 220, 160, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(40, 180, 140, 0.03) 0%, transparent 50%);
+}
+
+/* Amber theme */
+[data-theme='amber'] {
+  --bg: #120e04;
+  --elevated: #1c1608;
+  --fg: #fff4e0;
+  --muted: #b09050;
+  --faint: #6a5820;
+  --border: rgba(220, 180, 60, 0.1);
+  --border-strong: rgba(220, 180, 60, 0.2);
+  --accent: #e8b820;
+  --accent-soft: rgba(232, 184, 32, 0.1);
+  --accent-glow: rgba(232, 184, 32, 0.3);
+}
+[data-theme='amber'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(220, 180, 60, 0.04) 1px, transparent 1px);
+}
+[data-theme='amber'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(232, 184, 32, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(200, 160, 40, 0.03) 0%, transparent 50%);
+}
+
 * {
   border-color: var(--border);
 }
@@ -471,6 +581,26 @@ body {
 }
 [data-theme='lavender'] .mesh-blob {
   background: radial-gradient(circle at 40% 40%, rgba(160, 120, 255, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='ember'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(255, 106, 26, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='arctic'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(32, 144, 208, 0.08), transparent 70%);
+  opacity: 0.35;
+}
+[data-theme='crimson'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(224, 48, 96, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='mint'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(60, 220, 160, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='amber'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(232, 184, 32, 0.08), transparent 70%);
   opacity: 0.3;
 }
 
