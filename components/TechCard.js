@@ -86,7 +86,7 @@ export default function TechCard({ tech, index = 0 }) {
           <span className={`${color} shrink-0 opacity-80`}>
             <CategoryIcon category={tech.category} className="h-4 w-4 sm:h-5 sm:w-5" />
           </span>
-          <h4 className="break-words font-mono text-sm font-semibold tracking-tight sm:text-base">
+          <h4 className="break-words font-mono text-sm font-semibold tracking-tight sm:text-base leading-snug">
             {tech.name}
           </h4>
           {tech.version && (

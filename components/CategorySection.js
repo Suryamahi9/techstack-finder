@@ -20,9 +20,11 @@ export default function CategorySection({ category, technologies, index }) {
             <span>{technologies.length === 1 ? 'technology' : 'technologies'} detected</span>
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="flex flex-wrap gap-4">
           {technologies.map((tech, i) => (
-            <TechCard key={tech.name} tech={tech} index={i} />
+            <div key={tech.name} className="w-full min-w-[280px] max-w-[420px] flex-1">
+              <TechCard tech={tech} index={i} />
+            </div>
           ))}
         </div>
       </div>
