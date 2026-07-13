@@ -5,6 +5,9 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import HistoryList from '../components/HistoryList';
 import PopularScans from '../components/PopularScans';
+import LiveScanPreview from '../components/LiveScanPreview';
+import FloatingLogos from '../components/FloatingLogos';
+import CategoryGrid from '../components/CategoryGrid';
 import useInView from '../lib/useInView';
 
 const EXAMPLE_SITES = [
@@ -99,31 +102,6 @@ function LiveBar() {
       <span className="ml-auto font-mono text-[10px] text-faint">
         {time}
       </span>
-    </div>
-  );
-}
-
-function ScannerRadar() {
-  return (
-    <div className="relative flex h-48 w-48 items-center justify-center sm:h-56 sm:w-56">
-      <div className="absolute inset-2 rounded-full bg-accent/[0.02] blur-2xl" />
-      <div className="pulse-ring" />
-      <div className="pulse-ring" style={{ animationDelay: '0.6s' }} />
-      <div className="pulse-ring" style={{ animationDelay: '1.2s' }} />
-      <div className="scanner-ring animate-sweep-rotate" style={{ animationDuration: '10s' }} />
-      <div className="scanner-ring" style={{ animation: 'sweepRotate 7s linear infinite reverse' }} />
-      <div className="scanner-sweep animate-sweep-rotate" />
-      <div className="relative z-10 flex h-3.5 w-3.5 items-center justify-center">
-        <div className="h-3.5 w-3.5 rounded-full border border-accent/50 bg-accent shadow-[inset_0_1.5px_0_rgba(0,0,0,0.3)]" />
-      </div>
-      <svg className="absolute h-[88%] w-[88%] animate-sweep-rotate" viewBox="0 0 100 100" style={{ animationDuration: '18s' }}>
-        <defs>
-          <path id="ringPath" d="M 50 5 A 45 45 0 1 1 49.99 5" fill="none" />
-        </defs>
-        <text className="fill-current text-fg/40 text-[5px] font-mono tracking-[0.4em]">
-          <textPath href="#ringPath" startOffset="0%">MONITORING · ANALYZING · DETECTING ·</textPath>
-        </text>
-      </svg>
     </div>
   );
 }
@@ -256,6 +234,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
         <div className="scan-line" />
         <DataTicker />
+        <FloatingLogos />
         <div className="glow-orb h-[500px] w-[500px] animate-orb-drift-1" style={{ top: '-100px', left: '50%', background: 'var(--accent)', opacity: 0.04 }} />
         <div className="glow-orb h-[300px] w-[300px] animate-orb-drift-2" style={{ bottom: '-50px', right: '10%', background: 'var(--accent)', opacity: 0.025 }} />
       </div>
@@ -320,9 +299,9 @@ export default function Home() {
             </AnimatedSection>
           </div>
 
-          {/* Right: Radar (desktop only) */}
-          <AnimatedSection delay={0.3} className="hidden shrink-0 items-center justify-center lg:flex">
-            <ScannerRadar />
+          {/* Right: Live scan preview (desktop only) */}
+          <AnimatedSection delay={0.3} className="hidden shrink-0 lg:block lg:w-[42%]">
+            <LiveScanPreview />
           </AnimatedSection>
         </section>
 
@@ -359,6 +338,11 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* ─── What we detect ─── */}
+        <AnimatedSection delay={0.1} className="mt-20 sm:mt-28">
+          <CategoryGrid />
+        </AnimatedSection>
 
         {/* ─── Scans + History ─── */}
         <section className="mt-20 sm:mt-28">
