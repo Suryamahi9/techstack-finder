@@ -8,6 +8,8 @@ import PopularScans from '../components/PopularScans';
 import LiveScanPreview from '../components/LiveScanPreview';
 import FloatingLogos from '../components/FloatingLogos';
 import CategoryGrid from '../components/CategoryGrid';
+import TerminalScanner from '../components/TerminalScanner';
+import ComparePreview from '../components/ComparePreview';
 import useInView from '../lib/useInView';
 
 const EXAMPLE_SITES = [
@@ -23,21 +25,21 @@ const STEPS = [
     n: '01',
     title: 'Fetch',
     tag: 'HTTP client',
-    body: 'Downloads the full HTML with a configurable timeout. No browser overhead — just raw, server-side extraction.',
-    stats: '2.4kb avg · 8s timeout · no CORS',
+    body: 'Downloads the full HTML with a configurable timeout. No browser overhead.',
+    stats: '2.4kb avg · 8s timeout',
   },
   {
     n: '02',
     title: 'Parse',
     tag: 'DOM analysis',
-    body: 'Walks the document tree extracting scripts, meta tags, headers, and CSS classes into a structured corpus.',
-    stats: '50+ signals · 800ms parse',
+    body: 'Walks the document tree extracting scripts, meta tags, headers, and CSS.',
+    stats: '50+ signals · 800ms',
   },
   {
     n: '03',
     title: 'Match',
     tag: 'rule engine',
-    body: 'A 2,300+ rule engine fingerprints each technology and logs the exact HTML signal that triggered the match.',
+    body: '2,300+ rules fingerprint each technology from the exact HTML signal.',
     stats: '92 categories · 2,300+ rules',
   },
 ];
@@ -45,7 +47,6 @@ const STEPS = [
 function AnimatedCounter({ end, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0);
   const [ref, inView] = useInView({ threshold: 0.5 });
-
   useEffect(() => {
     if (!inView) return;
     let start = 0;
@@ -57,12 +58,7 @@ function AnimatedCounter({ end, suffix = '', duration = 2000 }) {
     }, 16);
     return () => clearInterval(timer);
   }, [inView, end, duration]);
-
-  return (
-    <span ref={ref} className="counter-number">
-      {count}{suffix}
-    </span>
-  );
+  return <span ref={ref} className="counter-number">{count}{suffix}</span>;
 }
 
 function DataTicker() {
@@ -96,12 +92,8 @@ function LiveBar() {
       <span className="relative flex h-1.5 w-1.5">
         <span className="absolute inline-flex h-full w-full animate-pulse-glow rounded-full bg-accent" />
       </span>
-      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
-        System online
-      </span>
-      <span className="ml-auto font-mono text-[10px] text-faint">
-        {time}
-      </span>
+      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">System online</span>
+      <span className="ml-auto font-mono text-[10px] text-faint">{time}</span>
     </div>
   );
 }
@@ -138,7 +130,6 @@ function StepCard({ step, index }) {
   const [hovered, setHovered] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [sectionRef, inView] = useInView({ threshold: 0.2 });
-
   const onMove = (e) => {
     const el = tiltRef.current;
     if (!el) return;
@@ -148,14 +139,13 @@ function StepCard({ step, index }) {
       y: ((e.clientX - rect.left) / rect.width - 0.5) * 8,
     });
   };
-
   return (
     <div ref={sectionRef} className={inView ? 'animate-fade-in-view' : 'opacity-0'} style={{ animationDelay: `${index * 0.12}s` }}>
       <SpotlightCard>
         <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-[1px] backdrop-blur-sm">
           <div
             ref={tiltRef}
-            className="card-shimmer rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] will-change-transform sm:px-6 sm:py-6"
+            className="card-shimmer rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] will-change-transform sm:px-5 sm:py-5"
             style={{
               transform: hovered ? `perspective(600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` : 'perspective(600px) rotateX(0deg) rotateY(0deg)',
               transition: hovered ? 'transform 0.08s cubic-bezier(0.32, 0.72, 0, 1)' : 'transform 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
@@ -165,18 +155,16 @@ function StepCard({ step, index }) {
             onMouseLeave={() => { setHovered(false); setTilt({ x: 0, y: 0 }); }}
           >
             <div className="flex items-start gap-3">
-              <div className="relative mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 font-mono text-xs text-accent shadow-[inset_0_1px_0_rgba(197,251,69,0.15)]">
+              <div className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 font-mono text-xs text-accent shadow-[inset_0_1px_0_rgba(197,251,69,0.15)]">
                 {step.n}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border border-accent/10 bg-accent/5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.15em] text-accent">
-                    {step.tag}
-                  </span>
-                </div>
-                <h3 className="mt-2 text-sm font-semibold tracking-tight sm:text-base">{step.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted">{step.body}</p>
-                <div className="mt-2.5 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.1em] text-faint">
+                <span className="rounded-full border border-accent/10 bg-accent/5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.15em] text-accent">
+                  {step.tag}
+                </span>
+                <h3 className="mt-1.5 text-sm font-semibold tracking-tight">{step.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted">{step.body}</p>
+                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.1em] text-faint">
                   <svg className="h-3 w-3 text-accent/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 6v6l4 2" />
@@ -239,12 +227,12 @@ export default function Home() {
         <div className="glow-orb h-[300px] w-[300px] animate-orb-drift-2" style={{ bottom: '-50px', right: '10%', background: 'var(--accent)', opacity: 0.025 }} />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-5xl px-4 pt-24 pb-40 sm:px-6 sm:pt-32 lg:pt-40">
+      <main className="relative z-10 mx-auto max-w-5xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28 lg:pt-32">
 
         {/* ─── Hero ─── */}
-        <section className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:gap-16">
+        <section className="flex flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
           {/* Left: Copy + Search */}
-          <div className="w-full space-y-5 lg:flex-1">
+          <div className="w-full space-y-4 lg:flex-1">
             <AnimatedSection delay={0}>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs text-muted backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                 <span className="relative flex h-1.5 w-1.5">
@@ -267,16 +255,14 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection delay={0.12}>
-              <p className="max-w-lg text-base leading-relaxed text-muted sm:text-lg">
+              <p className="max-w-lg text-base leading-relaxed text-muted">
                 Enter any URL and fingerprint the technologies powering it —
                 frameworks, CMS, analytics, hosting, and more.
               </p>
             </AnimatedSection>
 
             <AnimatedSection delay={0.18}>
-              <div className="w-full">
-                <SearchBar />
-              </div>
+              <SearchBar />
             </AnimatedSection>
 
             <AnimatedSection delay={0.24}>
@@ -285,7 +271,7 @@ export default function Home() {
                   <a
                     key={site.label}
                     href={`/results?site=${encodeURIComponent(site.label)}`}
-                    className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3.5 py-1.5 text-sm transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.03] active:scale-[0.97]"
+                    className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.03] active:scale-[0.97]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={`https://www.google.com/s2/favicons?domain=${site.label}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
@@ -306,18 +292,18 @@ export default function Home() {
         </section>
 
         {/* ─── Stats ─── */}
-        <AnimatedSection delay={0.2} className="mt-16 sm:mt-20">
-          <div className="grid grid-cols-3 gap-4 border-y border-white/[0.04] py-8">
+        <AnimatedSection delay={0.2} className="mt-12 sm:mt-16">
+          <div className="grid grid-cols-3 gap-4 border-y border-white/[0.04] py-6">
             <StatCard label="Detection rules" value={2300} suffix="+" />
             <StatCard label="Categories" value={92} />
             <StatCard label="Avg scan time" value={2} suffix="s" />
           </div>
         </AnimatedSection>
 
-        {/* ─── How it works ─── */}
-        <section className="mt-20 sm:mt-28">
+        {/* ─── How it works + Terminal ─── */}
+        <section className="mt-14 sm:mt-20">
           <AnimatedSection delay={0}>
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
                   Pipeline
@@ -332,24 +318,58 @@ export default function Home() {
             </div>
           </AnimatedSection>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            {STEPS.map((step, i) => (
-              <StepCard key={step.n} step={step} index={i} />
-            ))}
+          <div className="grid gap-4 lg:grid-cols-5">
+            {/* Steps: 3 cols */}
+            <div className="space-y-4 lg:col-span-3 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-4">
+              {STEPS.map((step, i) => (
+                <StepCard key={step.n} step={step} index={i} />
+              ))}
+            </div>
+            {/* Terminal scanner: 2 cols */}
+            <AnimatedSection delay={0.2} className="lg:col-span-2">
+              <TerminalScanner />
+            </AnimatedSection>
           </div>
         </section>
 
+        {/* ─── Compare Preview ─── */}
+        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                Compare
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Side by side <span className="text-accent">comparison</span>
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-muted">
+                Compare tech stacks across multiple sites. See what platforms share and where they differ.
+              </p>
+              <a
+                href="/compare"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-xs font-medium text-muted transition-all hover:border-accent/20 hover:text-fg"
+              >
+                Try it live
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+            <ComparePreview />
+          </div>
+        </AnimatedSection>
+
         {/* ─── What we detect ─── */}
-        <AnimatedSection delay={0.1} className="mt-20 sm:mt-28">
+        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
           <CategoryGrid />
         </AnimatedSection>
 
         {/* ─── Scans + History ─── */}
-        <section className="mt-20 sm:mt-28">
+        <section className="mt-14 sm:mt-20">
           <AnimatedSection delay={0.1}>
             <PopularScans />
           </AnimatedSection>
-          <AnimatedSection delay={0.15} className="mt-8">
+          <AnimatedSection delay={0.15} className="mt-6">
             <HistoryList />
           </AnimatedSection>
         </section>

@@ -39,7 +39,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed left-0 right-0 top-0 z-50 lg:left-1/2 lg:top-4 lg:w-auto lg:-translate-x-1/2">
+      <header className="fixed left-0 right-0 top-0 z-50 lg:left-1/2 lg:top-6 lg:w-auto lg:-translate-x-1/2">
         {/* Desktop nav — pill bar (lg+ only) */}
         <nav className="hidden lg:flex w-max max-w-[calc(100vw-2rem)] items-center gap-2 overflow-x-auto rounded-full border border-white/10 bg-bg/70 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl xl:gap-3 xl:px-5">
           <Link href="/" className="group mr-1 flex shrink-0 items-center gap-2">
