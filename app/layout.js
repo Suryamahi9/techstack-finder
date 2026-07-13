@@ -1,4 +1,5 @@
 import './globals.css';
+import AnimatedMesh from '../components/AnimatedMesh';
 
 export const metadata = {
   title: 'TechStack Finder — What is any website built with?',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <AnimatedMesh />
         <div className="noise-overlay" />
         {children}
       </body>

@@ -223,6 +223,133 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Animated mesh background */
+.animated-mesh {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.7;
+}
+
+.mesh-blob {
+  position: absolute;
+  will-change: transform, border-radius;
+  filter: blur(80px);
+  opacity: 0.35;
+  border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+  background: radial-gradient(circle at 40% 40%, var(--accent-soft), transparent 70%);
+  animation: meshMorph1 22s ease-in-out infinite alternate, meshDrift1 28s ease-in-out infinite alternate;
+}
+
+.mesh-blob-1 {
+  width: clamp(300px, 40vw, 600px);
+  height: clamp(300px, 40vw, 600px);
+  top: -8%;
+  left: -5%;
+  animation-delay: 0s;
+}
+
+.mesh-blob-2 {
+  width: clamp(250px, 35vw, 550px);
+  height: clamp(250px, 35vw, 550px);
+  top: 50%;
+  right: -10%;
+  animation-delay: -6s;
+  animation-name: meshMorph2, meshDrift2;
+}
+
+.mesh-blob-3 {
+  width: clamp(200px, 30vw, 480px);
+  height: clamp(200px, 30vw, 480px);
+  bottom: -5%;
+  left: 30%;
+  animation-delay: -12s;
+  animation-name: meshMorph3, meshDrift3;
+}
+
+.mesh-blob-4 {
+  width: clamp(180px, 25vw, 400px);
+  height: clamp(180px, 25vw, 400px);
+  top: 30%;
+  left: 50%;
+  animation-delay: -18s;
+  animation-name: meshMorph1, meshDrift4;
+  opacity: 0.2;
+}
+
+@keyframes meshMorph1 {
+  0%   { border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%; }
+  25%  { border-radius: 55% 45% 40% 60% / 45% 55% 45% 55%; }
+  50%  { border-radius: 45% 55% 65% 35% / 60% 45% 55% 40%; }
+  75%  { border-radius: 60% 40% 45% 55% / 40% 60% 40% 60%; }
+  100% { border-radius: 50% 50% 55% 45% / 50% 50% 50% 50%; }
+}
+@keyframes meshMorph2 {
+  0%   { border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%; }
+  25%  { border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%; }
+  50%  { border-radius: 60% 40% 45% 55% / 40% 60% 45% 55%; }
+  75%  { border-radius: 40% 60% 55% 45% / 60% 40% 55% 45%; }
+  100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+}
+@keyframes meshMorph3 {
+  0%   { border-radius: 50% 50% 40% 60% / 55% 45% 55% 45%; }
+  25%  { border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+  50%  { border-radius: 45% 55% 50% 50% / 60% 40% 50% 50%; }
+  75%  { border-radius: 55% 45% 60% 40% / 40% 60% 55% 45%; }
+  100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+}
+
+@keyframes meshDrift1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(40px, 30px) scale(1.05); }
+  66%  { transform: translate(-20px, 50px) scale(0.95); }
+  100% { transform: translate(20px, -10px) scale(1.02); }
+}
+@keyframes meshDrift2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-50px, -20px) scale(1.08); }
+  66%  { transform: translate(30px, -40px) scale(0.92); }
+  100% { transform: translate(-10px, 20px) scale(1.04); }
+}
+@keyframes meshDrift3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(30px, -30px) scale(0.95); }
+  66%  { transform: translate(-40px, 20px) scale(1.06); }
+  100% { transform: translate(15px, -15px) scale(0.98); }
+}
+@keyframes meshDrift4 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-30px, 40px) scale(1.1); }
+  66%  { transform: translate(20px, -20px) scale(0.9); }
+  100% { transform: translate(-10px, 10px) scale(1.05); }
+}
+
+[data-theme='light'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(77, 122, 0, 0.12), transparent 70%);
+  opacity: 0.4;
+}
+[data-theme='terminal'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(51, 255, 51, 0.08), transparent 70%);
+  opacity: 0.25;
+  filter: blur(100px);
+}
+[data-theme='blueprint'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(77, 166, 255, 0.1), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='solarized'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(181, 137, 0, 0.1), transparent 70%);
+  opacity: 0.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesh-blob {
+    animation: none !important;
+  }
+}
+
 .gradient-mesh {
   background:
     radial-gradient(ellipse 65% 45% at 15% 25%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 60%),
