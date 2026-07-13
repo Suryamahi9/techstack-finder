@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
               (function() {
                 try {
                   var t = localStorage.getItem('tsf-theme');
-                  if (['dark','terminal','blueprint','solarized','light'].indexOf(t) !== -1) {
+                  if (['dark','terminal','blueprint','solarized','neon','monochrome','sakura','ocean','lavender','light'].indexOf(t) !== -1) {
                     document.documentElement.setAttribute('data-theme', t);
                   }
                 } catch (e) {}

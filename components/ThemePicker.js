@@ -35,6 +35,46 @@ const THEMES = [
     desc: 'Warm dark',
   },
   {
+    id: 'neon',
+    name: 'Neon',
+    bg: '#0a0012',
+    fg: '#f0e6ff',
+    accent: '#ff2d95',
+    desc: 'Cyberpunk magenta',
+  },
+  {
+    id: 'monochrome',
+    name: 'Monochrome',
+    bg: '#0a0a0a',
+    fg: '#e8e8e8',
+    accent: '#ffffff',
+    desc: 'Pure black & white',
+  },
+  {
+    id: 'sakura',
+    name: 'Sakura',
+    bg: '#1a0a12',
+    fg: '#fce4ec',
+    accent: '#ff6b9d',
+    desc: 'Rose & pink',
+  },
+  {
+    id: 'ocean',
+    name: 'Ocean',
+    bg: '#041a1a',
+    fg: '#d4f5f0',
+    accent: '#48d2be',
+    desc: 'Deep teal',
+  },
+  {
+    id: 'lavender',
+    name: 'Lavender',
+    bg: '#0e0a1a',
+    fg: '#e8e0f8',
+    accent: '#a078ff',
+    desc: 'Soft purple',
+  },
+  {
     id: 'light',
     name: 'Light',
     bg: '#faf9f4',
@@ -78,7 +118,7 @@ export default function ThemePicker({ currentTheme, onSelect, onClose }) {
           </button>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
           {THEMES.map((t) => (
             <button
               key={t.id}

@@ -127,6 +127,116 @@
     radial-gradient(ellipse 40% 50% at 80% 70%, rgba(42, 161, 152, 0.03) 0%, transparent 50%);
 }
 
+/* Neon theme */
+[data-theme='neon'] {
+  --bg: #0a0012;
+  --elevated: #12001f;
+  --fg: #f0e6ff;
+  --muted: #b07ed4;
+  --faint: #6b3fa0;
+  --border: rgba(200, 80, 255, 0.1);
+  --border-strong: rgba(200, 80, 255, 0.2);
+  --accent: #ff2d95;
+  --accent-soft: rgba(255, 45, 149, 0.1);
+  --accent-glow: rgba(255, 45, 149, 0.35);
+}
+[data-theme='neon'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(200, 80, 255, 0.04) 1px, transparent 1px);
+}
+[data-theme='neon'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 25%, rgba(255, 45, 149, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 85% 70%, rgba(200, 80, 255, 0.04) 0%, transparent 50%);
+}
+
+/* Monochrome theme */
+[data-theme='monochrome'] {
+  --bg: #0a0a0a;
+  --elevated: #141414;
+  --fg: #e8e8e8;
+  --muted: #888888;
+  --faint: #4a4a4a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --accent: #ffffff;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-glow: rgba(255, 255, 255, 0.2);
+}
+[data-theme='monochrome'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+[data-theme='monochrome'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+}
+
+/* Sakura theme */
+[data-theme='sakura'] {
+  --bg: #1a0a12;
+  --elevated: #220f1a;
+  --fg: #fce4ec;
+  --muted: #c48b9f;
+  --faint: #6d3a50;
+  --border: rgba(244, 143, 177, 0.1);
+  --border-strong: rgba(244, 143, 177, 0.2);
+  --accent: #ff6b9d;
+  --accent-soft: rgba(255, 107, 157, 0.1);
+  --accent-glow: rgba(255, 107, 157, 0.3);
+}
+[data-theme='sakura'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(244, 143, 177, 0.04) 1px, transparent 1px);
+}
+[data-theme='sakura'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(255, 107, 157, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(244, 143, 177, 0.03) 0%, transparent 50%);
+}
+
+/* Ocean theme */
+[data-theme='ocean'] {
+  --bg: #041a1a;
+  --elevated: #082626;
+  --fg: #d4f5f0;
+  --muted: #6db5a8;
+  --faint: #2d6b60;
+  --border: rgba(72, 210, 190, 0.1);
+  --border-strong: rgba(72, 210, 190, 0.2);
+  --accent: #48d2be;
+  --accent-soft: rgba(72, 210, 190, 0.1);
+  --accent-glow: rgba(72, 210, 190, 0.3);
+}
+[data-theme='ocean'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(72, 210, 190, 0.04) 1px, transparent 1px);
+}
+[data-theme='ocean'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(72, 210, 190, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(42, 160, 145, 0.03) 0%, transparent 50%);
+}
+
+/* Lavender theme */
+[data-theme='lavender'] {
+  --bg: #0e0a1a;
+  --elevated: #161022;
+  --fg: #e8e0f8;
+  --muted: #9a85c0;
+  --faint: #4d3d70;
+  --border: rgba(160, 120, 255, 0.1);
+  --border-strong: rgba(160, 120, 255, 0.2);
+  --accent: #a078ff;
+  --accent-soft: rgba(160, 120, 255, 0.1);
+  --accent-glow: rgba(160, 120, 255, 0.3);
+}
+[data-theme='lavender'] .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(160, 120, 255, 0.04) 1px, transparent 1px);
+}
+[data-theme='lavender'] .gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(160, 120, 255, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(140, 100, 220, 0.03) 0%, transparent 50%);
+}
+
 * {
   border-color: var(--border);
 }
@@ -341,6 +451,26 @@ body {
 }
 [data-theme='solarized'] .mesh-blob {
   background: radial-gradient(circle at 40% 40%, rgba(181, 137, 0, 0.1), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='neon'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(255, 45, 149, 0.08), transparent 70%);
+  opacity: 0.25;
+}
+[data-theme='monochrome'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05), transparent 70%);
+  opacity: 0.2;
+}
+[data-theme='sakura'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(255, 107, 157, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='ocean'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(72, 210, 190, 0.08), transparent 70%);
+  opacity: 0.3;
+}
+[data-theme='lavender'] .mesh-blob {
+  background: radial-gradient(circle at 40% 40%, rgba(160, 120, 255, 0.08), transparent 70%);
   opacity: 0.3;
 }
 
