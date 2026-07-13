@@ -10,6 +10,7 @@ import FloatingLogos from '../components/FloatingLogos';
 import CategoryGrid from '../components/CategoryGrid';
 import TerminalScanner from '../components/TerminalScanner';
 import ComparePreview from '../components/ComparePreview';
+import MouseGlow from '../components/MouseGlow';
 import useInView from '../lib/useInView';
 
 const EXAMPLE_SITES = [
@@ -213,6 +214,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       <Header />
+      <MouseGlow />
 
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
