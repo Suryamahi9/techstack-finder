@@ -55,7 +55,7 @@ export default function PopularScans() {
 
   return (
     <div className="mt-20 animate-fade-up">
-      <div className="mx-auto max-w-3xl">
+      <div className="">
         {saved.length > 0 && (
           <div className="mb-10">
             <div className="mb-4 flex items-center gap-2">

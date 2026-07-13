@@ -227,7 +227,7 @@ export default function Home() {
         <div className="glow-orb h-[300px] w-[300px] animate-orb-drift-2" style={{ bottom: '-50px', right: '10%', background: 'var(--accent)', opacity: 0.025 }} />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-5xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28 lg:pt-32">
+      <main className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-24 sm:px-8 sm:pt-28 lg:px-12 lg:pt-32">
 
         {/* ─── Hero ─── */}
         <section className="flex flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
