@@ -86,7 +86,7 @@ export async function POST(request) {
     );
   }
 
-  const { url, headers, cookies, timeout } = body;
+  const { url, headers, cookies, timeout, proxy } = body;
   if (!url || typeof url !== 'string' || url.trim().length === 0) {
     return NextResponse.json(
       { success: false, error: 'A URL is required.' },
@@ -102,7 +102,7 @@ export async function POST(request) {
   }
 
   try {
-    const result = await detectTechnologies(url, { timeout, ...authOpts });
+    const result = await detectTechnologies(url, { timeout, proxy, ...authOpts });
     setCache(key, result);
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
@@ -116,7 +116,7 @@ export async function POST(request) {
 export async function GET() {
   return NextResponse.json({
     name: 'TechStack Finder API',
-    usage: 'POST { "url": "example.com", "headers": {}, "cookies": "a=b; c=d", "timeout": 8000 }',
+    usage: 'POST { "url": "example.com", "headers": {}, "cookies": "a=b; c=d", "timeout": 8000, "proxy": "http://user:pass@host:port" }',
     rateLimits: {
       anonymous: '10 requests/minute by IP',
       authenticated: '100 requests/minute with x-api-key header',

@@ -52,6 +52,7 @@ function ResultsContent() {
 
   const customHeaders = searchParams.get('headers');
   const customCookies = searchParams.get('cookies');
+  const customProxy = searchParams.get('proxy');
 
   useEffect(() => {
     if (!site) {
@@ -68,6 +69,7 @@ function ResultsContent() {
     const body = { url: site };
     if (customHeaders) body.headers = customHeaders;
     if (customCookies) body.cookies = customCookies;
+    if (customProxy) body.proxy = customProxy;
 
     fetch('/api/scan', {
       method: 'POST',
@@ -133,7 +135,7 @@ function ResultsContent() {
     return () => {
       cancelled = true;
     };
-  }, [site, customHeaders, customCookies]);
+  }, [site, customHeaders, customCookies, customProxy]);
 
   return (
     <div className="relative min-h-screen">

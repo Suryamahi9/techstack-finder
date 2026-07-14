@@ -8,6 +8,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   const [advanced, setAdvanced] = useState(false);
   const [authHeaders, setAuthHeaders] = useState('');
   const [cookies, setCookies] = useState('');
+  const [proxy, setProxy] = useState('');
   const router = useRouter();
 
   const handleSubmit = (e) => {
@@ -17,6 +18,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
     const params = new URLSearchParams({ site: trimmed });
     if (authHeaders.trim()) params.set('headers', authHeaders.trim());
     if (cookies.trim()) params.set('cookies', cookies.trim());
+    if (proxy.trim()) params.set('proxy', proxy.trim());
     router.push(`/results?${params.toString()}`);
   };
 
@@ -107,6 +109,18 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               placeholder="session=abc123; token=xyz"
               rows={2}
               className="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block font-mono text-[11px] uppercase tracking-wider text-faint">
+              Proxy URL
+            </label>
+            <input
+              type="text"
+              value={proxy}
+              onChange={(e) => setProxy(e.target.value)}
+              placeholder="http://user:pass@proxy-host:port"
+              className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50"
             />
           </div>
         </div>
