@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: '/digest', label: 'Digest' },
   { href: '/monitor', label: 'Monitor' },
   { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/browse', label: 'Browse' },
   { href: '/radar', label: 'Radar' },
 ];
 
