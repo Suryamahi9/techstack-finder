@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "npx playwright install --with-deps chromium"
+    "lint": "next lint"
   },
   "dependencies": {
     "cheerio": "1.0.0",
