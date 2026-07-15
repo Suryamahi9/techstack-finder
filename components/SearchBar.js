@@ -1,16 +1,54 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+
+const POPULAR_SITES = [
+  'amazon.com', 'google.com', 'youtube.com', 'facebook.com', 'twitter.com',
+  'instagram.com', 'linkedin.com', 'reddit.com', 'wikipedia.org', 'github.com',
+  'stackoverflow.com', 'netflix.com', 'twitch.tv', 'tiktok.com', 'pinterest.com',
+  'microsoft.com', 'apple.com', 'zoom.us', 'slack.com', 'discord.com',
+  'spotify.com', 'medium.com', 'notion.so', 'figma.com', 'canva.com',
+  'shopify.com', 'wordpress.com', 'wix.com', 'squarespace.com', 'webflow.com',
+  'stripe.com', 'paypal.com', 'airbnb.com', 'uber.com', 'lyft.com',
+  'dropbox.com', 'adobe.com', 'salesforce.com', 'hubspot.com', 'mailchimp.com',
+  'nytimes.com', 'bbc.com', 'cnn.com', 'forbes.com', 'bloomberg.com',
+  'espn.com', 'imdb.com', 'etsy.com', 'ebay.com', 'aliexpress.com',
+  'flipkart.com', 'booking.com', 'tripadvisor.com', 'yelp.com', 'quora.com',
+  'dribbble.com', 'behance.net', 'dev.to', 'vercel.com', 'netlify.com',
+  'heroku.com', 'digitalocean.com', 'aws.amazon.com', 'cloud.google.com', 'azure.microsoft.com',
+  'openai.com', 'anthropic.com', 'midjourney.com', 'chat.openai.com', 'bard.google.com',
+  'tumblr.com', 'flickr.com', 'vimeo.com', 'dailymotion.com', 'soundcloud.com',
+  'substack.com', 'ghost.org', 'hashnode.dev', 'codepen.io', 'codesandbox.io',
+  'kaggle.com', 'huggingface.co', 'replit.com', 'glitch.com', 'runkit.com',
+  'craigslist.org', 'zillow.com', 'redfin.com', 'glassdoor.com', 'indeed.com',
+  'coursera.org', 'udemy.com', 'edx.org', 'khanacademy.org', 'duolingo.com',
+  'twitch.tv', 'rumble.com', 'odysee.com', 'patreon.com', 'gumroad.com',
+];
 
 export default function SearchBar({ initialValue = '', size = 'large' }) {
   const [value, setValue] = useState(initialValue);
   const [focused, setFocused] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [advanced, setAdvanced] = useState(false);
   const [authHeaders, setAuthHeaders] = useState('');
   const [cookies, setCookies] = useState('');
   const [proxy, setProxy] = useState('');
   const router = useRouter();
   const inputRef = useRef(null);
+  const suggestionsRef = useRef(null);
+
+  const suggestions = useMemo(() => {
+    const q = value.trim().toLowerCase();
+    if (!q || q.length < 1) return [];
+    return POPULAR_SITES
+      .filter((s) => s.includes(q))
+      .slice(0, 8);
+  }, [value]);
+
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [value]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -23,10 +61,21 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmed = value.trim();
     if (!trimmed) return;
+    setShowSuggestions(false);
     const params = new URLSearchParams({ site: trimmed });
     if (authHeaders.trim()) params.set('headers', authHeaders.trim());
     if (cookies.trim()) params.set('cookies', cookies.trim());
@@ -34,10 +83,32 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
     router.push(`/results?${params.toString()}`);
   };
 
+  const selectSuggestion = (site) => {
+    setValue(site);
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % suggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev <= 0 ? suggestions.length - 1 : prev - 1));
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      selectSuggestion(suggestions[selectedIndex]);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
   const isLarge = size === 'large';
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
+    <form onSubmit={handleSubmit} className="relative w-full">
       <div
         className={`group relative flex items-center gap-2 rounded-2xl border bg-elevated transition-all duration-300 ${
           focused
@@ -59,9 +130,13 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           ref={inputRef}
           type="text"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onFocus={() => setFocused(true)}
+          onChange={(e) => {
+            setValue(e.target.value);
+            setShowSuggestions(true);
+          }}
+          onFocus={() => { setFocused(true); setShowSuggestions(true); }}
           onBlur={() => setFocused(false)}
+          onKeyDown={handleKeyDown}
           placeholder="Enter a website URL (e.g. amazon.com)"
           autoCapitalize="off"
           autoCorrect="off"
@@ -80,6 +155,32 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           <span className="ml-1.5 opacity-60">↵</span>
         </button>
       </div>
+
+      {showSuggestions && suggestions.length > 0 && (
+        <div
+          ref={suggestionsRef}
+          className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-border bg-elevated shadow-lg"
+        >
+          {suggestions.map((site, i) => (
+            <button
+              key={site}
+              type="button"
+              onMouseDown={() => selectSuggestion(site)}
+              className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
+                i === selectedIndex
+                  ? 'bg-accent/10 text-accent'
+                  : 'text-muted hover:bg-accent/5 hover:text-fg'
+              }`}
+            >
+              <svg className="h-3.5 w-3.5 shrink-0 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              {site}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="mt-2 flex items-center justify-between">
         <button
