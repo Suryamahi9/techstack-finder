@@ -1,5 +1,6 @@
 import './globals.css';
 import BackgroundManager from '../components/BackgroundManager';
+import SessionProvider from '../components/SessionProvider';
 
 export const metadata = {
   title: 'TechStack Finder — What is any website built with?',
@@ -33,9 +34,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <BackgroundManager />
-        <div className="noise-overlay" />
-        {children}
+        <SessionProvider>
+          <BackgroundManager />
+          <div className="noise-overlay" />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

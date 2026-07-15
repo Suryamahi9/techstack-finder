@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
 
 const NAV_ITEMS = [
@@ -52,7 +53,10 @@ function NavLink({ item, isActive }) {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const userMenuRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -137,8 +141,52 @@ export default function Header() {
               Source
             </a>
 
-            <ThemeToggle />
-          </nav>
+              <ThemeToggle />
+
+              {session ? (
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-medium text-muted transition-all hover:border-accent/20 hover:text-fg"
+                  >
+                    {session.user?.image ? (
+                      <img src={session.user.image} alt="" className="h-5 w-5 rounded-full" />
+                    ) : (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/20 text-[9px] font-bold text-accent">
+                        {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
+                      </span>
+                    )}
+                    <span className="hidden xl:inline">{session.user?.name || session.user?.email?.split('@')[0]}</span>
+                  </button>
+                  {userMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                      <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-border bg-elevated p-1.5 shadow-xl">
+                        <div className="px-3 py-2 text-xs text-faint border-b border-border mb-1">
+                          <div className="font-medium text-fg truncate">{session.user?.name || 'User'}</div>
+                          <div className="truncate text-faint">{session.user?.email}</div>
+                          {session.user?.tier && session.user.tier !== 'free' && (
+                            <span className="mt-1 inline-block rounded-full bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold text-accent uppercase">{session.user.tier}</span>
+                          )}
+                        </div>
+                        <Link href="/api-keys" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">API Keys</Link>
+                        <Link href="/history" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">Scan History</Link>
+                        <button onClick={() => { setUserMenuOpen(false); signOut({ callbackUrl: '/' }); }} className="w-full rounded-lg px-3 py-1.5 text-left text-xs text-red-400 hover:bg-red-500/10">Sign out</button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <Link href="/login" className="nav-spotlight flex shrink-0 items-center rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted transition-all hover:border-accent/15 hover:text-fg active:scale-[0.95]">
+                    Sign in
+                  </Link>
+                  <Link href="/signup" className="nav-spotlight flex shrink-0 items-center rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1 text-[11px] font-medium text-accent transition-all hover:bg-accent/20 active:scale-[0.95]">
+                    Sign up
+                  </Link>
+                </div>
+              )}
+            </nav>
         </div>
       </header>
 
@@ -163,6 +211,22 @@ export default function Header() {
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {session ? (
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted"
+              >
+                {session.user?.image ? (
+                  <img src={session.user.image} alt="" className="h-6 w-6 rounded-full" />
+                ) : (
+                  <span className="text-xs font-bold text-accent">{(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}</span>
+                )}
+              </button>
+            ) : (
+              <Link href="/login" className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1 text-[11px] font-medium text-accent">
+                Sign in
+              </Link>
+            )}
             <button
               onClick={() => setOpen(!open)}
               className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted transition-all duration-300 hover:text-fg hover:border-accent/20 active:scale-95"
@@ -222,6 +286,19 @@ export default function Header() {
                 </svg>
                 Source
               </a>
+              {session ? (
+                <>
+                  <div className="border-t border-white/[0.06] pt-2 mt-2">
+                    <div className="px-4 py-2 text-xs text-faint">{session.user?.name || session.user?.email}</div>
+                    <button onClick={() => { setOpen(false); signOut({ callbackUrl: '/' }); }} className="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-sm font-medium text-red-400 transition-all hover:bg-red-500/10">Sign out</button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex gap-2 px-4 pt-3 border-t border-white/[0.06] mt-2">
+                  <Link href="/login" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-medium text-fg hover:border-accent/30">Sign in</Link>
+                  <Link href="/signup" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-accent py-2.5 text-center text-sm font-medium text-white hover:bg-accent/90">Sign up</Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
