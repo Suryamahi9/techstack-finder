@@ -46,14 +46,10 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   const suggestions = useMemo(() => {
     const q = value.trim().toLowerCase();
     if (!q || q.length < 1) return [];
-
     const isExactMatch = POPULAR_SITES.includes(q);
-
-    const matches = POPULAR_SITES
+    return POPULAR_SITES
       .filter((s) => s.includes(q) && s !== q)
       .slice(0, isExactMatch ? 6 : 7);
-
-    return matches;
   }, [value]);
 
   useEffect(() => {
@@ -82,7 +78,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   }, []);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const trimmed = value.trim();
     if (!trimmed) return;
     setShowSuggestions(false);
@@ -129,7 +125,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         } ${isLarge ? 'p-2 pl-5' : 'p-1.5 pl-4'}`}
       >
         <svg
-          className={`shrink-0 text-muted ${isLarge ? 'h-5 w-5' : 'h-4 w-4'}`}
+          className={`shrink-0 text-muted transition-colors duration-200 ${focused ? 'text-accent' : ''} ${isLarge ? 'h-5 w-5' : 'h-4 w-4'}`}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -159,57 +155,86 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         />
         <button
           type="submit"
-          className={`shrink-0 rounded-xl bg-accent font-medium text-black transition-all hover:brightness-110 active:scale-[0.98] ${
+          className={`shrink-0 rounded-xl bg-accent font-medium text-black transition-all hover:brightness-110 active:scale-[0.97] ${
             isLarge ? 'px-5 py-2.5 text-sm' : 'px-4 py-2 text-xs'
           }`}
         >
           Scan
-          <span className="ml-1.5 opacity-60">↵</span>
+          <span className="ml-1.5 opacity-60 hidden sm:inline">Enter</span>
         </button>
       </div>
 
       {showSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
+          className="absolute left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] dark:border-gray-700/60 dark:bg-gray-900 dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]"
+          style={{ animation: 'suggestionsSlideIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)' }}
         >
           {isValidInput && (
             <button
               type="button"
               onMouseDown={handleSubmit}
-              className="flex w-full items-center gap-3 border-b border-gray-100 px-4 py-2.5 text-left text-sm font-mono transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
+              className="flex w-full items-center gap-3 border-b border-gray-100 px-4 py-3 text-left text-sm font-mono transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/60"
             >
-              <svg className="h-3.5 w-3.5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/10">
+                <svg className="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
               <span className="text-gray-900 dark:text-white">Scan <span className="font-semibold">{trimmedValue}</span></span>
+              <span className="ml-auto text-[10px] text-gray-400 dark:text-gray-500 font-mono">Enter</span>
             </button>
           )}
 
-          {suggestions.map((site, i) => (
-            <button
-              key={site}
-              type="button"
-              onMouseDown={() => selectSuggestion(site)}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
-                i === selectedIndex
-                  ? 'bg-accent/10 text-accent'
-                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'
-              }`}
-            >
-              <svg className="h-3.5 w-3.5 shrink-0 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="7" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              {site}
-            </button>
-          ))}
+          {suggestions.length > 0 && (
+            <div className="py-1">
+              {suggestions.map((site, i) => (
+                <button
+                  key={site}
+                  type="button"
+                  onMouseDown={() => selectSuggestion(site)}
+                  className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
+                    i === selectedIndex
+                      ? 'bg-accent/8 text-accent'
+                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/60'
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://www.google.com/s2/favicons?domain=${site}&sz=32`}
+                    alt=""
+                    className="h-4 w-4 rounded-sm"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                  <span className="flex-1 truncate">{site}</span>
+                  {i < 3 && (
+                    <span className="text-[10px] text-gray-300 dark:text-gray-600">{i + 1}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
 
           {!isValidInput && suggestions.length === 0 && (
             <div className="px-4 py-3 text-center text-xs text-gray-400 dark:text-gray-500">
               Type a website URL to scan (e.g. flipkart.com)
             </div>
           )}
+
+          <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-4 py-2 dark:border-gray-800">
+            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">↑↓</kbd>
+              navigate
+            </span>
+            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">Enter</kbd>
+              scan
+            </span>
+            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">Esc</kbd>
+              close
+            </span>
+          </div>
         </div>
       )}
 
@@ -217,10 +242,10 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         <button
           type="button"
           onClick={() => setAdvanced(!advanced)}
-          className="flex items-center gap-1.5 text-xs text-faint hover:text-muted"
+          className="flex items-center gap-1.5 text-xs text-faint hover:text-muted transition-colors"
         >
           <svg
-            className={`h-3 w-3 transition-transform ${advanced ? 'rotate-90' : ''}`}
+            className={`h-3 w-3 transition-transform duration-200 ${advanced ? 'rotate-90' : ''}`}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -231,7 +256,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           Advanced
         </button>
         <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1 font-mono text-[10px] text-faint">
-          <span className="text-[9px]">/</span> to scan
+          <span className="text-[9px]">/</span> to focus
         </kbd>
       </div>
 
@@ -246,7 +271,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               onChange={(e) => setAuthHeaders(e.target.value)}
               placeholder='{"Authorization": "Bearer xxx", "X-API-Key": "yyy"}'
               rows={2}
-              className="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50"
+              className="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
             />
           </div>
           <div>
@@ -258,7 +283,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               onChange={(e) => setCookies(e.target.value)}
               placeholder="session=abc123; token=xyz"
               rows={2}
-              className="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50"
+              className="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
             />
           </div>
           <div>
@@ -270,11 +295,18 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               value={proxy}
               onChange={(e) => setProxy(e.target.value)}
               placeholder="http://user:pass@proxy-host:port"
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50"
+              className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs outline-none placeholder:text-faint focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
             />
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes suggestionsSlideIn {
+          from { opacity: 0; transform: translateY(-4px) scale(0.99); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
     </form>
   );
 }

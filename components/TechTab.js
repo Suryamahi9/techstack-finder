@@ -157,15 +157,15 @@ export default function TechTab({ data }) {
           <button
             key={tab.id}
             onClick={() => { setTechView(tab.id); setExcludedCategories(new Set()); }}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
               techView === tab.id
                 ? 'bg-accent/10 text-accent shadow-sm'
-                : 'text-muted hover:text-fg'
+                : 'text-muted hover:text-fg hover:bg-white/[0.02]'
             }`}
           >
             <span>{tab.icon}</span>
             <span>{tab.label}</span>
-            <span className={`rounded-full px-2 py-0.5 text-xs font-mono ${
+            <span className={`rounded-full px-2 py-0.5 text-xs font-mono transition-colors ${
               techView === tab.id ? 'bg-accent/20 text-accent' : 'bg-bg text-faint'
             }`}>
               {tab.count}
@@ -188,14 +188,25 @@ export default function TechTab({ data }) {
       {/* Filter + Content */}
       {summary.total === 0 ? (
         <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
+            <svg className="h-6 w-6 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
           <h3 className="text-lg font-semibold">
             No {techView === 'main' ? 'main' : 'rare'} technologies detected
           </h3>
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-2 max-w-sm mx-auto text-sm text-muted">
             {techView === 'main'
-              ? 'No commonly-recognized technologies were found for this site.'
-              : 'No niche or lesser-known technologies were detected.'}
+              ? 'No commonly-recognized technologies were found for this site. Try switching to Rare / Niche to see all detections.'
+              : 'No niche or lesser-known technologies were detected. Try the Main Technologies tab for commonly-recognized tools.'}
           </p>
+          <button
+            onClick={() => setTechView(techView === 'main' ? 'rare' : 'main')}
+            className="mt-4 rounded-full border border-accent/20 bg-accent/8 px-4 py-2 text-xs font-medium text-accent transition-all hover:bg-accent/12"
+          >
+            Switch to {techView === 'main' ? 'Rare / Niche' : 'Main Technologies'}
+          </button>
         </div>
       ) : (
         <div className="space-y-8">
@@ -205,7 +216,7 @@ export default function TechTab({ data }) {
             <StackVisualization categories={filteredCats} />
           )}
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2" style={{ animation: 'fadeIn 0.3s ease' }}>
             {filteredCats.map((cat, i) => (
               <CategorySection
                 key={cat.category}

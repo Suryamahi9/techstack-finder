@@ -20,7 +20,7 @@ export default function ResultsTabs({ active, onChange, summary }) {
               onClick={() => onChange(tab.id)}
               className={`relative flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-accent/10 text-accent'
+                  ? 'bg-accent/10 text-accent shadow-sm shadow-accent/5'
                   : 'text-muted hover:text-fg hover:bg-white/[0.03]'
               }`}
             >
@@ -30,7 +30,7 @@ export default function ResultsTabs({ active, onChange, summary }) {
                 <span className="ml-0.5 rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] text-accent">{summary.total}</span>
               )}
               {isActive && (
-                <span className="absolute inset-x-1 -bottom-px h-px bg-accent" />
+                <span className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-accent transition-all duration-300" />
               )}
             </button>
           );

@@ -78,19 +78,19 @@ export default function TechCard({ tech, index = 0 }) {
 
   return (
     <div
-      className="card-hover group relative flex flex-col gap-3 rounded-2xl border border-border bg-elevated p-4 sm:p-5 sm:gap-4 animate-fade-up"
+      className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-elevated p-4 sm:p-5 sm:gap-4 transition-all duration-300 hover:border-border-strong hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.3)] animate-fade-up"
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`${color} shrink-0 opacity-80`}>
+          <span className={`${color} shrink-0 opacity-80 transition-opacity group-hover:opacity-100`}>
             <CategoryIcon category={tech.category} className="h-4 w-4 sm:h-5 sm:w-5" />
           </span>
-          <h4 className="break-words font-mono text-sm font-semibold tracking-tight sm:text-base leading-snug">
+          <h4 className="break-words font-mono text-sm font-semibold tracking-tight sm:text-base leading-snug transition-colors group-hover:text-fg">
             {tech.name}
           </h4>
           {tech.version && (
-            <span className="shrink-0 rounded-md border border-accent/20 bg-accent/8 px-1.5 py-0.5 font-mono text-[10px] text-accent sm:px-2 sm:text-[11px]">
+            <span className="shrink-0 rounded-md border border-accent/20 bg-accent/8 px-1.5 py-0.5 font-mono text-[10px] text-accent sm:px-2 sm:text-[11px] transition-colors group-hover:bg-accent/12">
               v{tech.version}
             </span>
           )}
@@ -100,7 +100,7 @@ export default function TechCard({ tech, index = 0 }) {
             {tech.type}
           </span>
           <span
-            className={`h-2 w-2 shrink-0 rounded-full ${
+            className={`h-2 w-2 shrink-0 rounded-full transition-transform duration-200 group-hover:scale-125 ${
               tech.confidence === 'high' ? 'bg-accent' : tech.confidence === 'medium' ? 'bg-amber-500' : 'bg-red-500'
             }`}
             title={`${tech.confidence} confidence`}
@@ -110,9 +110,9 @@ export default function TechCard({ tech, index = 0 }) {
           </span>
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-faint">
-          <span className="font-mono">via</span>
+      <div className="flex flex-col gap-1.5 border-t border-white/[0.04] pt-2.5">
+        <div className="flex items-start gap-1.5 text-xs text-faint">
+          <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-faint/70 mt-0.5">via</span>
           <span className="text-muted leading-relaxed">{tech.detectedVia}</span>
         </div>
       </div>

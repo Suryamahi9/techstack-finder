@@ -235,12 +235,12 @@ export default function Home() {
         <FloatingLogos />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-24 sm:px-8 sm:pt-28 lg:px-12 lg:pt-32">
+      <main className="relative z-10 mx-auto max-w-7xl px-6 pt-16 pb-20 sm:px-8 sm:pt-24 lg:px-12 lg:pt-28">
 
         {/* ─── Hero ─── */}
-        <section className="flex flex-col items-center gap-8 lg:flex-row lg:items-start lg:gap-12">
+        <section className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-12">
           {/* Left: Copy + Search */}
-          <div className="w-full space-y-4 lg:flex-1">
+          <div className="w-full space-y-3 lg:flex-1">
             <AnimatedSection delay={0}>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs text-muted backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                 <span className="relative flex h-1.5 w-1.5">
@@ -251,19 +251,19 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection delay={0.06}>
-              <h1 className="text-4xl font-bold leading-[1.0] tracking-tighter sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[3.5rem]">
                 What&apos;s it
                 <br />
-                <span className="relative">
-                  <span className="text-accent">built with</span>
-                  <span className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-accent/30 sm:-bottom-1.5" />
+                <span className="relative inline-block">
+                  <span className="gradient-text-animated">built with</span>
+                  <span className="absolute -bottom-0.5 left-0 h-[3px] w-full rounded-full bg-accent/30 sm:-bottom-1" />
                 </span>
                 <span className="text-muted">?</span>
               </h1>
             </AnimatedSection>
 
             <AnimatedSection delay={0.12}>
-              <p className="max-w-lg text-base leading-relaxed text-muted">
+              <p className="max-w-md text-sm leading-relaxed text-muted sm:text-base">
                 Enter any URL and fingerprint the technologies powering it —
                 frameworks, CMS, analytics, hosting, and more.
               </p>
@@ -300,8 +300,8 @@ export default function Home() {
         </section>
 
         {/* ─── Stats ─── */}
-        <AnimatedSection delay={0.2} className="mt-12 sm:mt-16">
-          <div className="grid grid-cols-2 gap-4 border-y border-white/[0.04] py-6 sm:grid-cols-4">
+        <AnimatedSection delay={0.2} className="mt-10 sm:mt-14">
+          <div className="grid grid-cols-2 gap-4 border-y border-white/[0.04] py-5 sm:grid-cols-4">
             <StatCard label="Detection rules" value={2300} suffix="+" />
             <StatCard label="Categories" value={92} />
             <StatCard label="Avg scan time" value={2} suffix="s" />
@@ -310,27 +310,32 @@ export default function Home() {
         </AnimatedSection>
 
         {/* ─── Use Cases ─── */}
-        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
-          <div className="mb-6">
+        <AnimatedSection delay={0.1} className="mt-12 sm:mt-16">
+          <div className="mb-5">
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
               Use cases
             </div>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Built for <span className="text-accent">real workflows</span>
+              Built for <span className="gradient-text-animated">real workflows</span>
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.2fr]">
             {[
-              { title: 'Security audits', desc: 'Verify headers, CSP, and HTTPS enforcement across your stack.' },
-              { title: 'Competitive research', desc: 'Compare tech choices across similar products in your market.' },
-              { title: 'Vendor due diligence', desc: 'Validate a vendor stack before committing to a platform.' },
-              { title: 'Portfolio tracking', desc: 'Track technology changes across sites you own or monitor.' },
+              { title: 'Security audits', desc: 'Verify headers, CSP, and HTTPS enforcement across your stack.', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
+              { title: 'Competitive research', desc: 'Compare tech choices across similar products in your market.', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+              { title: 'Vendor due diligence', desc: 'Validate a vendor stack before committing to a platform.', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+              { title: 'Portfolio tracking', desc: 'Track technology changes across sites you own or monitor.', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
             ].map((useCase, i) => (
               <div
                 key={i}
                 className="card-hover group rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5 transition-all duration-300 hover:border-accent/15 hover:bg-accent/[0.03]"
               >
-                <h3 className="mb-2 text-sm font-semibold text-fg/90 transition-colors group-hover:text-accent">{useCase.title}</h3>
+                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] transition-colors group-hover:border-accent/20 group-hover:bg-accent/[0.06]">
+                  <svg className="h-4 w-4 text-muted transition-colors group-hover:text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={useCase.icon} />
+                  </svg>
+                </div>
+                <h3 className="mb-1.5 text-sm font-semibold text-fg/90 transition-colors group-hover:text-accent">{useCase.title}</h3>
                 <p className="text-xs leading-relaxed text-muted">{useCase.desc}</p>
               </div>
             ))}
@@ -338,15 +343,15 @@ export default function Home() {
         </AnimatedSection>
 
         {/* ─── How it works + Terminal ─── */}
-        <section className="mt-14 sm:mt-20">
+        <section className="mt-12 sm:mt-16">
           <AnimatedSection delay={0}>
-            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
                   Pipeline
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  How the <span className="text-accent">engine works</span>
+                  How the <span className="gradient-text-animated">engine works</span>
                 </h2>
               </div>
               <p className="max-w-xs text-sm leading-relaxed text-muted">
@@ -370,14 +375,14 @@ export default function Home() {
         </section>
 
         {/* ─── Compare Preview ─── */}
-        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+        <AnimatedSection delay={0.1} className="mt-12 sm:mt-16">
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
               <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
                 Compare
               </div>
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Side by side <span className="text-accent">comparison</span>
+                Side by side <span className="gradient-text-animated">comparison</span>
               </h2>
               <p className="mt-2 max-w-md text-sm text-muted">
                 Compare tech stacks across multiple sites. See what platforms share and where they differ.
@@ -397,19 +402,19 @@ export default function Home() {
         </AnimatedSection>
 
         {/* ─── What we detect ─── */}
-        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+        <AnimatedSection delay={0.1} className="mt-12 sm:mt-16">
           <CategoryGrid />
         </AnimatedSection>
 
         {/* ─── Export & Share ─── */}
-        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+        <AnimatedSection delay={0.1} className="mt-12 sm:mt-16">
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
               <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
                 Export
               </div>
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Share your <span className="text-accent">findings</span>
+                Share your <span className="gradient-text-animated">findings</span>
               </h2>
               <p className="mt-2 max-w-md text-sm text-muted">
                 Export reports as JSON or CSV. Generate PDFs. Embed a live badge on your site or README.
@@ -437,7 +442,7 @@ export default function Home() {
         </AnimatedSection>
 
         {/* ─── Scans + History ─── */}
-        <section className="mt-14 sm:mt-20">
+        <section className="mt-12 sm:mt-16">
           <AnimatedSection delay={0.1}>
             <PopularScans />
           </AnimatedSection>
