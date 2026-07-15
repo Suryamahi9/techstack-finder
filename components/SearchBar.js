@@ -16,13 +16,18 @@ const POPULAR_SITES = [
   'flipkart.com', 'booking.com', 'tripadvisor.com', 'yelp.com', 'quora.com',
   'dribbble.com', 'behance.net', 'dev.to', 'vercel.com', 'netlify.com',
   'heroku.com', 'digitalocean.com', 'aws.amazon.com', 'cloud.google.com', 'azure.microsoft.com',
-  'openai.com', 'anthropic.com', 'midjourney.com', 'chat.openai.com', 'bard.google.com',
+  'openai.com', 'anthropic.com', 'midjourney.com', 'chat.openai.com',
   'tumblr.com', 'flickr.com', 'vimeo.com', 'dailymotion.com', 'soundcloud.com',
   'substack.com', 'ghost.org', 'hashnode.dev', 'codepen.io', 'codesandbox.io',
   'kaggle.com', 'huggingface.co', 'replit.com', 'glitch.com', 'runkit.com',
   'craigslist.org', 'zillow.com', 'redfin.com', 'glassdoor.com', 'indeed.com',
   'coursera.org', 'udemy.com', 'edx.org', 'khanacademy.org', 'duolingo.com',
-  'twitch.tv', 'rumble.com', 'odysee.com', 'patreon.com', 'gumroad.com',
+  'rumble.com', 'odysee.com', 'patreon.com', 'gumroad.com', 'tesla.com',
+  'nasa.gov', 'who.int', 'un.org', 'imf.org', 'worldbank.org',
+  'roblox.com', 'mojang.com', 'epicgames.com', 'steampowered.com', 'blizzard.com',
+  'nike.com', 'adidas.com', 'lego.com', 'ikea.com', 'samsung.com',
+  'sony.com', 'nvidia.com', 'amd.com', 'intel.com', 'ibm.com',
+  'oracle.com', 'cisco.com', 'vmware.com', 'mongodb.com', 'docker.com',
 ];
 
 export default function SearchBar({ initialValue = '', size = 'large' }) {
@@ -41,9 +46,14 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   const suggestions = useMemo(() => {
     const q = value.trim().toLowerCase();
     if (!q || q.length < 1) return [];
-    return POPULAR_SITES
-      .filter((s) => s.includes(q))
-      .slice(0, 8);
+
+    const isExactMatch = POPULAR_SITES.includes(q);
+
+    const matches = POPULAR_SITES
+      .filter((s) => s.includes(q) && s !== q)
+      .slice(0, isExactMatch ? 6 : 7);
+
+    return matches;
   }, [value]);
 
   useEffect(() => {
@@ -106,6 +116,8 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   };
 
   const isLarge = size === 'large';
+  const trimmedValue = value.trim().toLowerCase();
+  const isValidInput = trimmedValue.length > 0 && trimmedValue.includes('.');
 
   return (
     <form onSubmit={handleSubmit} className="relative w-full">
@@ -156,11 +168,24 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         </button>
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-border bg-elevated shadow-lg"
+          className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
         >
+          {isValidInput && (
+            <button
+              type="button"
+              onMouseDown={handleSubmit}
+              className="flex w-full items-center gap-3 border-b border-gray-100 px-4 py-2.5 text-left text-sm font-mono transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
+            >
+              <svg className="h-3.5 w-3.5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              <span className="text-gray-900 dark:text-white">Scan <span className="font-semibold">{trimmedValue}</span></span>
+            </button>
+          )}
+
           {suggestions.map((site, i) => (
             <button
               key={site}
@@ -169,7 +194,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
                 i === selectedIndex
                   ? 'bg-accent/10 text-accent'
-                  : 'text-muted hover:bg-accent/5 hover:text-fg'
+                  : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'
               }`}
             >
               <svg className="h-3.5 w-3.5 shrink-0 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -179,6 +204,12 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
               {site}
             </button>
           ))}
+
+          {!isValidInput && suggestions.length === 0 && (
+            <div className="px-4 py-3 text-center text-xs text-gray-400 dark:text-gray-500">
+              Type a website URL to scan (e.g. flipkart.com)
+            </div>
+          )}
         </div>
       )}
 
