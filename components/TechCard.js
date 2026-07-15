@@ -113,7 +113,7 @@ export default function TechCard({ tech, index = 0 }) {
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-faint">
           <span className="font-mono">via</span>
-          <span className="truncate text-muted">{tech.detectedVia}</span>
+          <span className="text-muted leading-relaxed">{tech.detectedVia}</span>
         </div>
       </div>
     </div>
