@@ -62,7 +62,7 @@ export default function TerminalScanner() {
   };
 
   return (
-    <div ref={containerRef} className="w-full rounded-2xl border border-white/[0.06] bg-black/50 p-[1px] backdrop-blur-sm">
+    <div ref={containerRef} className="w-full rounded-2xl border border-white/[0.06] bg-zinc-950/50 p-[1px] backdrop-blur-sm">
       <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.03] to-white/[0.01] overflow-hidden">
         {/* Title bar */}
         <div className="flex items-center gap-2 border-b border-white/[0.04] px-4 py-2.5">

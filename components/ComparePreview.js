@@ -23,7 +23,7 @@ export default function ComparePreview() {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-black/40 p-[1px] backdrop-blur-sm">
+    <div className="rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-[1px] backdrop-blur-sm">
       <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-4 sm:p-5">
         <div className="mb-4 flex items-center gap-2">
           <svg className="h-3.5 w-3.5 text-accent/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

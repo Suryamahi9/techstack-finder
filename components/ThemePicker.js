@@ -45,7 +45,7 @@ export default function ThemePicker({ currentTheme, onSelect, onClose, justOpene
 
   return createPortal(
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24" style={{ animation: 'fadeIn 0.15s ease' }}>
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm" onClick={onClose} />
       <div
         ref={ref}
         className="relative w-72 rounded-2xl border border-white/[0.08] bg-elevated/95 p-4 shadow-2xl backdrop-blur-xl"

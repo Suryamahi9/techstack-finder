@@ -26,7 +26,13 @@ export default function HistoryList() {
     };
   }, []);
 
-  if (history.length === 0) return null;
+  if (history.length === 0) {
+    return (
+      <div className="w-full animate-fade-in text-center py-8">
+        <p className="text-xs text-faint">No scans yet. Enter a URL above to get started.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full animate-fade-in">

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SearchBar({ initialValue = '', size = 'large' }) {
@@ -10,6 +10,18 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   const [cookies, setCookies] = useState('');
   const [proxy, setProxy] = useState('');
   const router = useRouter();
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,6 +56,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           <path d="m21 21-4.3-4.3" />
         </svg>
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -68,22 +81,27 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setAdvanced(!advanced)}
-        className="mt-2 flex items-center gap-1.5 text-xs text-faint hover:text-muted"
-      >
-        <svg
-          className={`h-3 w-3 transition-transform ${advanced ? 'rotate-90' : ''}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      <div className="mt-2 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setAdvanced(!advanced)}
+          className="flex items-center gap-1.5 text-xs text-faint hover:text-muted"
         >
-          <path d="M9 18 15 12 9 6" />
-        </svg>
-        Advanced
-      </button>
+          <svg
+            className={`h-3 w-3 transition-transform ${advanced ? 'rotate-90' : ''}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M9 18 15 12 9 6" />
+          </svg>
+          Advanced
+        </button>
+        <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1 font-mono text-[10px] text-faint">
+          <span className="text-[9px]">/</span> to scan
+        </kbd>
+      </div>
 
       {advanced && (
         <div className="mt-3 space-y-3 rounded-xl border border-border bg-elevated/50 p-4">

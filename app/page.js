@@ -89,7 +89,7 @@ function LiveBar() {
     return () => clearInterval(id);
   }, []);
   return (
-    <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-white/[0.04] bg-black/60 px-6 py-2 backdrop-blur-md">
+      <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-white/[0.04] bg-zinc-950/60 px-6 py-2 backdrop-blur-md">
       <span className="relative flex h-1.5 w-1.5">
         <span className="absolute inline-flex h-full w-full animate-pulse-glow rounded-full bg-accent" />
       </span>
@@ -102,9 +102,17 @@ function LiveBar() {
 function StatCard({ label, value, suffix = '' }) {
   return (
     <div className="text-center">
-      <div className="font-mono text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-        <AnimatedCounter end={value} suffix={suffix} />
-      </div>
+      {value !== undefined ? (
+        <div className="font-mono text-2xl font-bold tracking-tight text-fg sm:text-3xl">
+          <AnimatedCounter end={value} suffix={suffix} />
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-1.5 font-mono text-2xl font-bold tracking-tight text-fg sm:text-3xl">
+          <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M5 12l5 5L20 7" />
+          </svg>
+        </div>
+      )}
       <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-faint">{label}</div>
     </div>
   );
@@ -143,7 +151,7 @@ function StepCard({ step, index }) {
   return (
     <div ref={sectionRef} className={inView ? 'animate-fade-in-view' : 'opacity-0'} style={{ animationDelay: `${index * 0.12}s` }}>
       <SpotlightCard>
-        <div className="rounded-2xl border border-white/[0.06] bg-black/30 p-[1px] backdrop-blur-sm">
+        <div className="rounded-2xl border border-white/[0.06] bg-zinc-950/30 p-[1px] backdrop-blur-sm">
           <div
             ref={tiltRef}
             className="card-shimmer rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] will-change-transform sm:px-5 sm:py-5"
@@ -225,8 +233,6 @@ export default function Home() {
         <div className="scan-line" />
         <DataTicker />
         <FloatingLogos />
-        <div className="glow-orb h-[500px] w-[500px] animate-orb-drift-1" style={{ top: '-100px', left: '50%', background: 'var(--accent)', opacity: 0.04 }} />
-        <div className="glow-orb h-[300px] w-[300px] animate-orb-drift-2" style={{ bottom: '-50px', right: '10%', background: 'var(--accent)', opacity: 0.025 }} />
       </div>
 
       <main className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-24 sm:px-8 sm:pt-28 lg:px-12 lg:pt-32">
@@ -245,7 +251,7 @@ export default function Home() {
             </AnimatedSection>
 
             <AnimatedSection delay={0.06}>
-              <h1 className="text-4xl font-bold leading-[1.0] tracking-tighter sm:text-6xl lg:text-7xl">
+              <h1 className="text-4xl font-bold leading-[1.0] tracking-tighter sm:text-5xl lg:text-6xl">
                 What&apos;s it
                 <br />
                 <span className="relative">
@@ -295,10 +301,39 @@ export default function Home() {
 
         {/* ─── Stats ─── */}
         <AnimatedSection delay={0.2} className="mt-12 sm:mt-16">
-          <div className="grid grid-cols-3 gap-4 border-y border-white/[0.04] py-6">
+          <div className="grid grid-cols-2 gap-4 border-y border-white/[0.04] py-6 sm:grid-cols-4">
             <StatCard label="Detection rules" value={2300} suffix="+" />
             <StatCard label="Categories" value={92} />
             <StatCard label="Avg scan time" value={2} suffix="s" />
+            <StatCard label="No signup" />
+          </div>
+        </AnimatedSection>
+
+        {/* ─── Use Cases ─── */}
+        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+          <div className="mb-6">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+              Use cases
+            </div>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Built for <span className="text-accent">real workflows</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.2fr]">
+            {[
+              { title: 'Security audits', desc: 'Verify headers, CSP, and HTTPS enforcement across your stack.' },
+              { title: 'Competitive research', desc: 'Compare tech choices across similar products in your market.' },
+              { title: 'Vendor due diligence', desc: 'Validate a vendor stack before committing to a platform.' },
+              { title: 'Portfolio tracking', desc: 'Track technology changes across sites you own or monitor.' },
+            ].map((useCase, i) => (
+              <div
+                key={i}
+                className="card-hover group rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5 transition-all duration-300 hover:border-accent/15 hover:bg-accent/[0.03]"
+              >
+                <h3 className="mb-2 text-sm font-semibold text-fg/90 transition-colors group-hover:text-accent">{useCase.title}</h3>
+                <p className="text-xs leading-relaxed text-muted">{useCase.desc}</p>
+              </div>
+            ))}
           </div>
         </AnimatedSection>
 
@@ -364,6 +399,41 @@ export default function Home() {
         {/* ─── What we detect ─── */}
         <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
           <CategoryGrid />
+        </AnimatedSection>
+
+        {/* ─── Export & Share ─── */}
+        <AnimatedSection delay={0.1} className="mt-14 sm:mt-20">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                Export
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Share your <span className="text-accent">findings</span>
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-muted">
+                Export reports as JSON or CSV. Generate PDFs. Embed a live badge on your site or README.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-muted">JSON export</span>
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-muted">CSV export</span>
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-muted">PDF report</span>
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-muted">Embed badge</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-wider text-faint">Badge preview</div>
+                <div className="inline-flex items-center gap-2 rounded-xl border border-accent/20 bg-accent/5 px-4 py-2.5">
+                  <svg className="h-4 w-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 7l8-4 8 4-8 4-8-4z" />
+                  </svg>
+                  <span className="font-sans text-sm font-semibold text-fg">github.com</span>
+                  <span className="rounded-full bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent">medium</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </AnimatedSection>
 
         {/* ─── Scans + History ─── */}

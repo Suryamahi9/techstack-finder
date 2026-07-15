@@ -47,7 +47,7 @@ export default function LiveScanPreview() {
   }, [visible]);
 
   return (
-    <div className="w-full rounded-2xl border border-white/[0.06] bg-black/40 p-[1px] backdrop-blur-sm">
+    <div className="w-full rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-[1px] backdrop-blur-sm">
       <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-4 sm:p-5">
         {/* Header bar */}
         <div className="mb-4 flex items-center gap-2">

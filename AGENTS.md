@@ -3,26 +3,35 @@
 ## Commands
 ```bash
 npm run dev      # Dev server at port 3000
-npm run build    # Production build (use after edits to verify)
+npm run build    # Runs `prisma generate && next build` — schema changes auto-generate client
 npm run start    # Production server
 npm run lint     # next lint (ESLint via next/core-web-vitals)
 ```
 
+## Setup prerequisites
+- Copy `.env` → set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, and OAuth credentials (`GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET`)
+- Run `npx prisma migrate deploy` (or `prisma db push` for local) before first build — schema requires PostgreSQL
+- Auth uses NextAuth v4 with Google/GitHub OAuth + custom credentials provider (`lib/auth.js` → `bcryptjs` hashing, Prisma User model)
+
 ## Architecture
-- **Next.js 14 App Router** (no TypeScript) — home at `app/page.js`, results at `app/results/page.js`, API at `app/api/scan/route.js`
+- **Next.js 14.2.35 App Router** (no TypeScript) — home at `app/page.js`, results at `app/results/page.js`, API at `app/api/scan/route.js`
 - **1,867 hand-crafted detection rules** in `lib/detect.js` (7,500+ lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB JSON, lazy-loaded via `readFileSync` + `process.cwd()`)
 - **269 category-to-type mappings** in `CATEGORY_TYPES` (frontend/backend/infra). ~100 unique category names across rules.
-- **Deep scan** in `lib/deep-scan.js` (472 lines) — fetches 15 CSS/JS files, probes 150+ common paths, uses Playwright headless browser when DOM < 50 elements. Browser default timeout: 20s.
-- **E-commerce detection** — auto-skips deep scan for Shopify/WooCommerce/Magento/Flipkart etc. Returns HTML/header-only detections.
-- **Vercel-aware** — detects `process.env.VERCEL` to skip browser scan, CSS/JS deep fetch, and path probes on serverless (Playwright binaries not available there). Fetch timeout reduced to 25s on Vercel.
-- **63 client components** in `components/`, all `'use client'`
+- **Deep scan** in `lib/deep-scan.js` (539 lines) — fetches CSS/JS files, probes 150+ common paths, uses Playwright headless browser when DOM < 50 elements. Browser default timeout: 20s. **Runs for ALL sites** (no e-commerce skip).
+- **Remote browser fallback** — `browserScanRemote()` in `deep-scan.js` uses Browserless.io when local Playwright unavailable (Vercel). Requires `BROWSERLESS_API_KEY` env var.
+- **Vercel-aware** — detects `process.env.VERCEL` to skip local browser scan, CSS/JS deep fetch, and path probes on serverless (Playwright binaries not available there). Fetch timeout reduced to 25s on Vercel.
+- **Proxy support** — `undici.ProxyAgent` dynamically imported in `detect.js` and `deep-scan.js` when `proxy` option passed. `undici` is not a listed dependency (used via dynamic import only).
+- **~67 client components** in `components/`, all `'use client'`
 - **CSS variables** in `globals.css` (`:root` dark, `[data-theme='light']` light) referenced in `tailwind.config.js` via `var(--*)`. Never hardcode hex colors.
 - **jsconfig.json** maps `@/*` → `./*`
 
-## Pages (19 routes)
+## Pages (20 routes)
 | Route | File | Description |
 |-------|------|-------------|
 | `/` | `app/page.js` | Homepage — SearchBar, LiveScanPreview, FloatingLogos, CategoryGrid, TerminalScanner, ComparePreview |
+| `/login` | `app/login/page.js` | Email + OAuth (Google/GitHub) login |
+| `/signup` | `app/signup/page.js` | Email + OAuth signup (validates password length, POSTs `/api/auth/signup`) |
+| `/browse` | `app/browse/page.js` | Browse technologies by category (static data from `lib/browse-data.json`) |
 | `/results` | `app/results/page.js` | 5-tab results (Overview, Technologies, Analysis, Code, Tools) |
 | `/site/[domain]` | `app/site/[domain]/page.js` | Public profile |
 | `/radar` | `app/radar/page.js` | Full-page Tech Radar |
@@ -49,9 +58,10 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 
 ## Scan flow
 1. Client reads `?site=`, optional `?headers=`, `?cookies=`, `?proxy=` via `useSearchParams`. POSTs `/api/scan`.
-2. Server: normalize URL → check cache → rate-limit by IP → fetch HTML (Cheerio, no JS execution) → detect challenge/blocked pages (5xx, Cloudflare markers) → auto-fallback to Playwright browser if blocked (skipped on Vercel) → skip deep scan for e-commerce sites → run rule engine → return results.
-3. Client saves to localStorage `tsf-scan-history` (max 50), dispatches `tsf-scan-history-updated` event.
-4. Technologies tab uses `TechTab.js` to split into **Main** (popular/high-confidence) vs **Rare** (niche/low-confidence) sub-tabs.
+2. Server: normalize URL → check cache → rate-limit by IP → fetch HTML (Cheerio, no JS execution) → detect challenge/blocked pages (5xx, Cloudflare markers) → auto-fallback to Playwright browser if blocked (skipped on Vercel) → run deep scan (CSS/JS fetch, path probes — skipped on Vercel) → run rule engine → return results.
+3. **Fetch-failure fallback**: If `fetch()` throws a network error (not timeout), `detectTechnologies()` now tries `tryBrowserScan()` (local Playwright → remote Browserless) before giving up. This handles sites that aggressively block non-browser requests.
+4. Client saves to localStorage `tsf-scan-history` (max 50), dispatches `tsf-scan-history-updated` event.
+5. Technologies tab uses `TechTab.js` to split into **Main** (popular/high-confidence) vs **Rare** (niche/low-confidence) sub-tabs.
 
 ## Detection system
 - Rules stored as `RULES` array in `lib/detect.js` (1,867 inline) + generated rules merged at module load via `getGenRules()`

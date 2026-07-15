@@ -255,7 +255,7 @@ export default function StackVisualization({ categories }) {
           onClick={handleClick}
         />
         {tooltip && (
-          <div className="pointer-events-none absolute left-4 top-4 rounded-lg border border-white/10 bg-black/80 px-3 py-2 text-xs backdrop-blur-sm">
+           <div className="pointer-events-none absolute left-4 top-4 rounded-lg border border-white/10 bg-zinc-950/80 px-3 py-2 text-xs backdrop-blur-sm">
             <div className="font-semibold text-fg">{tooltip.label}</div>
             {tooltip.type !== 'center' && tooltip.type !== 'category' && (
               <div className="mt-0.5 text-muted">{tooltip.type} · {tooltip.id.split('_')[0]}</div>

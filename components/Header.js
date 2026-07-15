@@ -251,7 +251,7 @@ export default function Header() {
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setOpen(false)}
           />
           <div className="absolute left-0 right-0 top-[52px] max-h-[calc(100vh-52px)] overflow-y-auto border-b border-white/[0.06] bg-bg/95 px-4 py-4 backdrop-blur-2xl">
