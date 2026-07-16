@@ -6,6 +6,8 @@ import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
 
 const NAV_ITEMS = [
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/docs', label: 'Docs' },
   { href: '/bookmarks', label: 'Bookmarks' },
   { href: '/compare', label: 'Compare' },
   { href: '/trends', label: 'Trends' },
@@ -170,8 +172,12 @@ export default function Header() {
                             <span className="mt-1 inline-block rounded-full bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold text-accent uppercase">{session.user.tier}</span>
                           )}
                         </div>
+                        <Link href="/settings" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">Settings</Link>
                         <Link href="/api-keys" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">API Keys</Link>
                         <Link href="/history" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">Scan History</Link>
+                        {session.user?.tier === 'free' && (
+                          <Link href="/pricing" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs font-medium text-accent hover:bg-accent/10">Upgrade Plan</Link>
+                        )}
                         <button onClick={() => { setUserMenuOpen(false); signOut({ callbackUrl: '/' }); }} className="w-full rounded-lg px-3 py-1.5 text-left text-xs text-red-400 hover:bg-red-500/10">Sign out</button>
                       </div>
                     </>

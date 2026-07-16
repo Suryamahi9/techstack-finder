@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { sendWelcomeEmail } from '../../../../lib/email';
 
 const prisma = new PrismaClient();
 
@@ -26,9 +27,12 @@ export async function POST(request) {
   }
 
   const hashed = await bcrypt.hash(password, 12);
+  const displayName = name || email.split('@')[0];
   const user = await prisma.user.create({
-    data: { name: name || email.split('@')[0], email, password: hashed },
+    data: { name: displayName, email, password: hashed },
   });
+
+  sendWelcomeEmail(email, displayName).catch(() => {});
 
   return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
 }
