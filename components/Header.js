@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
@@ -153,7 +154,7 @@ export default function Header() {
                     className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-medium text-muted transition-all hover:border-accent/20 hover:text-fg"
                   >
                     {session.user?.image ? (
-                      <img src={session.user.image} alt="" className="h-5 w-5 rounded-full" />
+                      <Image src={session.user.image} alt="" width={20} height={20} className="h-5 w-5 rounded-full" unoptimized />
                     ) : (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/20 text-[9px] font-bold text-accent">
                         {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
@@ -224,7 +225,7 @@ export default function Header() {
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted"
               >
                 {session.user?.image ? (
-                  <img src={session.user.image} alt="" className="h-6 w-6 rounded-full" />
+                  <Image src={session.user.image} alt="" width={24} height={24} className="h-6 w-6 rounded-full" unoptimized />
                 ) : (
                   <span className="text-xs font-bold text-accent">{(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}</span>
                 )}

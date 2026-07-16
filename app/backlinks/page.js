@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import { getScanHistory, clearScanHistory } from '../../lib/scan-history';
 
@@ -258,7 +259,7 @@ export default function BacklinksPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {site.favicon ? (
-                            <img src={site.favicon} alt="" className="h-4 w-4 rounded" onError={(e) => { e.target.style.display = 'none'; }} />
+                            <Image src={site.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded" unoptimized onError={(e) => { e.target.style.display = 'none'; }} />
                           ) : (
                             <div className="h-4 w-4 rounded bg-border flex items-center justify-center text-[8px] font-bold text-dim">{site.domain[0]?.toUpperCase()}</div>
                           )}
