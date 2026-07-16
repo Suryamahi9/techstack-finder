@@ -735,6 +735,93 @@ html {
   50% { background-position: 100% 50%; }
 }
 
+/* Glass morphism panel */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 32px -8px rgba(0,0,0,0.3);
+}
+[data-theme='light'] .glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 8px 32px -8px rgba(0,0,0,0.08);
+}
+
+/* Diffusion shadow for cards */
+.shadow-diffusion {
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.03);
+}
+[data-theme='light'] .shadow-diffusion {
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+/* Tactile press effect */
+.press-tactile {
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.15s ease;
+}
+.press-tactile:active {
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.2);
+}
+
+/* Rich hover glow */
+.hover-glow {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-soft), transparent 40%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.hover-glow:hover::after {
+  opacity: 1;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Subtle rotate on hover */
+@keyframes subtleRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Gradient border */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 50%, var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.gradient-border:hover::before {
+  opacity: 0.6;
+}
+
 .premium-transition {
   transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
 }

@@ -62,20 +62,23 @@ export default function TerminalScanner() {
   };
 
   return (
-    <div ref={containerRef} className="w-full rounded-2xl border border-white/[0.06] bg-zinc-950/50 p-[1px] backdrop-blur-sm">
+    <div ref={containerRef} className="w-full rounded-2xl border border-white/[0.06] bg-zinc-950/50 p-[1px] backdrop-blur-sm shadow-diffusion">
       <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.03] to-white/[0.01] overflow-hidden">
         {/* Title bar */}
         <div className="flex items-center gap-2 border-b border-white/[0.04] px-4 py-2.5">
           <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+            <span className="h-2.5 w-2.5 rounded-full bg-red-500/40" />
+            <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/40" />
+            <span className="h-2.5 w-2.5 rounded-full bg-green-500/40" />
           </div>
           <span className="ml-2 font-mono text-[10px] text-faint">terminal</span>
           <button
             onClick={restart}
-            className="ml-auto font-mono text-[10px] text-faint hover:text-accent transition-colors"
+            className="ml-auto flex items-center gap-1 font-mono text-[10px] text-faint hover:text-accent transition-colors"
           >
+            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+            </svg>
             rerun
           </button>
         </div>
@@ -85,7 +88,15 @@ export default function TerminalScanner() {
           {SCAN_LINES.slice(0, visibleLines).map((line, i) => (
             <div
               key={i}
-              className={line.accent ? 'text-accent' : line.text.startsWith('>') ? 'text-faint' : 'text-fg/70'}
+              className={`transition-colors duration-200 ${
+                line.accent
+                  ? 'text-accent font-medium'
+                  : line.text.startsWith('>')
+                  ? 'text-faint'
+                  : line.text.includes('├─') || line.text.includes('└─')
+                  ? 'text-fg/70'
+                  : 'text-fg/70'
+              }`}
               style={{ animationDelay: `${i * 0.05}s` }}
             >
               {line.text || '\u00A0'}
