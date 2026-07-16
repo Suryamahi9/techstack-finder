@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -7,8 +7,13 @@ function formatDate(iso) {
 }
 
 function esc(str) {
-  if (!str) return '';
-  return String(str).replace(/[^\x20-\x7E]/g, '');
+  if (str === null || str === undefined) return '';
+  const s = String(str);
+  return s.replace(/[^\x20-\x7E]/g, '');
+}
+
+function safeNum(v, fallback = 0) {
+  return typeof v === 'number' && isFinite(v) ? v : fallback;
 }
 
 const TYPE_COLORS = {
@@ -27,14 +32,21 @@ const LIGHT_BORDER = { r: 229, g: 231, b: 235 };
 
 export default function DownloadPdfButton({ data, fileName = 'report' }) {
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState(null);
   const [pdfTheme, setPdfTheme] = useState('dark');
+  const jsPDFRef = useRef(null);
 
   const handleDownload = async () => {
     if (!data || generating) return;
     setGenerating(true);
+    setError(null);
 
     try {
-      const { jsPDF } = await import('jspdf');
+      if (!jsPDFRef.current) {
+        const mod = await import('jspdf');
+        jsPDFRef.current = mod.jsPDF;
+      }
+      const jsPDF = jsPDFRef.current;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const W = pdf.internal.pageSize.getWidth();
       const H = pdf.internal.pageSize.getHeight();
@@ -72,7 +84,8 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         return false;
       };
 
-      const sectionHeader = (title, color = ACCENT) => {
+      const sectionHeader = (title, color) => {
+        color = color || ACCENT;
         checkPage(18);
         y += 4;
         pdf.setFillColor(color.r, color.g, color.b);
@@ -92,16 +105,17 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         y += 6;
       };
 
-      const text = (str, x, opts = {}) => {
-        const size = opts.size || 10;
-        const style = opts.style || 'normal';
-        const color = opts.color || fg;
-        const maxWidth = opts.maxWidth || CW;
+      const text = (str, x, opts) => {
+        opts = opts || {};
+        var size = opts.size || 10;
+        var style = opts.style || 'normal';
+        var color = opts.color || fg;
+        var maxWidth = opts.maxWidth || CW;
         pdf.setFont('helvetica', style);
         pdf.setFontSize(size);
         pdf.setTextColor(color[0], color[1], color[2]);
-        const lines = pdf.splitTextToSize(esc(str), maxWidth);
-        lines.forEach((line) => {
+        var lines = pdf.splitTextToSize(esc(str), maxWidth);
+        lines.forEach(function (line) {
           checkPage(6);
           pdf.text(line, x, y);
           y += size * 0.4;
@@ -124,12 +138,14 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         y += 3;
       };
 
-      const statCard = (val, lbl, x, w, color = fg) => {
+      const statCard = (val, lbl, x, w, color) => {
+        color = color || fg;
         checkPage(22);
         pdf.setFillColor(card.r, card.g, card.b);
-        pdf.roundedRect(x, y, w, 20, 2, 2, 'FD');
+        pdf.rect(x, y, w, 20, 'F');
         pdf.setDrawColor(border.r, border.g, border.b);
-        pdf.roundedRect(x, y, w, 20, 2, 2, 'S');
+        pdf.setLineWidth(0.3);
+        pdf.rect(x, y, w, 20, 'S');
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(18);
         pdf.setTextColor(color[0], color[1], color[2]);
@@ -141,35 +157,26 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       };
 
       const confBar = (pct, x, barW, color) => {
-        const barH = 3;
+        var barH = 3;
         pdf.setFillColor(border.r, border.g, border.b);
-        pdf.roundedRect(x, y, barW, barH, 1.5, 1.5, 'F');
+        pdf.rect(x, y, barW, barH, 'F');
         if (pct > 0) {
           pdf.setFillColor(color.r, color.g, color.b);
-          pdf.roundedRect(x, y, Math.max(barW * (pct / 100), 3), barH, 1.5, 1.5, 'F');
+          pdf.rect(x, y, Math.max(barW * (pct / 100), 3), barH, 'F');
         }
       };
 
       setPageBg();
 
       // ─── COVER ───
-      // Gradient background using rects
-      for (let i = 0; i < 60; i++) {
-        const t = i / 60;
-        const r = Math.round(DARK_BG.r + (DARK_CARD.r - DARK_BG.r) * t);
-        const g = Math.round(DARK_BG.g + (DARK_CARD.g - DARK_BG.g) * t);
-        const b = Math.round(DARK_BG.b + (DARK_CARD.b - DARK_BG.b) * t);
-        pdf.setFillColor(r, g, b);
+      for (var i = 0; i < 60; i++) {
+        var t = i / 60;
+        var cr = Math.round(DARK_BG.r + (DARK_CARD.r - DARK_BG.r) * t);
+        var cg = Math.round(DARK_BG.g + (DARK_CARD.g - DARK_BG.g) * t);
+        var cb = Math.round(DARK_BG.b + (DARK_CARD.b - DARK_BG.b) * t);
+        pdf.setFillColor(cr, cg, cb);
         pdf.rect(0, i * (H / 60), W, H / 60 + 1, 'F');
       }
-
-      // Decorative circles
-      pdf.setFillColor(ACCENT.r, ACCENT.g, ACCENT.b);
-      pdf.setGState(new pdf.GState({ opacity: 0.08 }));
-      pdf.circle(W - 30, 40, 50, 'F');
-      pdf.setGState(new pdf.GState({ opacity: 0.05 }));
-      pdf.circle(40, H - 60, 40, 'F');
-      pdf.setGState(new pdf.GState({ opacity: 1 }));
 
       // Accent bar
       pdf.setFillColor(ACCENT.r, ACCENT.g, ACCENT.b);
@@ -194,71 +201,70 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       // Meta line
       pdf.setFontSize(10);
       pdf.setTextColor(100, 116, 139);
-      const meta = [
-        formatDate(data.site?.scannedAt),
-        data.site?.statusCode ? `HTTP ${data.site.statusCode}` : null,
-        `${data.categories?.length || 0} categories`,
-        `${data.summary?.total || 0} technologies`,
-      ].filter(Boolean).join('  ·  ');
-      pdf.text(meta, M + 8, 104);
+      var metaParts = [];
+      if (data.site?.scannedAt) metaParts.push(formatDate(data.site.scannedAt));
+      if (data.site?.statusCode) metaParts.push('HTTP ' + data.site.statusCode);
+      metaParts.push((data.categories?.length || 0) + ' categories');
+      metaParts.push((data.summary?.total || 0) + ' technologies');
+      pdf.text(metaParts.join('  ·  '), M + 8, 104);
 
       // Stat cards on cover
-      const total = data.summary?.total || 0;
-      const cats = data.summary?.categories || 0;
-      const fe = data.summary?.frontend || 0;
-      const be = data.summary?.backend || 0;
-      const inf = data.summary?.infra || 0;
+      var total = safeNum(data.summary?.total);
+      var cats = safeNum(data.summary?.categories);
+      var fe = safeNum(data.summary?.frontend);
+      var be = safeNum(data.summary?.backend);
+      var inf = safeNum(data.summary?.infra);
 
-      const cardW = (CW - 12) / 4;
+      var cardW = (CW - 12) / 4;
       y = 130;
       statCard(total, 'Technologies', M, cardW, ACCENT);
-      statCard(cats, 'Categories', M + cardW + 4, cardW, [59, 130, 246]);
-      statCard(`${total ? Math.round((fe / total) * 100) : 0}%`, 'Frontend', M + (cardW + 4) * 2, cardW, [59, 130, 246]);
-      statCard(`${total ? Math.round(((be + inf) / total) * 100) : 0}%`, 'Backend+Infra', M + (cardW + 4) * 3, cardW, [16, 185, 129]);
+      statCard(cats, 'Categories', M + cardW + 4, cardW, TYPE_COLORS.frontend);
+      statCard((total ? Math.round((fe / total) * 100) : 0) + '%', 'Frontend', M + (cardW + 4) * 2, cardW, TYPE_COLORS.frontend);
+      statCard((total ? Math.round(((be + inf) / total) * 100) : 0) + '%', 'Backend+Infra', M + (cardW + 4) * 3, cardW, TYPE_COLORS.backend);
 
       // Footer on cover
       y = H - 30;
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(8);
       pdf.setTextColor(100, 116, 139);
-      pdf.text('Generated by TechStack Finder  ·  techstack-finder.vercel.app', M, y);
-      pdf.text(`${pdfTheme === 'dark' ? 'Dark' : 'Light'} theme  ·  ${formatDate(new Date().toISOString())}`, W - M, y, { align: 'right' });
+      pdf.text('Generated by TechStack Finder', M, y);
+      pdf.text(formatDate(new Date().toISOString()), W - M, y, { align: 'right' });
 
       // ─── PAGE 2+: CONTENT ───
       newPage();
 
       // Distribution bar
       sectionHeader('Stack Distribution', ACCENT);
-      const barY = y;
-      const barH = 8;
+      var barY = y;
+      var barH = 8;
       pdf.setFillColor(border.r, border.g, border.b);
-      pdf.roundedRect(M, barY, CW, barH, 4, 4, 'F');
-      let barX = M;
-      const segments = [
+      pdf.rect(M, barY, CW, barH, 'F');
+      var barX = M;
+      var segments = [
         { pct: total ? (fe / total) * 100 : 0, color: TYPE_COLORS.frontend },
         { pct: total ? (be / total) * 100 : 0, color: TYPE_COLORS.backend },
         { pct: total ? (inf / total) * 100 : 0, color: TYPE_COLORS.infra },
       ];
-      segments.forEach((seg) => {
+      segments.forEach(function (seg) {
         if (seg.pct > 0) {
-          const w = Math.max(CW * (seg.pct / 100), 4);
+          var sw = Math.max(CW * (seg.pct / 100), 4);
           pdf.setFillColor(seg.color.r, seg.color.g, seg.color.b);
-          pdf.roundedRect(barX, barY, w, barH, 4, 4, 'F');
-          barX += w;
+          pdf.rect(barX, barY, sw, barH, 'F');
+          barX += sw;
         }
       });
       y += 16;
 
       // Legend
-      const legendItems = [
-        { label: `Frontend ${total ? Math.round((fe / total) * 100) : 0}% (${fe})`, color: TYPE_COLORS.frontend },
-        { label: `Backend ${total ? Math.round((be / total) * 100) : 0}% (${be})`, color: TYPE_COLORS.backend },
-        { label: `Infra ${total ? Math.round((inf / total) * 100) : 0}% (${inf})`, color: TYPE_COLORS.infra },
+      var legendItems = [
+        { label: 'Frontend ' + (total ? Math.round((fe / total) * 100) : 0) + '% (' + fe + ')', color: TYPE_COLORS.frontend },
+        { label: 'Backend ' + (total ? Math.round((be / total) * 100) : 0) + '% (' + be + ')', color: TYPE_COLORS.backend },
+        { label: 'Infra ' + (total ? Math.round((inf / total) * 100) : 0) + '% (' + inf + ')', color: TYPE_COLORS.infra },
       ];
-      let legendX = M;
-      legendItems.forEach((item) => {
+      var legendX = M;
+      legendItems.forEach(function (item) {
         pdf.setFillColor(item.color.r, item.color.g, item.color.b);
-        pdf.roundedRect(legendX, y, 4, 4, 1, 1, 'F');
+        pdf.rect(legendX, y, 4, 4, 'F');
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(8);
         pdf.setTextColor(fg[0], fg[1], fg[2]);
@@ -268,90 +274,109 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       y += 12;
 
       // Category breakdown
-      const catStats = (data.categories || [])
-        .map((c) => ({ name: c.category, count: c.technologies.length }))
-        .filter((c) => c.count > 0)
-        .sort((a, b) => b.count - a.count);
+      var catStats = [];
+      (data.categories || []).forEach(function (c) {
+        if (c.technologies && c.technologies.length > 0) {
+          catStats.push({ name: c.category, count: c.technologies.length });
+        }
+      });
+      catStats.sort(function (a, b) { return b.count - a.count; });
 
       if (catStats.length > 0) {
-        sectionHeader('Category Breakdown', [59, 130, 246]);
-        const maxCount = catStats[0].count;
-        const colW = (CW - 6) / 2;
+        sectionHeader('Category Breakdown', TYPE_COLORS.frontend);
+        var maxCount = catStats[0].count;
+        var colW = (CW - 6) / 2;
+        var colIdx = 0;
 
-        catStats.slice(0, 16).forEach((cat, i) => {
-          const col = i % 2;
-          const cx = M + col * (colW + 6);
+        catStats.slice(0, 16).forEach(function (cat) {
+          var col = colIdx % 2;
+          var cx = M + col * (colW + 6);
           checkPage(14);
 
-          if (col === 0 && i > 0) y -= 12;
+          if (col === 0 && colIdx > 0) y -= 12;
 
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(9);
           pdf.setTextColor(fg[0], fg[1], fg[2]);
           pdf.text(esc(cat.name), cx, y + 4);
 
+          var countStr = String(cat.count);
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(9);
           pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
-          pdf.text(String(cat.count), cx + colW - pdf.getTextWidth(String(cat.count)), y + 4);
+          pdf.text(countStr, cx + colW - pdf.getTextWidth(countStr), y + 4);
 
           y += 6;
-          const barPct = (cat.count / maxCount) * 100;
+          var barPct = (cat.count / maxCount) * 100;
           confBar(barPct, cx, colW, ACCENT);
           y += 6;
+          colIdx++;
         });
         y += 4;
       }
 
       // Technology list
-      const allTechs = (data.categories || []).flatMap((cat) =>
-        (cat.technologies || []).map((t) => ({ ...t, categoryName: cat.category }))
-      );
+      var allTechs = [];
+      (data.categories || []).forEach(function (cat) {
+        (cat.technologies || []).forEach(function (t) {
+          var tech = {};
+          for (var k in t) tech[k] = t[k];
+          tech.categoryName = cat.category;
+          allTechs.push(tech);
+        });
+      });
 
       if (allTechs.length > 0) {
-        sectionHeader('Technology Details', [16, 185, 129]);
+        sectionHeader('Technology Details', TYPE_COLORS.backend);
 
-        allTechs.forEach((tech, i) => {
+        allTechs.forEach(function (tech) {
           checkPage(18);
 
-          // Tech name + type badge
-          const tc = TYPE_COLORS[tech.type] || TYPE_COLORS.frontend;
+          var tc = TYPE_COLORS[tech.type] || TYPE_COLORS.frontend;
+
+          // Tech name
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(10);
           pdf.setTextColor(fg[0], fg[1], fg[2]);
           pdf.text(esc(tech.name), M, y + 4);
 
+          // Version
           if (tech.version) {
             pdf.setFont('helvetica', 'normal');
             pdf.setFontSize(8);
             pdf.setTextColor(fgDim[0], fgDim[1], fgDim[2]);
-            pdf.text(`v${esc(tech.version)}`, M + pdf.getTextWidth(esc(tech.name)) + 3, y + 4);
+            var nameW = pdf.getTextWidth(esc(tech.name));
+            pdf.text('v' + esc(tech.version), M + nameW + 3, y + 4);
           }
 
           // Type badge
-          const badgeText = (tech.type || 'frontend').toUpperCase();
+          var badgeText = (tech.type || 'frontend').toUpperCase();
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(7);
-          const badgeW = pdf.getTextWidth(badgeText) + 6;
+          var badgeW = pdf.getTextWidth(badgeText) + 6;
           pdf.setFillColor(tc.r, tc.g, tc.b);
-          pdf.roundedRect(W - M - badgeW, y, badgeW, 5, 1.5, 1.5, 'F');
+          pdf.rect(W - M - badgeW, y, badgeW, 5, 'F');
           pdf.setTextColor(255, 255, 255);
           pdf.text(badgeText, W - M - badgeW + 3, y + 3.8);
 
           y += 8;
 
-          // Category + confidence
+          // Category + detection info
+          var catText = esc(tech.categoryName || tech.category || '');
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(8);
           pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
-          pdf.text(esc(tech.categoryName || tech.category), M, y + 3);
+          pdf.text(catText, M, y + 3);
 
-          pdf.text('via', M + pdf.getTextWidth(esc(tech.categoryName || tech.category)) + 4, y + 3);
-          pdf.setTextColor(fg[0], fg[1], fg[2]);
-          pdf.text(esc(tech.detectedVia), M + pdf.getTextWidth(esc(tech.categoryName || tech.category)) + 12, y + 3);
+          if (tech.detectedVia) {
+            var catW2 = pdf.getTextWidth(catText);
+            pdf.text('via', M + catW2 + 4, y + 3);
+            pdf.setTextColor(fg[0], fg[1], fg[2]);
+            pdf.text(esc(tech.detectedVia), M + catW2 + 12, y + 3);
+          }
 
           // Confidence bar
-          const confPct = tech.confidence === 'high' ? 95 : tech.confidence === 'medium' ? 65 : 35;
+          var confPct = tech.confidence === 'high' ? 95 : tech.confidence === 'medium' ? 65 : 35;
           confBar(confPct, W - M - 40, 40, tc);
 
           y += 8;
@@ -360,16 +385,18 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       }
 
       // SEO section
-      const seo = data.seo;
-      if (seo) {
-        checkPage(60);
-        sectionHeader('SEO Analysis', [245, 158, 11]);
+      if (data.seo) {
+        checkPage(50);
+        sectionHeader('SEO Analysis', TYPE_COLORS.infra);
 
-        // Score + Grade
-        const scoreW = (CW - 8) / 3;
-        statCard(seo.score || '—', 'Score', M, scoreW, seo.score >= 80 ? [16, 185, 129] : seo.score >= 50 ? [245, 158, 11] : [239, 68, 68]);
-        statCard(seo.grade || '—', 'Grade', M + scoreW + 4, scoreW, seo.score >= 80 ? [16, 185, 129] : seo.score >= 50 ? [245, 158, 11] : [239, 68, 68]);
-        statCard(`H1:${seo.headings?.h1 || 0} H2:${seo.headings?.h2 || 0}`, 'Headings', M + (scoreW + 4) * 2, scoreW, [59, 130, 246]);
+        var seo = data.seo;
+        var scoreW = (CW - 8) / 3;
+        var seoColor = seo.score >= 80 ? TYPE_COLORS.backend : seo.score >= 50 ? TYPE_COLORS.infra : { r: 239, g: 68, b: 68 };
+        statCard(safeNum(seo.score, '—'), 'Score', M, scoreW, seoColor);
+        statCard(seo.grade || '—', 'Grade', M + scoreW + 4, scoreW, seoColor);
+        var h1 = seo.headings?.h1 || 0;
+        var h2 = seo.headings?.h2 || 0;
+        statCard('H1:' + h1 + ' H2:' + h2, 'Headings', M + (scoreW + 4) * 2, scoreW, TYPE_COLORS.frontend);
         y += 6;
 
         kv('Title', seo.title?.text);
@@ -379,40 +406,40 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       }
 
       // Performance section
-      const perf = data.performance;
-      if (perf) {
+      if (data.performance) {
         checkPage(40);
-        sectionHeader('Performance', [16, 185, 129]);
+        sectionHeader('Performance', TYPE_COLORS.backend);
 
-        const perfItems = [
+        var perf = data.performance;
+        var perfItems = [
           ['HTTPS', perf.isHttps ? 'Enabled' : 'Not detected'],
           ['Compression', perf.compression],
           ['Cache Control', perf.cacheControl],
           ['HTTP Version', perf.httpVersion],
           ['Keep-Alive', perf.keepAlive],
           ['Alt-Svc', perf.altSvc],
-        ].filter(([, v]) => v);
+        ].filter(function (item) { return !!item[1]; });
 
-        const pColW = (CW - 8) / 3;
-        perfItems.forEach(([, val], i) => {
-          const col = i % 3;
+        var pColW = (CW - 8) / 3;
+        perfItems.forEach(function (item, i) {
+          var col = i % 3;
           if (col === 0 && i > 0) y += 16;
           checkPage(18);
-          const px = M + col * (pColW + 4);
-          label(perfItems[i][0], px);
-          text(perfItems[i][1], px, { size: 9, maxWidth: pColW });
+          var px = M + col * (pColW + 4);
+          label(item[0], px);
+          text(item[1], px, { size: 9, maxWidth: pColW });
           y += 4;
         });
         y += 4;
       }
 
       // Security section
-      const sec = data.security;
-      if (sec) {
+      if (data.security) {
         checkPage(40);
-        sectionHeader('Security Headers', [239, 68, 68]);
+        sectionHeader('Security Headers', { r: 239, g: 68, b: 68 });
 
-        const secItems = [
+        var sec = data.security;
+        var secItems = [
           ['Content-Security-Policy', sec.contentSecurityPolicy],
           ['Strict-Transport-Security', sec.strictTransportSecurity],
           ['X-Frame-Options', sec.xFrameOptions],
@@ -421,22 +448,22 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
           ['Permissions-Policy', sec.permissionsPolicy],
           ['X-XSS-Protection', sec.xssProtection],
           ['CORS', sec.cors?.allowOrigin],
-        ].filter(([, v]) => v);
+        ].filter(function (item) { return !!item[1]; });
 
-        secItems.forEach(([, val], i) => {
+        secItems.forEach(function (item) {
           checkPage(12);
-          kv(secItems[i][0], secItems[i][1], M, CW);
+          kv(item[0], item[1], M, CW);
           y += 1;
         });
       }
 
       // Response Headers
-      const rh = data.responseHeaders;
-      if (rh && Object.keys(rh).length > 0) {
+      if (data.responseHeaders && Object.keys(data.responseHeaders).length > 0) {
         checkPage(30);
-        sectionHeader('Response Headers', [139, 92, 246]);
+        sectionHeader('Response Headers', { r: 139, g: 92, b: 246 });
 
-        Object.entries(rh).slice(0, 20).forEach(([key, val]) => {
+        var rhKeys = Object.keys(data.responseHeaders).slice(0, 20);
+        rhKeys.forEach(function (key) {
           checkPage(10);
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(8);
@@ -446,9 +473,10 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(8);
           pdf.setTextColor(fg[0], fg[1], fg[2]);
-          const valStr = Array.isArray(val) ? val.join(', ') : String(val);
-          const valLines = pdf.splitTextToSize(esc(valStr), CW - 50);
-          valLines.forEach((line) => {
+          var val = data.responseHeaders[key];
+          var valStr = Array.isArray(val) ? val.join(', ') : String(val);
+          var valLines = pdf.splitTextToSize(esc(valStr), CW - 50);
+          valLines.forEach(function (line) {
             pdf.text(line, M + 50, y + 3);
             y += 4;
           });
@@ -457,12 +485,12 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       }
 
       // Page Metadata
-      const meta2 = data.pageMetadata;
-      if (meta2) {
+      if (data.pageMetadata) {
         checkPage(40);
-        sectionHeader('Page Metadata', [99, 102, 241]);
+        sectionHeader('Page Metadata', { r: 99, g: 102, b: 241 });
 
-        const metaItems = [
+        var meta2 = data.pageMetadata;
+        var metaItems = [
           ['Title', meta2.title],
           ['Description', meta2.description],
           ['Canonical', meta2.canonical],
@@ -477,41 +505,40 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
           ['Favicon', meta2.favicon],
           ['Manifest', meta2.manifest],
           ['Theme Color', meta2.themeColor],
-        ].filter(([, v]) => v);
+        ].filter(function (item) { return !!item[1]; });
 
-        metaItems.forEach(([, val], i) => {
+        metaItems.forEach(function (item) {
           checkPage(12);
-          kv(metaItems[i][0], metaItems[i][1], M, CW);
+          kv(item[0], item[1], M, CW);
           y += 1;
         });
       }
 
       // Company profile
-      const co = data.company;
-      if (co?.name) {
+      if (data.company && data.company.name) {
         checkPage(30);
-        sectionHeader('Company Profile', [139, 92, 246]);
+        sectionHeader('Company Profile', { r: 139, g: 92, b: 246 });
 
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(14);
         pdf.setTextColor(fg[0], fg[1], fg[2]);
-        pdf.text(esc(co.name), M, y + 5);
+        pdf.text(esc(data.company.name), M, y + 5);
         y += 10;
 
-        if (co.description) {
-          text(co.description, M, { size: 9, color: fgMuted, maxWidth: CW });
+        if (data.company.description) {
+          text(data.company.description, M, { size: 9, color: fgMuted, maxWidth: CW });
           y += 4;
         }
 
-        const coItems = [
-          ['Industry', co.industry],
-          ['Founded', co.foundingDate],
-          ['Employees', co.employeeCount],
-        ].filter(([, v]) => v);
+        var coItems = [
+          ['Industry', data.company.industry],
+          ['Founded', data.company.foundingDate],
+          ['Employees', data.company.employeeCount],
+        ].filter(function (item) { return !!item[1]; });
 
-        coItems.forEach(([key, val]) => {
+        coItems.forEach(function (item) {
           checkPage(8);
-          kv(key, val, M, CW / 3);
+          kv(item[0], item[1], M, CW / 3);
         });
       }
 
@@ -527,56 +554,71 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       pdf.setFontSize(8);
       pdf.setTextColor(fgDim[0], fgDim[1], fgDim[2]);
       pdf.text('Full-stack technology detection engine', M, y + 9);
-      pdf.text(`Page ${page}`, W - M, y + 4, { align: 'right' });
+      pdf.text('Page ' + page, W - M, y + 4, { align: 'right' });
       pdf.text(formatDate(new Date().toISOString()), W - M, y + 9, { align: 'right' });
 
-      pdf.save(`${fileName.replace(/[^a-z0-9]/gi, '-')}-techstack-report-${pdfTheme}.pdf`);
+      // Save — use blob URL for reliable download after async import
+      var blob = pdf.output('blob');
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (fileName.replace(/[^a-z0-9]/gi, '-') || 'report') + '-techstack-report-' + pdfTheme + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     } catch (err) {
       console.error('PDF generation failed:', err);
+      setError(err.message || 'PDF generation failed. Check the console for details.');
     } finally {
       setGenerating(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={handleDownload}
-        disabled={generating || !data}
-        className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-6 py-3 font-mono text-sm font-semibold text-accent hover:bg-accent/20 hover:border-accent/50 transition-all duration-300 disabled:opacity-40"
-      >
-        {generating ? (
-          <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
-            Generating PDF…
-          </>
-        ) : (
-          <>
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
+    <div className="flex flex-col items-start gap-2">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleDownload}
+          disabled={generating || !data}
+          className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/10 px-6 py-3 font-mono text-sm font-semibold text-accent hover:bg-accent/20 hover:border-accent/50 transition-all duration-300 disabled:opacity-40"
+        >
+          {generating ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
+              Generating PDF…
+            </>
+          ) : (
+            <>
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download PDF
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => setPdfTheme(pdfTheme === 'dark' ? 'light' : 'dark')}
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-elevated px-3 py-3 text-xs text-muted hover:border-border-strong hover:text-fg transition-colors"
+          title={`Switch to ${pdfTheme === 'dark' ? 'light' : 'dark'} theme PDF`}
+        >
+          {pdfTheme === 'dark' ? (
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+              <circle cx="12" cy="12" r="5" />
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
             </svg>
-            Download PDF
-          </>
-        )}
-      </button>
-      <button
-        onClick={() => setPdfTheme(pdfTheme === 'dark' ? 'light' : 'dark')}
-        className="flex items-center gap-1.5 rounded-lg border border-border bg-elevated px-3 py-3 text-xs text-muted hover:border-border-strong hover:text-fg transition-colors"
-        title={`Switch to ${pdfTheme === 'dark' ? 'light' : 'dark'} theme PDF`}
-      >
-        {pdfTheme === 'dark' ? (
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-            <circle cx="12" cy="12" r="5" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
-        ) : (
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-          </svg>
-        )}
-      </button>
+          ) : (
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          )}
+        </button>
+      </div>
+      {error && (
+        <p className="max-w-xs text-xs text-red-400">{error}</p>
+      )}
     </div>
   );
 }
