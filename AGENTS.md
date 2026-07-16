@@ -100,3 +100,44 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **Reusable utility class**: `.card-hover` for hover transitions on cards.
 - **Scan history localStorage**: key is `tsf-scan-history` (NOT `tsf-history`), max 50 entries, dispatches `tsf-scan-history-updated`. `lib/scan-history.js` exports `getScanHistory`, `saveScanSnapshot`, `getHistoryForDomain`, `diffScans`, `clearScanHistory`.
 - **Trends**: `app/trends/page.js` exports `saveScanTrend` — called from results page after scan completes.
+
+## Hetzner Cloud Deployment
+
+**Quick setup on a fresh Ubuntu 22.04/24.04 server (recommended: CAX11 arm64, 4 vCPU, 8GB, €5.29/mo):**
+
+```bash
+# SSH into your Hetzner server, then:
+REPO_URL="https://github.com/Suryamahi9/techstack-finder.git" \
+DOMAIN="yourdomain.com" \
+EMAIL="you@email.com" \
+bash <(curl -fsSL https://raw.githubusercontent.com/Suryamahi9/techstack-finder/main/deploy/hetzner-setup.sh)
+```
+
+**What the script does:** installs Node 20, nginx, PM2, clones repo, runs `prisma generate && next build`, configures nginx reverse proxy, sets up UFW firewall, optionally installs SSL via Let's Encrypt.
+
+**After first deploy:** edit `/var/www/techstack-finder/.env` with your actual `DATABASE_URL`, `NEXTAUTH_SECRET`, OAuth credentials, then `pm2 restart techstack-finder`.
+
+**Redeploy after updates:**
+```bash
+bash /var/www/techstack-finder/deploy/redeploy.sh
+# Or manually:
+cd /var/www/techstack-finder && git pull && npm run build && pm2 restart techstack-finder
+```
+
+**Key paths:**
+| Path | Description |
+|------|-------------|
+| `/var/www/techstack-finder` | App directory |
+| `/etc/nginx/sites-available/techstack-finder` | Nginx config |
+| `/var/log/techstack-finder-*.log` | PM2 logs |
+| `deploy/hetzner-setup.sh` | Full server setup script |
+| `deploy/redeploy.sh` | Quick redeploy script |
+| `deploy/ecosystem.config.js` | PM2 cluster config |
+
+**PM2 commands:**
+```bash
+pm2 status                    # Check status
+pm2 logs techstack-finder     # View logs
+pm2 restart techstack-finder  # Restart app
+pm2 monit                     # Live monitoring
+```
