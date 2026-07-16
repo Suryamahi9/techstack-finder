@@ -290,6 +290,8 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         jsPDFRef.current = mod.jsPDF;
       }
       var jsPDF = jsPDFRef.current;
+      var html2canvasMod = await import('html2canvas');
+      var html2canvas = html2canvasMod.default;
 
       var container = containerRef.current;
       if (!container) { throw new Error('PDF container not mounted'); }
@@ -297,29 +299,66 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       var htmlContent = buildHtml(data, pdfTheme);
       container.innerHTML = htmlContent;
 
-      await new Promise(function (r) { setTimeout(r, 100); });
+      // Make visible for capture
+      container.style.left = '0px';
+      container.style.top = '0px';
+      container.style.zIndex = '-1';
+      container.style.opacity = '1';
+      container.style.position = 'fixed';
 
-      var pdf = new jsPDF('p', 'mm', 'a4');
-      var pdfW = pdf.internal.pageSize.getWidth();
+      await new Promise(function (r) { setTimeout(r, 200); });
 
-      await pdf.html(container, {
-        callback: function (doc) {
-          var blob = doc.output('blob');
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = (fileName.replace(/[^a-z0-9]/gi, '-') || 'report') + '-techstack-report-' + pdfTheme + '.pdf';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-        },
-        x: 0,
-        y: 0,
-        width: pdfW,
-        windowWidth: 794,
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+      var canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: 794,
+        backgroundColor: null,
       });
+
+      // Hide again
+      container.style.left = '-9999px';
+      container.style.position = 'absolute';
+      container.style.zIndex = '';
+      container.style.opacity = '';
+
+      var imgW = canvas.width;
+      var imgH = canvas.height;
+      var pdfW = 210;
+      var pdfH = 297;
+      var marginMm = 0;
+      var usableW = pdfW - marginMm * 2;
+      var pxPerMm = imgW / usableW;
+      var pageHpx = (pdfH - marginMm * 2) * pxPerMm;
+
+      var totalPages = Math.ceil(imgH / pageHpx);
+      var pdf = new jsPDF('p', 'mm', 'a4');
+
+      for (var p = 0; p < totalPages; p++) {
+        if (p > 0) pdf.addPage();
+        var srcY = p * pageHpx;
+        var srcH = Math.min(pageHpx, imgH - srcY);
+
+        var pageCanvas = document.createElement('canvas');
+        pageCanvas.width = imgW;
+        pageCanvas.height = srcH;
+        var ctx = pageCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, srcY, imgW, srcH, 0, 0, imgW, srcH);
+
+        var imgData = pageCanvas.toDataURL('image/jpeg', 0.92);
+        var destH = srcH / pxPerMm;
+        pdf.addImage(imgData, 'JPEG', marginMm, marginMm, usableW, destH);
+      }
+
+      var blob = pdf.output('blob');
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (fileName.replace(/[^a-z0-9]/gi, '-') || 'report') + '-techstack-report-' + pdfTheme + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     } catch (err) {
       console.error('PDF generation failed:', err);
       setError(err.message || 'PDF generation failed');
@@ -374,7 +413,7 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
       )}
       <div
         ref={containerRef}
-        style={{ position: 'absolute', left: '-9999px', top: 0, width: '794px', background: '#0f172a', color: '#f1f5f9' }}
+        style={{ position: 'fixed', left: '-9999px', top: 0, width: '794px', background: '#0f172a', color: '#f1f5f9', zIndex: -1 }}
         aria-hidden="true"
       />
     </div>
