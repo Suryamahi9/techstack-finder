@@ -6,300 +6,24 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-function escapeXml(str) {
+function esc(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(str).replace(/[^\x20-\x7E]/g, '');
 }
 
 const TYPE_COLORS = {
-  frontend: { bg: '#dbeafe', text: '#1d4ed8', bar: '#3b82f6' },
-  backend: { bg: '#d1fae5', text: '#047857', bar: '#10b981' },
-  infra: { bg: '#fef3c7', text: '#b45309', bar: '#f59e0b' },
+  frontend: { r: 59, g: 130, b: 246 },
+  backend: { r: 16, g: 185, b: 129 },
+  infra: { r: 245, g: 158, b: 11 },
 };
 
-const TYPE_COLORS_DARK = {
-  frontend: { bg: '#1e3a5f', text: '#60a5fa', bar: '#3b82f6' },
-  backend: { bg: '#064e3b', text: '#34d399', bar: '#10b981' },
-  infra: { bg: '#451a03', text: '#fbbf24', bar: '#f59e0b' },
-};
-
-const CAT_COLORS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899',
-  '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#e11d48', '#84cc16',
-];
-
-function buildPdfHtml(data, theme = 'light') {
-  const isDark = theme === 'dark';
-  const total = data.summary?.total || 0;
-  const fe = data.summary?.frontend || 0;
-  const be = data.summary?.backend || 0;
-  const inf = data.summary?.infra || 0;
-  const cats = data.summary?.categories || 0;
-  const fePct = total ? Math.round((fe / total) * 100) : 0;
-  const bePct = total ? Math.round((be / total) * 100) : 0;
-  const infPct = total ? Math.round((inf / total) * 100) : 0;
-
-  const catStats = (data.categories || [])
-    .map((c) => ({ name: c.category, count: c.technologies.length }))
-    .filter((c) => c.count > 0)
-    .sort((a, b) => b.count - a.count);
-
-  const maxCatCount = catStats.length > 0 ? catStats[0].count : 1;
-  const tcMap = isDark ? TYPE_COLORS_DARK : TYPE_COLORS;
-
-  const techCards = (data.categories || []).flatMap((cat) =>
-    (cat.technologies || []).map((t) => {
-      const tc = tcMap[t.type] || tcMap.frontend;
-      return `
-        <div style="background:${isDark ? '#1e293b' : '#fff'};border:1px solid ${isDark ? '#334155' : '#e5e7eb'};border-radius:10px;padding:14px 16px;page-break-inside:avoid">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="font-size:14px;font-weight:700;color:${isDark ? '#f1f5f9' : '#111'}">${escapeXml(t.name)}${t.version ? ` <span style="font-size:11px;font-weight:400;color:${isDark ? '#64748b' : '#9ca3af'}">v${escapeXml(t.version)}</span>` : ''}</div>
-            <span style="display:inline-block;background:${tc.bg};color:${tc.text};font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:3px 8px;border-radius:4px">${t.type}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${isDark ? '#94a3b8' : '#6b7280'}">
-            <span style="background:${isDark ? '#0f172a' : '#f3f4f6'};padding:2px 6px;border-radius:3px;font-weight:500">${escapeXml(cat.category)}</span>
-            <span style="color:${isDark ? '#475569' : '#9ca3af'}">via</span>
-            <span style="color:${isDark ? '#cbd5e1' : '#374151'}">${escapeXml(t.detectedVia)}</span>
-          </div>
-        </div>`;
-    })
-  ).join('');
-
-  const seoData = data.seo;
-  const perfData = data.performance;
-  const secData = data.security;
-
-  const fg = isDark ? '#f1f5f9' : '#111';
-  const fgMuted = isDark ? '#94a3b8' : '#6b7280';
-  const fgDim = isDark ? '#64748b' : '#9ca3af';
-  const bgCard = isDark ? '#1e293b' : '#fff';
-  const bgPage = isDark ? '#0f172a' : '#fff';
-  const bgSection = isDark ? '#1e293b' : '#f8fafc';
-  const border = isDark ? '#334155' : '#e5e7eb';
-  const borderLight = isDark ? '#1e293b' : '#f1f5f9';
-
-  return `
-  <div style="font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:${fg};line-height:1.6;-webkit-font-smoothing:antialiased;background:${bgPage}">
-
-    <!-- COVER SECTION -->
-    <div style="background:linear-gradient(135deg,${isDark ? '#020617' : '#0f172a'} 0%,${isDark ? '#0f172a' : '#1e293b'} 50%,${isDark ? '#1e293b' : '#334155'} 100%);padding:56px 48px 48px;color:#fff;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(59,130,246,0.15)"></div>
-      <div style="position:absolute;bottom:-60px;left:30%;width:160px;height:160px;border-radius:50%;background:rgba(16,185,129,0.1)"></div>
-      <div style="position:relative;z-index:1">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-          <div style="width:4px;height:36px;background:#3b82f6;border-radius:2px"></div>
-          <span style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#94a3b8;font-weight:600">TechStack Finder</span>
-        </div>
-        <h1 style="font-size:36px;font-weight:800;letter-spacing:-1px;margin:0 0 6px;line-height:1.1">Technology Report</h1>
-        <p style="font-size:16px;color:#cbd5e1;margin:0 0 4px;font-weight:500">${escapeXml(data.site?.domain || '')}</p>
-        <p style="font-size:12px;color:#64748b;margin:0">${formatDate(data.site?.scannedAt)} &middot; HTTP ${data.site?.statusCode || '—'} &middot; ${isDark ? 'Dark' : 'Light'} theme</p>
-      </div>
-    </div>
-
-    <!-- STAT CARDS -->
-    <div style="padding:0 48px;margin-top:-24px;position:relative;z-index:2">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
-          <div style="font-size:32px;font-weight:800;color:${fg}">${total}</div>
-          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Technologies</div>
-        </div>
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
-          <div style="font-size:32px;font-weight:800;color:${fg}">${cats}</div>
-          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Categories</div>
-        </div>
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
-          <div style="font-size:32px;font-weight:800;color:#3b82f6">${fePct}%</div>
-          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Frontend</div>
-        </div>
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.06'})">
-          <div style="font-size:32px;font-weight:800;color:#10b981">${bePct + infPct}%</div>
-          <div style="font-size:11px;color:${fgMuted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Backend + Infra</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DISTRIBUTION BAR -->
-    <div style="padding:28px 48px 0">
-      <div style="background:${bgSection};border:1px solid ${border};border-radius:12px;padding:20px">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:${fgDim};font-weight:700;margin-bottom:12px">Stack Distribution</div>
-        <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:${isDark ? '#334155' : '#e5e7eb'}">
-          ${fePct > 0 ? `<div style="width:${fePct}%;background:#3b82f6"></div>` : ''}
-          ${bePct > 0 ? `<div style="width:${bePct}%;background:#10b981"></div>` : ''}
-          ${infPct > 0 ? `<div style="width:${infPct}%;background:#f59e0b"></div>` : ''}
-        </div>
-        <div style="display:flex;gap:20px;margin-top:10px">
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6"></span> Frontend ${fePct}% (${fe})</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#10b981"></span> Backend ${bePct}% (${be})</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:${fg}"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b"></span> Infra ${infPct}% (${inf})</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CATEGORY BREAKDOWN -->
-    ${catStats.length > 0 ? `
-    <div style="padding:24px 48px 0">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#3b82f6;border-radius:2px;display:inline-block"></span>
-        Category Breakdown
-      </h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${catStats.slice(0, 12).map((c, i) => {
-          const pct = Math.round((c.count / total) * 100);
-          const color = CAT_COLORS[i % CAT_COLORS.length];
-          return `
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${bgSection};border-radius:8px;border:1px solid ${borderLight}">
-              <div style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0"></div>
-              <div style="flex:1;min-width:0">
-                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:600;color:${fg};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeXml(c.name)}</span>
-                  <span style="font-size:11px;color:${fgMuted};font-weight:600;margin-left:8px;flex-shrink:0">${c.count}</span>
-                </div>
-                <div style="height:5px;background:${isDark ? '#334155' : '#e5e7eb'};border-radius:3px;overflow:hidden">
-                  <div style="height:100%;width:${pct}%;background:${color};border-radius:3px"></div>
-                </div>
-              </div>
-            </div>`;
-        }).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- TECH GRID -->
-    <div style="padding:28px 48px 0">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 14px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#10b981;border-radius:2px;display:inline-block"></span>
-        All Technologies
-      </h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        ${techCards || `<div style="grid-column:1/-1;text-align:center;padding:24px;color:${fgDim};font-size:13px">No technologies detected</div>`}
-      </div>
-    </div>
-
-    <!-- COMPANY -->
-    ${data.company?.name ? `
-    <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#8b5cf6;border-radius:2px;display:inline-block"></span>
-        Company Profile
-      </h2>
-      <div style="background:linear-gradient(135deg,${isDark ? '#1e293b' : '#f8fafc'},${isDark ? '#0f172a' : '#f1f5f9'});border:1px solid ${border};border-radius:12px;padding:24px">
-        <div style="display:flex;align-items:flex-start;gap:16px">
-          ${data.company.logo ? `<img src="${escapeXml(data.company.logo)}" style="width:56px;height:56px;border-radius:12px;border:1px solid ${border};object-fit:contain;background:${isDark ? '#0f172a' : '#fff'};padding:4px" onerror="this.style.display='none'" />` : ''}
-          <div style="flex:1">
-            <div style="font-size:18px;font-weight:700;color:${fg};margin-bottom:4px">${escapeXml(data.company.name)}</div>
-            ${data.company.description ? `<div style="font-size:12px;color:${fgMuted};margin-bottom:10px;line-height:1.5">${escapeXml(data.company.description)}</div>` : ''}
-            <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:11px;color:${fgMuted}">
-              ${data.company.industry ? `<span><span style="color:${fgDim}">Industry:</span> ${escapeXml(data.company.industry)}</span>` : ''}
-              ${data.company.foundingDate ? `<span><span style="color:${fgDim}">Founded:</span> ${escapeXml(data.company.foundingDate)}</span>` : ''}
-              ${data.company.employeeCount ? `<span><span style="color:${fgDim}">Employees:</span> ${escapeXml(data.company.employeeCount)}</span>` : ''}
-            </div>
-          </div>
-          <div style="text-align:center;background:${isDark ? '#0f172a' : '#fff'};border:1px solid ${border};border-radius:10px;padding:12px 18px;flex-shrink:0">
-            <div style="font-size:28px;font-weight:800;color:#3b82f6">${total}</div>
-            <div style="font-size:10px;color:${fgMuted};text-transform:uppercase;letter-spacing:0.5px;font-weight:600">techs</div>
-          </div>
-        </div>
-      </div>
-    </div>` : ''}
-
-    <!-- SEO -->
-    ${seoData ? `
-    <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#f59e0b;border-radius:2px;display:inline-block"></span>
-        SEO Analysis
-      </h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
-          <div style="font-size:32px;font-weight:800;color:${fg}">${seoData.score || '—'}<span style="font-size:14px;font-weight:400;color:${fgDim}">/100</span></div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Score</div>
-        </div>
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
-          <div style="font-size:32px;font-weight:800;color:${seoData.score >= 80 ? '#10b981' : seoData.score >= 50 ? '#f59e0b' : '#ef4444'}">${seoData.grade || '—'}</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Grade</div>
-        </div>
-        <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:16px;text-align:center">
-          <div style="font-size:14px;font-weight:700;color:${fg}">H1: ${seoData.headings?.h1 || 0} · H2: ${seoData.headings?.h2 || 0}</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgMuted};margin-top:2px;font-weight:600">Headings</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div style="background:${bgSection};border:1px solid ${borderLight};border-radius:8px;padding:12px">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">Title</div>
-          <div style="font-size:12px;color:${fg};word-break:break-word">${escapeXml(seoData.title?.text) || `<span style="color:${fgDim}">Missing</span>`}</div>
-        </div>
-        <div style="background:${bgSection};border:1px solid ${borderLight};border-radius:8px;padding:12px">
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">Description</div>
-          <div style="font-size:12px;color:${fg};word-break:break-word">${escapeXml(seoData.description?.text) || `<span style="color:${fgDim}">Missing</span>`}</div>
-        </div>
-      </div>
-    </div>` : ''}
-
-    <!-- PERFORMANCE -->
-    ${perfData ? `
-    <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#10b981;border-radius:2px;display:inline-block"></span>
-        Performance
-      </h2>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-        ${[
-          ['HTTPS', perfData.isHttps ? '✓ Enabled' : null, perfData.isHttps ? '#10b981' : null],
-          ['Compression', perfData.compression],
-          ['Cache Control', perfData.cacheControl],
-          ['HTTP Version', perfData.httpVersion],
-          ['Keep-Alive', perfData.keepAlive],
-          ['Alt-Svc', perfData.altSvc],
-        ].filter(i => i[1]).map(([label, value, color]) => `
-          <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:14px">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
-            <div style="font-size:13px;font-weight:600;color:${color || fg}">${escapeXml(value)}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- SECURITY -->
-    ${secData ? `
-    <div style="padding:28px 48px 0;page-break-inside:avoid">
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;color:${fg};display:flex;align-items:center;gap:8px">
-        <span style="width:3px;height:18px;background:#ef4444;border-radius:2px;display:inline-block"></span>
-        Security Headers
-      </h2>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-        ${[
-          ['Content-Security-Policy', secData.contentSecurityPolicy],
-          ['Strict-Transport-Security', secData.strictTransportSecurity],
-          ['X-Frame-Options', secData.xFrameOptions],
-          ['X-Content-Type-Options', secData.xContentTypeOptions],
-          ['Referrer-Policy', secData.referrerPolicy],
-          ['Permissions-Policy', secData.permissionsPolicy],
-          ['X-XSS-Protection', secData.xssProtection],
-          ['CORS', secData.cors?.allowOrigin],
-        ].filter(i => i[1]).map(([label, value]) => `
-          <div style="background:${bgCard};border:1px solid ${border};border-radius:10px;padding:14px">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${fgDim};font-weight:600;margin-bottom:4px">${escapeXml(label)}</div>
-            <div style="font-size:11px;color:${fg};word-break:break-all;font-weight:500">${escapeXml(value)}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- FOOTER -->
-    <div style="padding:40px 48px 48px;margin-top:32px">
-      <div style="border-top:1px solid ${border};padding-top:20px;display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:12px;font-weight:700;color:${fg}">TechStack Finder</div>
-          <div style="font-size:10px;color:${fgDim};margin-top:2px">Full-stack technology detection engine</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:10px;color:${fgDim}">Generated ${formatDate(new Date().toISOString())} &middot; ${isDark ? 'Dark' : 'Light'} theme</div>
-          <div style="font-size:10px;color:${fgDim};margin-top:2px">techstack-finder.vercel.app</div>
-        </div>
-      </div>
-    </div>
-
-  </div>`;
-}
+const ACCENT = { r: 197, g: 251, b: 69 };
+const DARK_BG = { r: 15, g: 23, b: 42 };
+const DARK_CARD = { r: 30, g: 41, b: 59 };
+const DARK_BORDER = { r: 51, g: 65, b: 85 };
+const LIGHT_BG = { r: 255, g: 255, b: 255 };
+const LIGHT_CARD = { r: 248, g: 250, b: 252 };
+const LIGHT_BORDER = { r: 229, g: 231, b: 235 };
 
 export default function DownloadPdfButton({ data, fileName = 'report' }) {
   const [generating, setGenerating] = useState(false);
@@ -310,47 +34,501 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
     setGenerating(true);
 
     try {
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import('html2canvas'),
-        import('jspdf'),
-      ]);
-
-      const container = document.createElement('div');
-      const isDark = pdfTheme === 'dark';
-      container.style.cssText = `position:fixed;left:-9999px;top:0;width:800px;background:${isDark ? '#0f172a' : '#fff'};padding:0;font-family:Segoe UI,system-ui,-apple-system,sans-serif;color:${isDark ? '#f1f5f9' : '#111'};line-height:1.6;z-index:99999;`;
-
-      container.innerHTML = buildPdfHtml(data, pdfTheme);
-
-      document.body.appendChild(container);
-
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: isDark ? '#0f172a' : '#ffffff',
-        logging: false,
-        width: 800,
-      });
-
-      document.body.removeChild(container);
-
-      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = (canvas.height * pdfW) / canvas.width;
-      const pageH = pdf.internal.pageSize.getHeight();
+      const W = pdf.internal.pageSize.getWidth();
+      const H = pdf.internal.pageSize.getHeight();
+      const M = 20;
+      const CW = W - M * 2;
+      const isDark = pdfTheme === 'dark';
 
-      let heightLeft = pdfH;
-      let position = 0;
+      const bg = isDark ? DARK_BG : LIGHT_BG;
+      const card = isDark ? DARK_CARD : LIGHT_CARD;
+      const border = isDark ? DARK_BORDER : LIGHT_BORDER;
+      const fg = isDark ? [241, 245, 249] : [17, 17, 17];
+      const fgMuted = isDark ? [148, 163, 184] : [107, 114, 128];
+      const fgDim = isDark ? [100, 116, 139] : [156, 163, 175];
 
-      pdf.addImage(imgData, 'PNG', 0, position, pdfW, pdfH);
-      heightLeft -= pageH;
+      let y = 0;
+      let page = 1;
 
-      while (heightLeft > 0) {
-        position -= pageH;
+      const setPageBg = () => {
+        pdf.setFillColor(bg.r, bg.g, bg.b);
+        pdf.rect(0, 0, W, H, 'F');
+      };
+
+      const newPage = () => {
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfW, pdfH);
-        heightLeft -= pageH;
+        page++;
+        setPageBg();
+        y = M;
+      };
+
+      const checkPage = (needed) => {
+        if (y + needed > H - M) {
+          newPage();
+          return true;
+        }
+        return false;
+      };
+
+      const sectionHeader = (title, color = ACCENT) => {
+        checkPage(18);
+        y += 4;
+        pdf.setFillColor(color.r, color.g, color.b);
+        pdf.rect(M, y, 3, 8, 'F');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(13);
+        pdf.setTextColor(fg[0], fg[1], fg[2]);
+        pdf.text(title, M + 8, y + 6);
+        y += 14;
+      };
+
+      const divider = () => {
+        checkPage(8);
+        pdf.setDrawColor(border.r, border.g, border.b);
+        pdf.setLineWidth(0.3);
+        pdf.line(M, y, W - M, y);
+        y += 6;
+      };
+
+      const text = (str, x, opts = {}) => {
+        const size = opts.size || 10;
+        const style = opts.style || 'normal';
+        const color = opts.color || fg;
+        const maxWidth = opts.maxWidth || CW;
+        pdf.setFont('helvetica', style);
+        pdf.setFontSize(size);
+        pdf.setTextColor(color[0], color[1], color[2]);
+        const lines = pdf.splitTextToSize(esc(str), maxWidth);
+        lines.forEach((line) => {
+          checkPage(6);
+          pdf.text(line, x, y);
+          y += size * 0.4;
+        });
+        return lines.length;
+      };
+
+      const label = (str, x) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(fgDim[0], fgDim[1], fgDim[2]);
+        pdf.text(str.toUpperCase(), x, y);
+        y += 4;
+      };
+
+      const kv = (key, val, x, maxW) => {
+        checkPage(10);
+        label(key, x);
+        text(val || '—', x, { size: 10, color: val ? fg : fgDim, maxWidth: maxW || CW / 2 - 4 });
+        y += 3;
+      };
+
+      const statCard = (val, lbl, x, w, color = fg) => {
+        checkPage(22);
+        pdf.setFillColor(card.r, card.g, card.b);
+        pdf.roundedRect(x, y, w, 20, 2, 2, 'FD');
+        pdf.setDrawColor(border.r, border.g, border.b);
+        pdf.roundedRect(x, y, w, 20, 2, 2, 'S');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(color[0], color[1], color[2]);
+        pdf.text(String(val), x + w / 2, y + 10, { align: 'center' });
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7);
+        pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
+        pdf.text(lbl.toUpperCase(), x + w / 2, y + 16, { align: 'center' });
+      };
+
+      const confBar = (pct, x, barW, color) => {
+        const barH = 3;
+        pdf.setFillColor(border.r, border.g, border.b);
+        pdf.roundedRect(x, y, barW, barH, 1.5, 1.5, 'F');
+        if (pct > 0) {
+          pdf.setFillColor(color.r, color.g, color.b);
+          pdf.roundedRect(x, y, Math.max(barW * (pct / 100), 3), barH, 1.5, 1.5, 'F');
+        }
+      };
+
+      setPageBg();
+
+      // ─── COVER ───
+      // Gradient background using rects
+      for (let i = 0; i < 60; i++) {
+        const t = i / 60;
+        const r = Math.round(DARK_BG.r + (DARK_CARD.r - DARK_BG.r) * t);
+        const g = Math.round(DARK_BG.g + (DARK_CARD.g - DARK_BG.g) * t);
+        const b = Math.round(DARK_BG.b + (DARK_CARD.b - DARK_BG.b) * t);
+        pdf.setFillColor(r, g, b);
+        pdf.rect(0, i * (H / 60), W, H / 60 + 1, 'F');
       }
+
+      // Decorative circles
+      pdf.setFillColor(ACCENT.r, ACCENT.g, ACCENT.b);
+      pdf.setGState(new pdf.GState({ opacity: 0.08 }));
+      pdf.circle(W - 30, 40, 50, 'F');
+      pdf.setGState(new pdf.GState({ opacity: 0.05 }));
+      pdf.circle(40, H - 60, 40, 'F');
+      pdf.setGState(new pdf.GState({ opacity: 1 }));
+
+      // Accent bar
+      pdf.setFillColor(ACCENT.r, ACCENT.g, ACCENT.b);
+      pdf.rect(M, 55, 3, 16, 'F');
+
+      // Title
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(ACCENT.r, ACCENT.g, ACCENT.b);
+      pdf.text('TECHSTACK FINDER', M + 8, 61);
+
+      pdf.setFontSize(32);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Technology Report', M + 8, 80);
+
+      // Domain
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(16);
+      pdf.setTextColor(203, 213, 225);
+      pdf.text(esc(data.site?.domain || 'Unknown'), M + 8, 94);
+
+      // Meta line
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 116, 139);
+      const meta = [
+        formatDate(data.site?.scannedAt),
+        data.site?.statusCode ? `HTTP ${data.site.statusCode}` : null,
+        `${data.categories?.length || 0} categories`,
+        `${data.summary?.total || 0} technologies`,
+      ].filter(Boolean).join('  ·  ');
+      pdf.text(meta, M + 8, 104);
+
+      // Stat cards on cover
+      const total = data.summary?.total || 0;
+      const cats = data.summary?.categories || 0;
+      const fe = data.summary?.frontend || 0;
+      const be = data.summary?.backend || 0;
+      const inf = data.summary?.infra || 0;
+
+      const cardW = (CW - 12) / 4;
+      y = 130;
+      statCard(total, 'Technologies', M, cardW, ACCENT);
+      statCard(cats, 'Categories', M + cardW + 4, cardW, [59, 130, 246]);
+      statCard(`${total ? Math.round((fe / total) * 100) : 0}%`, 'Frontend', M + (cardW + 4) * 2, cardW, [59, 130, 246]);
+      statCard(`${total ? Math.round(((be + inf) / total) * 100) : 0}%`, 'Backend+Infra', M + (cardW + 4) * 3, cardW, [16, 185, 129]);
+
+      // Footer on cover
+      y = H - 30;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text('Generated by TechStack Finder  ·  techstack-finder.vercel.app', M, y);
+      pdf.text(`${pdfTheme === 'dark' ? 'Dark' : 'Light'} theme  ·  ${formatDate(new Date().toISOString())}`, W - M, y, { align: 'right' });
+
+      // ─── PAGE 2+: CONTENT ───
+      newPage();
+
+      // Distribution bar
+      sectionHeader('Stack Distribution', ACCENT);
+      const barY = y;
+      const barH = 8;
+      pdf.setFillColor(border.r, border.g, border.b);
+      pdf.roundedRect(M, barY, CW, barH, 4, 4, 'F');
+      let barX = M;
+      const segments = [
+        { pct: total ? (fe / total) * 100 : 0, color: TYPE_COLORS.frontend },
+        { pct: total ? (be / total) * 100 : 0, color: TYPE_COLORS.backend },
+        { pct: total ? (inf / total) * 100 : 0, color: TYPE_COLORS.infra },
+      ];
+      segments.forEach((seg) => {
+        if (seg.pct > 0) {
+          const w = Math.max(CW * (seg.pct / 100), 4);
+          pdf.setFillColor(seg.color.r, seg.color.g, seg.color.b);
+          pdf.roundedRect(barX, barY, w, barH, 4, 4, 'F');
+          barX += w;
+        }
+      });
+      y += 16;
+
+      // Legend
+      const legendItems = [
+        { label: `Frontend ${total ? Math.round((fe / total) * 100) : 0}% (${fe})`, color: TYPE_COLORS.frontend },
+        { label: `Backend ${total ? Math.round((be / total) * 100) : 0}% (${be})`, color: TYPE_COLORS.backend },
+        { label: `Infra ${total ? Math.round((inf / total) * 100) : 0}% (${inf})`, color: TYPE_COLORS.infra },
+      ];
+      let legendX = M;
+      legendItems.forEach((item) => {
+        pdf.setFillColor(item.color.r, item.color.g, item.color.b);
+        pdf.roundedRect(legendX, y, 4, 4, 1, 1, 'F');
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(fg[0], fg[1], fg[2]);
+        pdf.text(item.label, legendX + 7, y + 3.5);
+        legendX += pdf.getTextWidth(item.label) + 16;
+      });
+      y += 12;
+
+      // Category breakdown
+      const catStats = (data.categories || [])
+        .map((c) => ({ name: c.category, count: c.technologies.length }))
+        .filter((c) => c.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+      if (catStats.length > 0) {
+        sectionHeader('Category Breakdown', [59, 130, 246]);
+        const maxCount = catStats[0].count;
+        const colW = (CW - 6) / 2;
+
+        catStats.slice(0, 16).forEach((cat, i) => {
+          const col = i % 2;
+          const cx = M + col * (colW + 6);
+          checkPage(14);
+
+          if (col === 0 && i > 0) y -= 12;
+
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9);
+          pdf.setTextColor(fg[0], fg[1], fg[2]);
+          pdf.text(esc(cat.name), cx, y + 4);
+
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(9);
+          pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
+          pdf.text(String(cat.count), cx + colW - pdf.getTextWidth(String(cat.count)), y + 4);
+
+          y += 6;
+          const barPct = (cat.count / maxCount) * 100;
+          confBar(barPct, cx, colW, ACCENT);
+          y += 6;
+        });
+        y += 4;
+      }
+
+      // Technology list
+      const allTechs = (data.categories || []).flatMap((cat) =>
+        (cat.technologies || []).map((t) => ({ ...t, categoryName: cat.category }))
+      );
+
+      if (allTechs.length > 0) {
+        sectionHeader('Technology Details', [16, 185, 129]);
+
+        allTechs.forEach((tech, i) => {
+          checkPage(18);
+
+          // Tech name + type badge
+          const tc = TYPE_COLORS[tech.type] || TYPE_COLORS.frontend;
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(10);
+          pdf.setTextColor(fg[0], fg[1], fg[2]);
+          pdf.text(esc(tech.name), M, y + 4);
+
+          if (tech.version) {
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8);
+            pdf.setTextColor(fgDim[0], fgDim[1], fgDim[2]);
+            pdf.text(`v${esc(tech.version)}`, M + pdf.getTextWidth(esc(tech.name)) + 3, y + 4);
+          }
+
+          // Type badge
+          const badgeText = (tech.type || 'frontend').toUpperCase();
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(7);
+          const badgeW = pdf.getTextWidth(badgeText) + 6;
+          pdf.setFillColor(tc.r, tc.g, tc.b);
+          pdf.roundedRect(W - M - badgeW, y, badgeW, 5, 1.5, 1.5, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.text(badgeText, W - M - badgeW + 3, y + 3.8);
+
+          y += 8;
+
+          // Category + confidence
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
+          pdf.text(esc(tech.categoryName || tech.category), M, y + 3);
+
+          pdf.text('via', M + pdf.getTextWidth(esc(tech.categoryName || tech.category)) + 4, y + 3);
+          pdf.setTextColor(fg[0], fg[1], fg[2]);
+          pdf.text(esc(tech.detectedVia), M + pdf.getTextWidth(esc(tech.categoryName || tech.category)) + 12, y + 3);
+
+          // Confidence bar
+          const confPct = tech.confidence === 'high' ? 95 : tech.confidence === 'medium' ? 65 : 35;
+          confBar(confPct, W - M - 40, 40, tc);
+
+          y += 8;
+          divider();
+        });
+      }
+
+      // SEO section
+      const seo = data.seo;
+      if (seo) {
+        checkPage(60);
+        sectionHeader('SEO Analysis', [245, 158, 11]);
+
+        // Score + Grade
+        const scoreW = (CW - 8) / 3;
+        statCard(seo.score || '—', 'Score', M, scoreW, seo.score >= 80 ? [16, 185, 129] : seo.score >= 50 ? [245, 158, 11] : [239, 68, 68]);
+        statCard(seo.grade || '—', 'Grade', M + scoreW + 4, scoreW, seo.score >= 80 ? [16, 185, 129] : seo.score >= 50 ? [245, 158, 11] : [239, 68, 68]);
+        statCard(`H1:${seo.headings?.h1 || 0} H2:${seo.headings?.h2 || 0}`, 'Headings', M + (scoreW + 4) * 2, scoreW, [59, 130, 246]);
+        y += 6;
+
+        kv('Title', seo.title?.text);
+        y += 2;
+        kv('Description', seo.description?.text);
+        y += 2;
+      }
+
+      // Performance section
+      const perf = data.performance;
+      if (perf) {
+        checkPage(40);
+        sectionHeader('Performance', [16, 185, 129]);
+
+        const perfItems = [
+          ['HTTPS', perf.isHttps ? 'Enabled' : 'Not detected'],
+          ['Compression', perf.compression],
+          ['Cache Control', perf.cacheControl],
+          ['HTTP Version', perf.httpVersion],
+          ['Keep-Alive', perf.keepAlive],
+          ['Alt-Svc', perf.altSvc],
+        ].filter(([, v]) => v);
+
+        const pColW = (CW - 8) / 3;
+        perfItems.forEach(([, val], i) => {
+          const col = i % 3;
+          if (col === 0 && i > 0) y += 16;
+          checkPage(18);
+          const px = M + col * (pColW + 4);
+          label(perfItems[i][0], px);
+          text(perfItems[i][1], px, { size: 9, maxWidth: pColW });
+          y += 4;
+        });
+        y += 4;
+      }
+
+      // Security section
+      const sec = data.security;
+      if (sec) {
+        checkPage(40);
+        sectionHeader('Security Headers', [239, 68, 68]);
+
+        const secItems = [
+          ['Content-Security-Policy', sec.contentSecurityPolicy],
+          ['Strict-Transport-Security', sec.strictTransportSecurity],
+          ['X-Frame-Options', sec.xFrameOptions],
+          ['X-Content-Type-Options', sec.xContentTypeOptions],
+          ['Referrer-Policy', sec.referrerPolicy],
+          ['Permissions-Policy', sec.permissionsPolicy],
+          ['X-XSS-Protection', sec.xssProtection],
+          ['CORS', sec.cors?.allowOrigin],
+        ].filter(([, v]) => v);
+
+        secItems.forEach(([, val], i) => {
+          checkPage(12);
+          kv(secItems[i][0], secItems[i][1], M, CW);
+          y += 1;
+        });
+      }
+
+      // Response Headers
+      const rh = data.responseHeaders;
+      if (rh && Object.keys(rh).length > 0) {
+        checkPage(30);
+        sectionHeader('Response Headers', [139, 92, 246]);
+
+        Object.entries(rh).slice(0, 20).forEach(([key, val]) => {
+          checkPage(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(8);
+          pdf.setTextColor(fgMuted[0], fgMuted[1], fgMuted[2]);
+          pdf.text(esc(key), M, y + 3);
+
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.setTextColor(fg[0], fg[1], fg[2]);
+          const valStr = Array.isArray(val) ? val.join(', ') : String(val);
+          const valLines = pdf.splitTextToSize(esc(valStr), CW - 50);
+          valLines.forEach((line) => {
+            pdf.text(line, M + 50, y + 3);
+            y += 4;
+          });
+          y += 2;
+        });
+      }
+
+      // Page Metadata
+      const meta2 = data.pageMetadata;
+      if (meta2) {
+        checkPage(40);
+        sectionHeader('Page Metadata', [99, 102, 241]);
+
+        const metaItems = [
+          ['Title', meta2.title],
+          ['Description', meta2.description],
+          ['Canonical', meta2.canonical],
+          ['Robots', meta2.robots],
+          ['Language', meta2.language],
+          ['Author', meta2.author],
+          ['OG Title', meta2.ogTitle],
+          ['OG Description', meta2.ogDescription],
+          ['OG Image', meta2.ogImage],
+          ['Twitter Card', meta2.twitterCard],
+          ['Twitter Site', meta2.twitterSite],
+          ['Favicon', meta2.favicon],
+          ['Manifest', meta2.manifest],
+          ['Theme Color', meta2.themeColor],
+        ].filter(([, v]) => v);
+
+        metaItems.forEach(([, val], i) => {
+          checkPage(12);
+          kv(metaItems[i][0], metaItems[i][1], M, CW);
+          y += 1;
+        });
+      }
+
+      // Company profile
+      const co = data.company;
+      if (co?.name) {
+        checkPage(30);
+        sectionHeader('Company Profile', [139, 92, 246]);
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        pdf.setTextColor(fg[0], fg[1], fg[2]);
+        pdf.text(esc(co.name), M, y + 5);
+        y += 10;
+
+        if (co.description) {
+          text(co.description, M, { size: 9, color: fgMuted, maxWidth: CW });
+          y += 4;
+        }
+
+        const coItems = [
+          ['Industry', co.industry],
+          ['Founded', co.foundingDate],
+          ['Employees', co.employeeCount],
+        ].filter(([, v]) => v);
+
+        coItems.forEach(([key, val]) => {
+          checkPage(8);
+          kv(key, val, M, CW / 3);
+        });
+      }
+
+      // Final footer
+      checkPage(20);
+      y = H - 25;
+      divider();
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(fg[0], fg[1], fg[2]);
+      pdf.text('TechStack Finder', M, y + 4);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(fgDim[0], fgDim[1], fgDim[2]);
+      pdf.text('Full-stack technology detection engine', M, y + 9);
+      pdf.text(`Page ${page}`, W - M, y + 4, { align: 'right' });
+      pdf.text(formatDate(new Date().toISOString()), W - M, y + 9, { align: 'right' });
 
       pdf.save(`${fileName.replace(/[^a-z0-9]/gi, '-')}-techstack-report-${pdfTheme}.pdf`);
     } catch (err) {
