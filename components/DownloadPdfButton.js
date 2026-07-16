@@ -295,7 +295,7 @@ function buildHtml(data, theme) {
 export default function DownloadPdfButton({ data, fileName = 'report' }) {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState(null);
-  const [pdfTheme, setPdfTheme] = useState('dark');
+  const [pdfTheme, setPdfTheme] = useState('lavender');
   const containerRef = useRef(null);
   const jsPDFRef = useRef(null);
 

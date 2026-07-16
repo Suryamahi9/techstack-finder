@@ -35,12 +35,12 @@ const ICONS = {
 };
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('lavender');
   const [open, setOpen] = useState(false);
   const justOpened = useRef(false);
 
   useEffect(() => {
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const current = document.documentElement.getAttribute('data-theme') || 'lavender';
     setTheme(current);
   }, []);
 
