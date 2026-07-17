@@ -15,9 +15,18 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const res = await signIn('credentials', { email, password, redirect: false });
-    if (res?.error) setError(res.error);
-    else window.location.href = '/';
+    try {
+      const res = await signIn('credentials', { email, password, redirect: false });
+      if (res?.error) {
+        setError(res.error === 'CredentialsSignin' ? 'Invalid email or password.' : res.error);
+      } else if (res?.ok) {
+        window.location.href = '/';
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    }
     setLoading(false);
   }
 
