@@ -6,7 +6,13 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
 
-const NAV_ITEMS = [
+const HOME_NAV_ITEMS = [
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/docs', label: 'Docs' },
+  { href: '/browse', label: 'Browse' },
+];
+
+const FULL_NAV_ITEMS = [
   { href: '/pricing', label: 'Pricing' },
   { href: '/docs', label: 'Docs' },
   { href: '/bookmarks', label: 'Bookmarks' },
@@ -61,6 +67,9 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const userMenuRef = useRef(null);
+
+  const isHome = pathname === '/';
+  const navItems = isHome ? HOME_NAV_ITEMS : FULL_NAV_ITEMS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -121,7 +130,7 @@ export default function Header() {
             <span className="h-4 w-px shrink-0 bg-white/[0.08]" />
 
             {/* Nav links */}
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.href}
                 item={item}
@@ -140,7 +149,7 @@ export default function Header() {
               className="nav-spotlight flex shrink-0 items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted transition-all duration-300 hover:border-accent/15 hover:text-fg active:scale-[0.95]"
             >
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.694.801.576C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
               </svg>
               Source
             </a>
@@ -264,7 +273,7 @@ export default function Header() {
           />
           <div className="absolute left-0 right-0 top-[52px] max-h-[calc(100vh-52px)] overflow-y-auto border-b border-white/[0.06] bg-bg/95 px-4 py-4 backdrop-blur-2xl">
             <div className="space-y-1">
-              {NAV_ITEMS.map((item, i) => (
+              {navItems.map((item, i) => (
                 <Link
                   key={item.href}
                   href={item.href}
