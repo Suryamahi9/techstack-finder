@@ -10,6 +10,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 
 ## Setup prerequisites
 - Copy `.env` → set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
+- **`DATABASE_URL` contains `[YOUR-PASSWORD]` placeholder** — must be replaced before first build or migration
 - OAuth: `GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET` (optional)
 - Stripe: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID`, `STRIPE_ENTERPRISE_PRICE_ID` (optional for billing)
 - Email: `RESEND_API_KEY`, `EMAIL_FROM` (optional for password reset/welcome emails)
@@ -18,8 +19,8 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - Build command is `prisma generate && next build` (defined in `package.json` scripts.build)
 
 ## Architecture
-- **Next.js 14.2.35 App Router** (no TypeScript) — 24 pages, 22 API routes, 65 components
-- **1,870 hand-crafted detection rules** in `lib/detect.js` (7,500+ lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB JSON, lazy-loaded via `readFileSync` + `process.cwd()`)
+- **Next.js 14.2.35 App Router** (no TypeScript) — 24 pages, 22 API routes, 64 components
+- **1,870 hand-crafted detection rules** in `lib/detect.js` (7,179 lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB JSON, lazy-loaded via `readFileSync` + `process.cwd()`)
 - **270 category-to-type mappings** in `CATEGORY_TYPES` (frontend/backend/infra)
 - **Deep scan** in `lib/deep-scan.js` — fetches CSS/JS files, probes 150+ common paths, uses Playwright headless browser when DOM < 50 elements. Browser default timeout: 20s. **Runs for ALL sites** (no e-commerce skip).
 - **Remote browser fallback** — `browserScanRemote()` in `deep-scan.js` uses Browserless.io when local Playwright unavailable (Vercel). Requires `BROWSERLESS_API_KEY` env var.
@@ -96,7 +97,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 1. Client reads `?site=`, optional `?headers=`, `?cookies=`, `?proxy=` via `useSearchParams`. POSTs `/api/scan`.
 2. Server: validate API key (if provided) → check rate limit → check monthly quota → check cache → fetch HTML (Cheerio) → detect challenge/blocked pages → auto-fallback to Playwright browser if blocked (skipped on Vercel) → deep scan (CSS/JS fetch, path probes — skipped on Vercel) → rule engine → log usage → return results.
 3. **Fetch-failure fallback**: If `fetch()` throws a network error, `detectTechnologies()` tries `tryBrowserScan()` (local Playwright → remote Browserless) before giving up.
-4. Client saves to both localStorage (`tsf-scan-history`) and server (`/api/history` if logged in).
+4. Client saves to both localStorage (`tsf-scan-history`) and server (`/api/history` if logged in). `lib/scan-history.js` `saveScanSnapshot()` handles both writes.
 5. Technologies tab uses `TechTab.js` to split into **Main** (popular/high-confidence) vs **Rare** (niche/low-confidence) sub-tabs.
 
 ## Detection system
@@ -121,6 +122,11 @@ Uses `next-auth/middleware` (`withAuth`). Redirects unauthenticated users to `/l
 
 Admin role check is done in-page (not middleware) — `app/admin/page.js` fetches `/api/admin/stats` which returns 403 if user is not admin.
 
+## Data persistence (dual-mode)
+Protected pages (bookmarks, history, monitor, api-keys, rules, backlinks, leaderboard) use **dual-mode**: server API when logged in, localStorage fallback when not. `lib/scan-history.js` exports both local and server functions (`fetchServerHistory`, `saveServerHistory`, etc.). `saveScanSnapshot()` auto-writes to both localStorage and server.
+
+**Two localStorage history keys still coexist**: `tsf-history` (legacy, written by `results/page.js`, max 20) and `tsf-scan-history` (written by `lib/scan-history.js`, max 50). The newer pages all use `tsf-scan-history`; `tsf-history` is legacy.
+
 ## Theming
 - **15 themes** via `data-theme` attribute, localStorage key `tsf-theme`. Default: `lavender`.
 - Supported: dark, terminal, blueprint, solarized, neon, monochrome, sakura, ocean, lavender, ember, arctic, crimson, mint, amber, light.
@@ -140,10 +146,9 @@ Admin role check is done in-page (not middleware) — `app/admin/page.js` fetche
 - `DownloadPdfButton.js` — html2canvas captures HTML div → jsPDF slices into A4 pages. Uses `buildHtml()` for report layout.
 
 ## Gotchas
-- **`useSearchParams` requires `<Suspense>` boundary** — results/page.js wraps `ResultsContent` in `<Suspense fallback={<Skeleton />}>`. Any new page using `useSearchParams` must follow the same pattern or build breaks.
+- **`useSearchParams` requires `<Suspense>` boundary** — `results/page.js` wraps `ResultsContent` in `<Suspense fallback={<Skeleton />}>`. `reset-password/page.js` uses it too. Any new page using `useSearchParams` must follow the same pattern or build breaks.
 - **No test suite** — manual verification only.
 - **`confidence` from detect.js is a string** (`"high"`, `"medium"`) not a number — components must convert via `CONF_MAP` for display.
-- **Two history localStorage keys coexist**: `tsf-history` (written by `results/page.js`, max 20) and `tsf-scan-history` (written by `lib/scan-history.js`, max 50). Components reading one won't see entries from the other. This is a known inconsistency.
 - **Animations** defined in `tailwind.config.js`: 13 animations. Components set per-item `animationDelay` via inline style.
 - **Fonts**: Space Grotesk (UI, `font-sans`) + JetBrains Mono (code, `font-mono`) loaded from Google Fonts in `globals.css`.
 - **`next.config.js`** has `reactStrictMode: true` only — no `images`, `rewrites`, or `experimental` config.
@@ -156,11 +161,11 @@ Admin role check is done in-page (not middleware) — `app/admin/page.js` fetche
 |-----|-------|---------|
 | `tsf-theme` | ThemeToggle, layout.js, BackgroundManager | Theme ID |
 | `tsf-bg` | BackgroundManager | Active background |
-| `tsf-scan-history` | lib/scan-history.js, leaderboard | Scan history (max 50) |
+| `tsf-scan-history` | lib/scan-history.js, leaderboard | Scan history (max 50, also syncs to server) |
 | `tsf-history` | results, HistoryList, PopularScans, radar, trends | Legacy scan history (max 20) |
-| `tsf-bookmarks` | BookmarkButton, bookmarks, PopularScans, digest | Bookmarks |
+| `tsf-bookmarks` | BookmarkButton, bookmarks, PopularScans, digest | Bookmarks (also syncs to server when logged in) |
 | `tsf-monitors` | monitor | Monitor configs |
-| `tsf-api-keys` | api-keys | Local API key cache |
+| `tsf-api-keys` | api-keys | API key cache |
 | `tsf-custom-rules` | rules | Custom detection rules |
 | `tsf-scan-trends` | trends, StackPopularity, leaderboard, digest | Trend data |
 | `tsf-backlinks-manual` | backlinks | Manual backlink entries |

@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 const STORAGE_KEY = 'tsf-bookmarks';
 const MAX_BOOKMARKS = 20;
 
-function getBookmarks() {
+function getLocalBookmarks() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   } catch {
@@ -13,42 +14,68 @@ function getBookmarks() {
 }
 
 export default function BookmarkButton({ data }) {
+  const { data: session } = useSession();
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (!data?.site?.domain) return;
-    const bookmarks = getBookmarks();
-    setSaved(bookmarks.some((b) => b.domain === data.site.domain));
-  }, [data?.site?.domain]);
 
-  const toggle = () => {
-    if (!data?.site?.domain) return;
-    const bookmarks = getBookmarks();
-    const idx = bookmarks.findIndex((b) => b.domain === data.site.domain);
-
-    if (idx !== -1) {
-      bookmarks.splice(idx, 1);
-      setSaved(false);
+    if (session) {
+      fetch('/api/bookmarks')
+        .then((r) => r.json())
+        .then((res) => {
+          if (res.success) {
+            setSaved(res.items.some((b) => b.domain === data.site.domain));
+          }
+        })
+        .catch(() => {});
     } else {
-      if (bookmarks.length >= MAX_BOOKMARKS) {
-        bookmarks.pop();
-      }
-      bookmarks.unshift({
-        domain: data.site.domain,
-        url: data.site.url,
-        favicon: data.site.favicon,
-        title: data.site.title,
-        scannedAt: data.site.scannedAt,
-        total: data.summary?.total || 0,
-        categories: data.summary?.categories || 0,
-        frontend: data.summary?.frontend || 0,
-        backend: data.summary?.backend || 0,
-        infra: data.summary?.infra || 0,
-      });
-      setSaved(true);
+      const bookmarks = getLocalBookmarks();
+      setSaved(bookmarks.some((b) => b.domain === data.site.domain));
     }
+  }, [data?.site?.domain, session]);
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+  const toggle = async () => {
+    if (!data?.site?.domain) return;
+
+    const payload = {
+      domain: data.site.domain,
+      url: data.site.url,
+      favicon: data.site.favicon,
+      name: data.site.title,
+      scannedAt: data.site.scannedAt,
+      total: data.summary?.total || 0,
+      categories: data.summary?.categories || 0,
+      frontend: data.summary?.frontend || 0,
+      backend: data.summary?.backend || 0,
+      infra: data.summary?.infra || 0,
+    };
+
+    if (session) {
+      if (saved) {
+        await fetch(`/api/bookmarks?domain=${encodeURIComponent(data.site.domain)}`, { method: 'DELETE' }).catch(() => {});
+        setSaved(false);
+      } else {
+        const res = await fetch('/api/bookmarks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }).catch(() => null);
+        if (res?.ok) setSaved(true);
+      }
+    } else {
+      const bookmarks = getLocalBookmarks();
+      const idx = bookmarks.findIndex((b) => b.domain === data.site.domain);
+      if (idx !== -1) {
+        bookmarks.splice(idx, 1);
+        setSaved(false);
+      } else {
+        if (bookmarks.length >= MAX_BOOKMARKS) bookmarks.pop();
+        bookmarks.unshift(payload);
+        setSaved(true);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+    }
     window.dispatchEvent(new Event('tsf-bookmarks-updated'));
   };
 

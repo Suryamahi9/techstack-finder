@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -27,13 +28,13 @@ const TECH_TYPES = [
 const CATEGORIES = [
   'CMS', 'Framework', 'JavaScript Framework', 'UI Library', 'CSS Framework',
   'Analytics', 'Tag Manager', 'Web Server', 'CDN', 'Hosting', 'Database',
-  'Email', 'Payment', 'Analytics', 'Testing', 'Performance', 'Security',
+  'Email', 'Payment', 'Testing', 'Performance', 'Security',
   'Font', 'Font Script', 'Accessibility', 'SEO', 'Widget', 'Map',
   'Live Chat', 'A/B Testing', 'Personalization', 'Video', 'Media',
   'Advertising', 'Affiliate', 'Feedback', 'Support', 'State Management',
 ];
 
-function getRules() {
+function getLocalRules() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   } catch {
@@ -41,7 +42,7 @@ function getRules() {
   }
 }
 
-function saveRules(rules) {
+function saveLocalRules(rules) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(rules));
   window.dispatchEvent(new Event('tsf-custom-rules-updated'));
 }
@@ -160,14 +161,40 @@ function RuleForm({ rule, onChange, onRemove, index }) {
 }
 
 export default function CustomRulesPage() {
+  const { data: session } = useSession();
   const [rules, setRules] = useState([]);
   const [testUrl, setTestUrl] = useState('');
   const [testResult, setTestResult] = useState(null);
   const [testing, setTesting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setRules(getRules());
-  }, []);
+    const load = async () => {
+      if (session) {
+        try {
+          const res = await fetch('/api/custom-rules');
+          const data = await res.json();
+          if (data.success) {
+            setRules(data.items.map((r) => ({
+              id: r.id,
+              name: r.name,
+              category: r.category,
+              type: r.type,
+              patternType: r.type || 'html',
+              patterns: r.pattern || '',
+              confidence: r.confidence || 0.9,
+            })));
+          }
+        } catch {
+          setRules(getLocalRules());
+        }
+      } else {
+        setRules(getLocalRules());
+      }
+      setLoading(false);
+    };
+    load();
+  }, [session]);
 
   const addRule = () => {
     setRules([...rules, emptyRule()]);
@@ -179,12 +206,28 @@ export default function CustomRulesPage() {
     setRules(next);
   };
 
-  const removeRule = (index) => {
+  const removeRule = async (index) => {
+    const rule = rules[index];
+    if (session && rule.id && typeof rule.id === 'string') {
+      await fetch(`/api/custom-rules?id=${encodeURIComponent(rule.id)}`, { method: 'DELETE' }).catch(() => {});
+    }
     setRules(rules.filter((_, i) => i !== index));
   };
 
   const persist = () => {
-    saveRules(rules.filter((r) => r.name && r.patterns));
+    const valid = rules.filter((r) => r.name && r.patterns);
+    if (session) {
+      valid.forEach((r) => {
+        if (!r.id || typeof r.id !== 'string') {
+          fetch('/api/custom-rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: r.name, category: r.category, type: r.type, pattern: r.patterns, flags: 'i' }),
+          }).catch(() => {});
+        }
+      });
+    }
+    saveLocalRules(valid);
   };
 
   const exportRules = () => {
@@ -291,29 +334,36 @@ export default function CustomRulesPage() {
         </div>
 
         {/* Rules list */}
-        <div className="space-y-4">
-          {rules.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
-              <svg className="mx-auto mb-4 h-10 w-10 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
-              </svg>
-              <h3 className="text-lg font-semibold">No custom rules</h3>
-              <p className="mt-2 text-sm text-muted">
-                Click &quot;Add Rule&quot; to define your first custom detection pattern.
-              </p>
-            </div>
-          ) : (
-            rules.map((rule, i) => (
-              <RuleForm
-                key={rule.id}
-                rule={rule}
-                index={i}
-                onChange={(updated) => updateRule(i, updated)}
-                onRemove={() => removeRule(i)}
-              />
-            ))
-          )}
-        </div>
+        {loading ? (
+          <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <p className="text-sm text-muted">Loading rules...</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {rules.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+                <svg className="mx-auto mb-4 h-10 w-10 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+                </svg>
+                <h3 className="text-lg font-semibold">No custom rules</h3>
+                <p className="mt-2 text-sm text-muted">
+                  Click &quot;Add Rule&quot; to define your first custom detection pattern.
+                </p>
+              </div>
+            ) : (
+              rules.map((rule, i) => (
+                <RuleForm
+                  key={rule.id}
+                  rule={rule}
+                  index={i}
+                  onChange={(updated) => updateRule(i, updated)}
+                  onRemove={() => removeRule(i)}
+                />
+              ))
+            )}
+          </div>
+        )}
 
         {/* Test section */}
         {rules.some((r) => r.name && r.patterns) && (

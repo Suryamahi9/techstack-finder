@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
 const STORAGE_KEY = 'tsf-bookmarks';
 
-function getBookmarks() {
+function getLocalBookmarks() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   } catch {
@@ -14,20 +15,53 @@ function getBookmarks() {
 }
 
 export default function BookmarksPage() {
+  const { data: session } = useSession();
   const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setBookmarks(getBookmarks());
+    const load = async () => {
+      if (session) {
+        try {
+          const res = await fetch('/api/bookmarks');
+          const data = await res.json();
+          if (data.success) {
+            setBookmarks(data.items.map((b) => ({
+              domain: b.domain,
+              url: b.url,
+              favicon: b.favicon,
+              title: b.name,
+              scannedAt: b.createdAt,
+              total: b.total || 0,
+              categories: b.categories || 0,
+              frontend: b.frontend || 0,
+              backend: b.backend || 0,
+              infra: b.infra || 0,
+            })));
+          }
+        } catch {
+          setBookmarks(getLocalBookmarks());
+        }
+      } else {
+        setBookmarks(getLocalBookmarks());
+      }
+      setLoading(false);
+    };
+    load();
 
-    const handler = () => setBookmarks(getBookmarks());
+    const handler = () => {
+      if (!session) setBookmarks(getLocalBookmarks());
+    };
     window.addEventListener('tsf-bookmarks-updated', handler);
     return () => window.removeEventListener('tsf-bookmarks-updated', handler);
-  }, []);
+  }, [session]);
 
-  const remove = (domain) => {
-    const updated = getBookmarks().filter((b) => b.domain !== domain);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setBookmarks(updated);
+  const remove = async (domain) => {
+    if (session) {
+      await fetch(`/api/bookmarks?domain=${encodeURIComponent(domain)}`, { method: 'DELETE' }).catch(() => {});
+    }
+    setBookmarks((prev) => prev.filter((b) => b.domain !== domain));
+    localStorage.removeItem(STORAGE_KEY);
     window.dispatchEvent(new Event('tsf-bookmarks-updated'));
   };
 
@@ -48,7 +82,12 @@ export default function BookmarksPage() {
           </p>
         </div>
 
-        {bookmarks.length === 0 ? (
+        {loading ? (
+          <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <p className="text-sm text-muted">Loading bookmarks...</p>
+          </div>
+        ) : bookmarks.length === 0 ? (
           <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
             <svg className="mx-auto mb-4 h-10 w-10 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M5 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-7-3.5L5 21V5z" />

@@ -1,18 +1,35 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-function getMonitors() {
-  try { return JSON.parse(localStorage.getItem('tsf-monitors') || '[]'); } catch { return []; }
+const STORAGE_KEY = 'tsf-monitors';
+
+function getLocalMonitors() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
 }
-function saveMonitors(m) { localStorage.setItem('tsf-monitors', JSON.stringify(m)); }
+function saveLocalMonitors(m) { localStorage.setItem(STORAGE_KEY, JSON.stringify(m)); }
+
+function extractDomain(url) {
+  try {
+    return new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
+  } catch {
+    return url.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+  }
+}
 
 function diffTechs(oldCats, newCats) {
   const oldT = new Set();
   const newT = new Set();
-  (oldCats || []).forEach((c) => c.technologies.forEach((t) => oldT.add(t.name)));
-  (newCats || []).forEach((c) => c.technologies.forEach((t) => newT.add(t.name)));
+  (oldCats || []).forEach((c) => {
+    const techs = typeof c === 'string' ? [] : (c.technologies || []);
+    techs.forEach((t) => oldT.add(typeof t === 'string' ? t : t.name));
+  });
+  (newCats || []).forEach((c) => {
+    const techs = typeof c === 'string' ? [] : (c.technologies || []);
+    techs.forEach((t) => newT.add(typeof t === 'string' ? t : t.name));
+  });
   return {
     added: [...newT].filter((n) => !oldT.has(n)),
     removed: [...oldT].filter((n) => !newT.has(n)),
@@ -28,27 +45,77 @@ async function scanSite(url) {
 }
 
 export default function MonitorPage() {
+  const { data: session } = useSession();
   const [monitors, setMonitors] = useState([]);
   const [newUrl, setNewUrl] = useState('');
   const [interval, setInterval_] = useState('daily');
   const [scanning, setScanning] = useState(null);
   const [results, setResults] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setMonitors(getMonitors()); }, []);
+  useEffect(() => {
+    const load = async () => {
+      if (session) {
+        try {
+          const res = await fetch('/api/monitors');
+          const data = await res.json();
+          if (data.success) {
+            setMonitors(data.items.map((m) => ({
+              id: m.id,
+              domain: m.domain,
+              url: m.url,
+              interval: m.intervalHours <= 1 ? 'hourly' : m.intervalHours <= 24 ? 'daily' : 'weekly',
+              addedAt: m.createdAt,
+              lastScan: m.lastScanAt,
+              lastTechs: m.lastTechs,
+              history: m.history || [],
+            })));
+          }
+        } catch {
+          setMonitors(getLocalMonitors());
+        }
+      } else {
+        setMonitors(getLocalMonitors());
+      }
+      setLoading(false);
+    };
+    load();
+  }, [session]);
 
-  const addMonitor = () => {
+  const addMonitor = async () => {
     if (!newUrl.trim()) return;
-    const m = { id: Date.now().toString(36), url: newUrl.trim(), interval, addedAt: new Date().toISOString(), lastScan: null, lastTechs: null, history: [] };
-    const updated = [m, ...monitors];
-    setMonitors(updated);
-    saveMonitors(updated);
+    const url = newUrl.trim();
+    const domain = extractDomain(url);
+    const intervalHours = interval === 'hourly' ? 1 : interval === 'daily' ? 24 : 168;
+
+    if (session) {
+      const res = await fetch('/api/monitors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain, url, intervalHours }),
+      }).catch(() => null);
+      const data = res ? await res.json() : null;
+      if (data?.success) {
+        setMonitors((prev) => [{ id: data.item.id, domain, url, interval, addedAt: data.item.createdAt, lastScan: null, lastTechs: null, history: [] }, ...prev]);
+      }
+    } else {
+      const m = { id: Date.now().toString(36), url, interval, addedAt: new Date().toISOString(), lastScan: null, lastTechs: null, history: [] };
+      const updated = [m, ...monitors];
+      setMonitors(updated);
+      saveLocalMonitors(updated);
+    }
     setNewUrl('');
   };
 
-  const removeMonitor = (id) => {
+  const removeMonitor = async (id) => {
+    const monitor = monitors.find((m) => m.id === id);
+    if (session && monitor) {
+      const domain = monitor.domain || extractDomain(monitor.url);
+      await fetch(`/api/monitors?domain=${encodeURIComponent(domain)}`, { method: 'DELETE' }).catch(() => {});
+    }
     const updated = monitors.filter((m) => m.id !== id);
     setMonitors(updated);
-    saveMonitors(updated);
+    saveLocalMonitors(updated);
   };
 
   const runScan = useCallback(async (monitor) => {
@@ -63,7 +130,7 @@ export default function MonitorPage() {
         return { ...m, lastScan: snapshot.scannedAt, lastTechs: data.categories, history };
       });
       setMonitors(updated);
-      saveMonitors(updated);
+      saveLocalMonitors(updated);
       setResults((prev) => ({ ...prev, [monitor.id]: { diff, total: data.summary.total } }));
     } catch (e) {
       setResults((prev) => ({ ...prev, [monitor.id]: { error: e.message } }));
@@ -108,7 +175,12 @@ export default function MonitorPage() {
           </div>
         </div>
 
-        {monitors.length === 0 ? (
+        {loading ? (
+          <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <p className="text-sm text-muted">Loading monitors...</p>
+          </div>
+        ) : monitors.length === 0 ? (
           <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
             <svg className="mx-auto mb-4 h-10 w-10 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-9.33-5" />

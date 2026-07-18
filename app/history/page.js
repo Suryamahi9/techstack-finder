@@ -1,21 +1,40 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { getScanHistory, getHistoryForDomain, diffScans, clearScanHistory } from '../../lib/scan-history';
+import { getScanHistory, getHistoryForDomain, diffScans, clearScanHistory, fetchServerHistory, clearServerHistory } from '../../lib/scan-history';
 
 export default function HistoryPage() {
+  const { data: session } = useSession();
   const [history, setHistory] = useState([]);
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [compareIdx, setCompareIdx] = useState(0);
   const [diffResult, setDiffResult] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setHistory(getScanHistory());
-    const handler = () => setHistory(getScanHistory());
+    const load = async () => {
+      if (session) {
+        const serverData = await fetchServerHistory();
+        if (serverData) {
+          setHistory(serverData);
+        } else {
+          setHistory(getScanHistory());
+        }
+      } else {
+        setHistory(getScanHistory());
+      }
+      setLoading(false);
+    };
+    load();
+
+    const handler = () => {
+      if (!session) setHistory(getScanHistory());
+    };
     window.addEventListener('tsf-scan-history-updated', handler);
     return () => window.removeEventListener('tsf-scan-history-updated', handler);
-  }, []);
+  }, [session]);
 
   const domains = [...new Set(history.map((h) => h.domain))];
   const domainHistory = useMemo(() => selectedDomain ? history.filter((h) => h.domain === selectedDomain) : [], [selectedDomain, history]);
@@ -33,6 +52,14 @@ export default function HistoryPage() {
     setCompareIdx(idx);
     setDiffResult(diffScans(domainHistory[idx], domainHistory[0]));
   };
+
+  const handleClear = async () => {
+    if (session) await clearServerHistory();
+    clearScanHistory();
+    setHistory([]);
+  };
+
+  const domainCount = (d) => history.filter((h) => h.domain === d).length;
 
   return (
     <div className="relative min-h-screen">
@@ -52,7 +79,7 @@ export default function HistoryPage() {
           </div>
           {history.length > 0 && (
             <button
-              onClick={() => { clearScanHistory(); setHistory([]); }}
+              onClick={handleClear}
               className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20"
             >
               Clear All
@@ -60,7 +87,12 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {domains.length === 0 ? (
+        {loading ? (
+          <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <p className="text-sm text-muted">Loading scan history...</p>
+          </div>
+        ) : domains.length === 0 ? (
           <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
             <svg className="mx-auto mb-4 h-10 w-10 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -84,7 +116,7 @@ export default function HistoryPage() {
               </h2>
               <div className="flex flex-wrap gap-2">
                 {domains.map((d) => {
-                  const count = getHistoryForDomain(d).length;
+                  const count = domainCount(d);
                   return (
                     <button
                       key={d}

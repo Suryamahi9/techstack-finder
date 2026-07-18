@@ -1,24 +1,36 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { getScanHistory, fetchServerHistory } from '../../lib/scan-history';
 
-function getScanHistory() {
-  try { return JSON.parse(localStorage.getItem('tsf-scan-history') || '[]'); } catch { return []; }
-}
 function getTrends() {
   try { return JSON.parse(localStorage.getItem('tsf-scan-trends') || '[]'); } catch { return []; }
 }
 
 export default function LeaderboardPage() {
+  const { data: session } = useSession();
   const [history, setHistory] = useState([]);
   const [trends, setTrends] = useState([]);
   const [tab, setTab] = useState('techs');
 
   useEffect(() => {
-    setHistory(getScanHistory());
-    setTrends(getTrends());
-  }, []);
+    const load = async () => {
+      if (session) {
+        const serverData = await fetchServerHistory();
+        if (serverData && serverData.length > 0) {
+          setHistory(serverData);
+        } else {
+          setHistory(getScanHistory());
+        }
+      } else {
+        setHistory(getScanHistory());
+      }
+      setTrends(getTrends());
+    };
+    load();
+  }, [session]);
 
   const techCounts = useMemo(() => {
     const counts = {};

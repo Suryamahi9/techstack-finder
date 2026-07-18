@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
-import { getScanHistory, clearScanHistory } from '../../lib/scan-history';
+import { useSession } from 'next-auth/react';
+import { getScanHistory, fetchServerHistory } from '../../lib/scan-history';
 
 const BACKLINK_TOOLS = [
   { name: 'Ahrefs', url: (d) => `https://ahrefs.com/backlink-checker/${d}`, color: '#ff6b35' },
@@ -30,7 +31,10 @@ function getTechSummary(entry) {
   return all;
 }
 
+const LOCAL_MANUAL_KEY = 'tsf-backlinks-manual';
+
 export default function BacklinksPage() {
+  const { data: session } = useSession();
   const [history, setHistory] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [manualUrl, setManualUrl] = useState('');
@@ -38,18 +42,28 @@ export default function BacklinksPage() {
   const [sortBy, setSortBy] = useState('date');
   const [sortDir, setSortDir] = useState('desc');
   const [selectedSites, setSelectedSites] = useState(new Set());
-  const [showExport, setShowExport] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const h = getScanHistory();
-      setHistory(h);
-    } catch {}
-    try {
-      const saved = localStorage.getItem('tsf-backlinks-manual');
-      if (saved) setManualSites(JSON.parse(saved));
-    } catch {}
-  }, []);
+    const load = async () => {
+      if (session) {
+        const serverData = await fetchServerHistory();
+        if (serverData) {
+          setHistory(serverData);
+        } else {
+          setHistory(getScanHistory());
+        }
+      } else {
+        setHistory(getScanHistory());
+      }
+      try {
+        const saved = localStorage.getItem(LOCAL_MANUAL_KEY);
+        if (saved) setManualSites(JSON.parse(saved));
+      } catch {}
+      setLoading(false);
+    };
+    load();
+  }, [session]);
 
   const allSites = [...history, ...manualSites.map((u) => ({ domain: u, url: `https://${u}`, scannedAt: null, total: 0, categories: [], manual: true }))];
   const domainSet = new Set();
@@ -95,19 +109,19 @@ export default function BacklinksPage() {
     else setSelectedSites(new Set(sortedSites.map((s) => s.domain)));
   };
 
-  const addManualSite = () => {
+  const addManualSite = async () => {
     const domain = manualUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
     if (!domain || manualSites.includes(domain)) return;
     const updated = [...manualSites, domain];
     setManualSites(updated);
-    localStorage.setItem('tsf-backlinks-manual', JSON.stringify(updated));
+    localStorage.setItem(LOCAL_MANUAL_KEY, JSON.stringify(updated));
     setManualUrl('');
   };
 
-  const removeManualSite = (domain) => {
+  const removeManualSite = async (domain) => {
     const updated = manualSites.filter((d) => d !== domain);
     setManualSites(updated);
-    localStorage.setItem('tsf-backlinks-manual', JSON.stringify(updated));
+    localStorage.setItem(LOCAL_MANUAL_KEY, JSON.stringify(updated));
   };
 
   const exportCSV = () => {
@@ -220,123 +234,130 @@ export default function BacklinksPage() {
         </div>
 
         {/* Sites Table */}
-        <div className="rounded-xl border border-border bg-elevated overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="px-4 py-3 text-left">
-                    <input type="checkbox" checked={selectedSites.size === sortedSites.length && sortedSites.length > 0} onChange={selectAll} className="accent-accent" />
-                  </th>
-                  <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('domain')}>
-                    Domain {sortBy === 'domain' && (sortDir === 'desc' ? '↓' : '↑')}
-                  </th>
-                  <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('techs')}>
-                    Techs {sortBy === 'techs' && (sortDir === 'desc' ? '↓' : '↑')}
-                  </th>
-                  <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('date')}>
-                    Scanned {sortBy === 'date' && (sortDir === 'desc' ? '↓' : '↑')}
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Stack</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Backlink Tools</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-muted uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedSites.map((site) => {
-                  const techs = getTechSummary(site);
-                  const fe = techs.filter((t) => t.type === 'frontend').length;
-                  const be = techs.filter((t) => t.type === 'backend').length;
-                  const inf = techs.filter((t) => t.type === 'infra').length;
-                  const topTechs = techs.slice(0, 5);
-                  const isSelected = selectedSites.has(site.domain);
+        {loading ? (
+          <div className="rounded-xl border border-border bg-elevated p-12 text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <p className="text-sm text-muted">Loading sites...</p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-border bg-elevated overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="px-4 py-3 text-left">
+                      <input type="checkbox" checked={selectedSites.size === sortedSites.length && sortedSites.length > 0} onChange={selectAll} className="accent-accent" />
+                    </th>
+                    <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('domain')}>
+                      Domain {sortBy === 'domain' && (sortDir === 'desc' ? '↓' : '↑')}
+                    </th>
+                    <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('techs')}>
+                      Techs {sortBy === 'techs' && (sortDir === 'desc' ? '↓' : '↑')}
+                    </th>
+                    <th className="cursor-pointer px-4 py-3 text-left text-xs font-semibold text-muted uppercase hover:text-fg" onClick={() => toggleSort('date')}>
+                      Scanned {sortBy === 'date' && (sortDir === 'desc' ? '↓' : '↑')}
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Stack</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Backlink Tools</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-muted uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedSites.map((site) => {
+                    const techs = getTechSummary(site);
+                    const fe = techs.filter((t) => t.type === 'frontend').length;
+                    const be = techs.filter((t) => t.type === 'backend').length;
+                    const inf = techs.filter((t) => t.type === 'infra').length;
+                    const topTechs = techs.slice(0, 5);
+                    const isSelected = selectedSites.has(site.domain);
 
-                  return (
-                    <tr key={site.domain} className={`border-b border-border/50 transition-colors ${isSelected ? 'bg-accent/5' : 'hover:bg-border/20'}`}>
-                      <td className="px-4 py-3">
-                        <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(site.domain)} className="accent-accent" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          {site.favicon ? (
-                            <Image src={site.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded" unoptimized onError={(e) => { e.target.style.display = 'none'; }} />
-                          ) : (
-                            <div className="h-4 w-4 rounded bg-border flex items-center justify-center text-[8px] font-bold text-dim">{site.domain[0]?.toUpperCase()}</div>
-                          )}
-                          <div>
-                            <a href={site.url || `https://${site.domain}`} target="_blank" rel="noopener noreferrer" className="font-medium text-fg hover:text-accent transition-colors">
-                              {site.domain}
-                            </a>
-                            {site.manual && <span className="ml-1.5 rounded bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">MANUAL</span>}
+                    return (
+                      <tr key={site.domain} className={`border-b border-border/50 transition-colors ${isSelected ? 'bg-accent/5' : 'hover:bg-border/20'}`}>
+                        <td className="px-4 py-3">
+                          <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(site.domain)} className="accent-accent" />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {site.favicon ? (
+                              <Image src={site.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded" unoptimized onError={(e) => { e.target.style.display = 'none'; }} />
+                            ) : (
+                              <div className="h-4 w-4 rounded bg-border flex items-center justify-center text-[8px] font-bold text-dim">{site.domain[0]?.toUpperCase()}</div>
+                            )}
+                            <div>
+                              <a href={site.url || `https://${site.domain}`} target="_blank" rel="noopener noreferrer" className="font-medium text-fg hover:text-accent transition-colors">
+                                {site.domain}
+                              </a>
+                              {site.manual && <span className="ml-1.5 rounded bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">MANUAL</span>}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="font-mono text-sm font-semibold text-fg">{site.total || techs.length}</span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted">
-                        {formatDate(site.scannedAt)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1">
-                          {topTechs.map((t, i) => (
-                            <span key={i} className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${t.type === 'frontend' ? 'bg-blue-500/10 text-blue-400' : t.type === 'backend' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                              {t.name}
-                            </span>
-                          ))}
-                          {techs.length > 5 && <span className="text-[10px] text-dim">+{techs.length - 5}</span>}
-                        </div>
-                        <div className="mt-1 flex gap-2 text-[10px] text-dim">
-                          {fe > 0 && <span>{fe} FE</span>}
-                          {be > 0 && <span>{be} BE</span>}
-                          {inf > 0 && <span>{inf} INF</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {BACKLINK_TOOLS.map((tool) => (
-                            <a
-                              key={tool.name}
-                              href={tool.url(site.domain)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="rounded-md border border-border px-2 py-1 text-[10px] font-medium text-muted hover:border-border-strong hover:text-fg transition-colors"
-                              style={{ borderColor: `${tool.color}30` }}
-                            >
-                              {tool.name}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="font-mono text-sm font-semibold text-fg">{site.total || techs.length}</span>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-muted">
+                          {formatDate(site.scannedAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1">
+                            {topTechs.map((t, i) => (
+                              <span key={i} className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${t.type === 'frontend' ? 'bg-blue-500/10 text-blue-400' : t.type === 'backend' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                {t.name}
+                              </span>
+                            ))}
+                            {techs.length > 5 && <span className="text-[10px] text-dim">+{techs.length - 5}</span>}
+                          </div>
+                          <div className="mt-1 flex gap-2 text-[10px] text-dim">
+                            {fe > 0 && <span>{fe} FE</span>}
+                            {be > 0 && <span>{be} BE</span>}
+                            {inf > 0 && <span>{inf} INF</span>}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-1">
+                            {BACKLINK_TOOLS.map((tool) => (
+                              <a
+                                key={tool.name}
+                                href={tool.url(site.domain)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-md border border-border px-2 py-1 text-[10px] font-medium text-muted hover:border-border-strong hover:text-fg transition-colors"
+                                style={{ borderColor: `${tool.color}30` }}
+                              >
+                                {tool.name}
+                              </a>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <a href={`/site/${site.domain}`} className="rounded-md border border-border px-2 py-1 text-[10px] text-muted hover:text-fg transition-colors">
+                              Scan
                             </a>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <a href={`/site/${site.domain}`} className="rounded-md border border-border px-2 py-1 text-[10px] text-muted hover:text-fg transition-colors">
-                            Scan
-                          </a>
-                          <a href={`/results?site=${site.domain}`} className="rounded-md border border-border px-2 py-1 text-[10px] text-muted hover:text-fg transition-colors">
-                            Report
-                          </a>
-                          {site.manual && (
-                            <button onClick={() => removeManualSite(site.domain)} className="rounded-md border border-red-500/20 px-2 py-1 text-[10px] text-red-400 hover:bg-red-500/10 transition-colors">
-                              Remove
-                            </button>
-                          )}
-                        </div>
+                            <a href={`/results?site=${site.domain}`} className="rounded-md border border-border px-2 py-1 text-[10px] text-muted hover:text-fg transition-colors">
+                              Report
+                            </a>
+                            {site.manual && (
+                              <button onClick={() => removeManualSite(site.domain)} className="rounded-md border border-red-500/20 px-2 py-1 text-[10px] text-red-400 hover:bg-red-500/10 transition-colors">
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {sortedSites.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-12 text-center text-muted">
+                        {searchQuery ? 'No sites match your filter.' : 'No sites scanned yet. Scan a website first or add one manually above.'}
                       </td>
                     </tr>
-                  );
-                })}
-                {sortedSites.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-muted">
-                      {searchQuery ? 'No sites match your filter.' : 'No sites scanned yet. Scan a website first or add one manually above.'}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Links */}
         <div className="mt-8 rounded-xl border border-border bg-elevated p-6">
