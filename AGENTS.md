@@ -24,7 +24,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **270 category-to-type mappings** in `CATEGORY_TYPES` (frontend/backend/infra)
 - **Deep scan** in `lib/deep-scan.js` — fetches CSS/JS files, probes 150+ common paths, uses Playwright headless browser when DOM < 50 elements. Browser default timeout: 20s. **Runs for ALL sites** (no e-commerce skip).
 - **Remote browser fallback** — `browserScanRemote()` in `deep-scan.js` uses Browserless.io when local Playwright unavailable (Vercel). Requires `BROWSERLESS_API_KEY` env var.
-- **Vercel-aware** — detects `process.env.VERCEL` to skip local browser scan, CSS/JS deep fetch, and path probes on serverless (Playwright binaries not available there). Fetch timeout reduced to 25s on Vercel.
+- **Vercel-aware** — `detectTechnologies()` in `detect.js` detects `process.env.VERCEL` to skip local browser scan, CSS/JS deep fetch, and path probes on serverless (Playwright binaries not available there). Fetch timeout reduced to 25s on Vercel.
 - **Proxy support** — `undici.ProxyAgent` dynamically imported in `detect.js` and `deep-scan.js` when `proxy` option passed. `undici` is not a listed dependency (used via dynamic import only).
 - **CSS variables** in `globals.css` (`:root` dark, `[data-theme='light']` light) referenced in `tailwind.config.js` via `var(--*)`. Never hardcode hex colors.
 - **jsconfig.json** maps `@/*` → `./*`
@@ -103,7 +103,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 ## Detection system
 - Rules stored as `RULES` array in `lib/detect.js` (1,870 inline) + generated rules merged at module load via `getGenRules()`
 - Generated rules in `scripts/_generated_rules.json` use `{p: "pattern", f: "flags"}` format — reconstructed to `new RegExp(p, f)` at load time
-- `scripts/generate.js` (1,070 lines) has 204 template functions that expand `[name, category, typeKey]` entries from `scripts/data-fe.js`, `data-be.js`, `data-infra.js`, `data-content.js`
+- `scripts/generate.js` (1,070 lines) has 100 template functions that expand `[name, category, typeKey]` entries from `scripts/data-fe.js`, `data-be.js`, `data-infra.js`, `data-content.js`
 - Generated rules filtered at load: only high-confidence signal types kept (`script_src`, `meta_generator`, `header`, `css_content`, `js_content`, `link_tag`, `cookie`). Broad types (`html`, `browser_var`, `path_probe`) excluded.
 - **Regex uses `new RegExp("...","i")` not `/regex/i` literals** — intentional to avoid `/` conflicts in names like `@headlessui/react`
 - Pattern types: `html`, `header`, `script_src`, `meta_generator`, `cookie`, `css_class`, `link_tag`, `css_content`, `js_content`, `path_probe`, `browser_var`, `browser_network`, `browser_cookie`
