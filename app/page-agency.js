@@ -574,6 +574,7 @@ function TerminalScanner() {
       if (i >= LINES.length) clearInterval(timer);
     }, 120);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   return (

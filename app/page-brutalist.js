@@ -214,6 +214,7 @@ function BrutalistScanPreview() {
       }
     }, 180);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -702,7 +703,7 @@ export default function Home() {
                     EMBED THIS BADGE IN YOUR README OR SITE
                   </div>
                   <div className="mt-3 border p-3 font-mono text-[10px]" style={{ borderColor: '#ccc', color: MID, backgroundColor: '#fff' }}>
-                    &lt;img src="badge-url" alt="tech stack" /&gt;
+                    &lt;img src=&quot;badge-url&quot; alt=&quot;tech stack&quot; /&gt;
                   </div>
                 </div>
               </div>
