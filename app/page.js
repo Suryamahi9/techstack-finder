@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
@@ -10,12 +10,18 @@ import FloatingLogos from '../components/FloatingLogos';
 import CategoryGrid from '../components/CategoryGrid';
 import useInView from '../lib/useInView';
 
-const EXAMPLE_SITES = ['github.com', 'stripe.com', 'vercel.com', 'shopify.com', 'netflix.com'];
+const SITES = [
+  { label: 'github.com', desc: 'Dev platform' },
+  { label: 'stripe.com', desc: 'Payments' },
+  { label: 'vercel.com', desc: 'Hosting' },
+  { label: 'shopify.com', desc: 'E-commerce' },
+  { label: 'netflix.com', desc: 'Streaming' },
+];
 
 const STEPS = [
-  { n: '01', title: 'FETCH', tag: 'HTTP client', body: 'Downloads the full HTML with a configurable timeout. No browser overhead.', stats: '2.4kb avg \u00b7 8s timeout' },
-  { n: '02', title: 'PARSE', tag: 'DOM analysis', body: 'Walks the document tree extracting scripts, meta tags, headers, and CSS.', stats: '50+ signals \u00b7 800ms' },
-  { n: '03', title: 'MATCH', tag: 'rule engine', body: '2,300+ rules fingerprint each technology from the exact HTML signal.', stats: '92 categories \u00b7 2,300+ rules' },
+  { n: '01', title: 'Fetch', tag: 'HTTP client', body: 'Downloads the full HTML with a configurable timeout. No browser overhead.', stats: '2.4kb avg \u00b7 8s timeout' },
+  { n: '02', title: 'Parse', tag: 'DOM analysis', body: 'Walks the document tree extracting scripts, meta tags, headers, and CSS.', stats: '50+ signals \u00b7 800ms' },
+  { n: '03', title: 'Match', tag: 'rule engine', body: '2,300+ rules fingerprint each technology from the exact HTML signal.', stats: '92 categories \u00b7 2,300+ rules' },
 ];
 
 const USE_CASES = [
@@ -27,89 +33,42 @@ const USE_CASES = [
   { title: 'API discovery', desc: 'Map third-party integrations across any website or application.', icon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4' },
 ];
 
-const BADGE_TECHS = ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Stripe', 'Vercel', 'PostgreSQL'];
+const GRADIENT_STYLE = {
+  background: 'linear-gradient(135deg, var(--accent), var(--accent) 60%, rgba(197,251,69,0.3))',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+};
 
-function ConstellationCanvas() {
-  const canvasRef = useRef(null);
-  const dotsRef = useRef([]);
-  const animRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    let w = window.innerWidth;
-    let h = window.innerHeight;
-    canvas.width = w;
-    canvas.height = h;
-
-    const COUNT = 50;
-    const PROXIMITY = 120;
-    dotsRef.current = Array.from({ length: COUNT }, () => ({
-      x: Math.random() * w, y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-    }));
-
-    const onResize = () => { w = window.innerWidth; h = window.innerHeight; canvas.width = w; canvas.height = h; };
-    window.addEventListener('resize', onResize);
-
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      const dots = dotsRef.current;
-      for (let i = 0; i < COUNT; i++) {
-        const d = dots[i];
-        d.x += d.vx; d.y += d.vy;
-        if (d.x < 0) d.x = w; if (d.x > w) d.x = 0;
-        if (d.y < 0) d.y = h; if (d.y > h) d.y = 0;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 1.2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(244,244,238,0.12)';
-        ctx.fill();
-      }
-      for (let i = 0; i < COUNT; i++) {
-        for (let j = i + 1; j < COUNT; j++) {
-          const dx = dots[i].x - dots[j].x;
-          const dy = dots[i].y - dots[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < PROXIMITY) {
-            ctx.beginPath();
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(244,244,238,${0.06 * (1 - dist / PROXIMITY)})`;
-            ctx.stroke();
-          }
-        }
-      }
-      animRef.current = requestAnimationFrame(draw);
-    };
-    animRef.current = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(animRef.current); window.removeEventListener('resize', onResize); };
-  }, []);
-
-  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" style={{ willChange: 'transform' }} />;
-}
-
-function FadeSection({ children, delay = 0 }) {
+function FadeIn({ children, delay = 0 }) {
   const [ref, inView] = useInView({ threshold: 0.15 });
   return (
-    <div ref={ref} className={inView ? 'animate-fade-in-view' : 'opacity-0'} style={{ animationDelay: `${delay}s` }}>
+    <div
+      ref={ref}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'translateY(0)' : 'translateY(24px)',
+        transition: `opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+      }}
+    >
       {children}
     </div>
   );
 }
 
-function AnimatedCounter({ end, suffix = '', duration = 2000 }) {
+function Counter({ end, suffix = '' }) {
   const [count, setCount] = useState(0);
   const [ref, inView] = useInView({ threshold: 0.5 });
   useEffect(() => {
     if (!inView) return;
-    let start = 0;
-    const step = Math.ceil(end / (duration / 16));
+    let current = 0;
+    const step = Math.ceil(end / 60);
     const timer = setInterval(() => {
-      start += step;
-      if (start >= end) { setCount(end); clearInterval(timer); } else setCount(start);
+      current += step;
+      if (current >= end) { setCount(end); clearInterval(timer); } else setCount(current);
     }, 16);
     return () => clearInterval(timer);
-  }, [inView, end, duration]);
+  }, [inView, end]);
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
@@ -124,9 +83,14 @@ function TypewriterBadge() {
     return () => clearInterval(timer);
   }, []);
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1">
-      <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-glow" />
-      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">{text}<span className="animate-pulse ml-0.5">|</span></span>
+    <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-40" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+      </span>
+      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
+        {text}<span className="animate-pulse ml-px text-accent">|</span>
+      </span>
     </div>
   );
 }
@@ -134,310 +98,254 @@ function TypewriterBadge() {
 function LiveClock() {
   const [time, setTime] = useState('');
   useEffect(() => {
-    const update = () => setTime(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    const update = () => setTime(new Date().toLocaleTimeString('en-US', { hour12: false }));
     update();
-    const timer = setInterval(update, 1000);
-    return () => clearInterval(timer);
+    const t = setInterval(update, 1000);
+    return () => clearInterval(t);
   }, []);
   return <span className="font-mono text-[11px] text-faint">{time}</span>;
 }
 
-const STAT_SVGS = [
-  'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z',
-  'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
-  'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-  'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-];
-
-function StatCell({ icon, value, suffix, label, isText }) {
+export default function Home() {
   return (
-    <div className="bg-[#0a0a0e] p-6 flex flex-col items-center text-center">
-      <svg className="h-4 w-4 text-accent/60 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
-      </svg>
-      <div className="font-mono text-3xl md:text-4xl font-bold tracking-tight text-fg">
-        {isText ? value : <AnimatedCounter end={value} suffix={suffix || ''} />}
-      </div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-faint mt-2">{label}</div>
-    </div>
-  );
-}
-
-function UseCaseCard({ useCase, idx }) {
-  const [ref, inView] = useInView({ threshold: 0.1 });
-  return (
-    <div ref={ref} className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] p-[1px] transition-all duration-300 hover:border-accent/15 hover:scale-[1.01] ${inView ? 'animate-fade-in-view' : 'opacity-0'}`} style={{ animationDelay: `${idx * 0.08}s` }}>
-      <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-5">
-        <div className={`h-10 w-10 rounded-xl border ${useCase.accent ? 'border-accent/20 bg-accent/10' : 'border-white/[0.06] bg-white/[0.03]'} flex items-center justify-center`}>
-          <svg className={`h-5 w-5 ${useCase.accent ? 'text-accent' : 'text-fg/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d={useCase.icon} />
-          </svg>
-        </div>
-        <h3 className="text-sm font-semibold text-fg/90 mt-3">{useCase.title}</h3>
-        <p className="text-xs leading-relaxed text-muted mt-1.5">{useCase.desc}</p>
-      </div>
-    </div>
-  );
-}
-
-function ComparisonCard() {
-  return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-[1px]">
-      <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center">
-              <img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt="" className="h-4 w-4 rounded-sm" />
-            </div>
-            <span className="font-mono text-xs text-fg/80">github.com</span>
-          </div>
-          <span className="text-[10px] font-mono text-accent/60 border border-accent/10 bg-accent/5 rounded-full px-2 py-0.5">vs</span>
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-fg/80">gitlab.com</span>
-            <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center">
-              <img src="https://www.google.com/s2/favicons?domain=gitlab.com&sz=32" alt="" className="h-4 w-4 rounded-sm" />
-            </div>
-          </div>
-        </div>
-        <div className="space-y-2">
-          {['React', 'Ruby on Rails', 'PostgreSQL'].map((t) => (
-            <div key={t} className="flex items-center gap-2 text-xs">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent/70" />
-              <span className="text-fg/70">{t}</span>
-              <span className="ml-auto font-mono text-[10px] text-accent/60">shared</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 pt-3 border-t border-white/[0.04] flex items-center justify-between">
-          <span className="font-mono text-[10px] text-faint">3 shared technologies</span>
-          <span className="font-mono text-[10px] text-accent/80">View full compare &rarr;</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BadgePreviewCard() {
-  return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-[1px]">
-      <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-6 flex flex-col items-center">
-        <div className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 flex items-center gap-4">
-          <div className="h-10 w-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
-            <svg className="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-            </svg>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <img src="https://www.google.com/s2/favicons?domain=stripe.com&sz=32" alt="" className="h-4 w-4 rounded-sm" />
-              <span className="font-mono text-sm text-fg truncate">stripe.com</span>
-            </div>
-            <div className="font-mono text-[10px] text-faint mt-0.5">12 technologies detected</div>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-1.5 mt-4 justify-center">
-          {BADGE_TECHS.map((t) => (
-            <span key={t} className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 font-mono text-[10px] text-muted">{t}</span>
-          ))}
-          <span className="rounded-full border border-accent/10 bg-accent/5 px-2.5 py-1 font-mono text-[10px] text-accent/70">+5 more</span>
-        </div>
-        <div className="mt-4 w-full grid grid-cols-3 gap-3">
-          {[
-            { label: 'Frontend', val: '4' },
-            { label: 'Backend', val: '3' },
-            { label: 'Infra', val: '5' },
-          ].map((s) => (
-            <div key={s.label} className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-2.5 text-center">
-              <div className="font-mono text-lg font-bold text-fg">{s.val}</div>
-              <div className="font-mono text-[9px] uppercase tracking-wider text-faint mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <div className="relative min-h-screen">
-      <ConstellationCanvas />
+    <div className="relative min-h-screen overflow-x-hidden">
       <MouseGlow />
       <Header />
 
+      {/* Ambient background */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="dot-grid-bg absolute inset-0" />
+        <div className="gradient-mesh absolute inset-0" />
+        <div className="scan-line" />
+        <FloatingLogos />
+      </div>
+
       <main className="relative z-10">
-        {/* HERO */}
-        <section className="relative pt-32 pb-20 overflow-hidden">
-          <FloatingLogos />
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col lg:flex-row items-center gap-12">
-              <div className="flex-1 max-w-4xl mx-auto lg:mx-0">
-                <FadeSection>
-                  <TypewriterBadge />
-                </FadeSection>
 
-                <FadeSection delay={0.1}>
-                  <h1 className="mt-6 text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.9] text-fg">
-                    What&apos;s it<br />
-                    <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">built with?</span>
-                  </h1>
-                </FadeSection>
+        {/* ═══════════ HERO ═══════════ */}
+        <section className="flex flex-col items-center gap-6 px-6 pt-28 pb-16 sm:pt-36 lg:flex-row lg:items-start lg:gap-12 lg:px-12">
+          <div className="w-full flex-1 space-y-4 lg:max-w-4xl">
+            <FadeIn>
+              <TypewriterBadge />
+            </FadeIn>
 
-                <FadeSection delay={0.2}>
-                  <p className="mt-5 max-w-lg text-sm md:text-base text-muted leading-relaxed">
-                    Instantly detect every technology powering any website. No signup, no wait.
-                  </p>
-                </FadeSection>
+            <FadeIn delay={0.08}>
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[4rem]">
+                What&apos;s it<br />
+                <span style={GRADIENT_STYLE}>built with</span><span className="text-muted">?</span>
+              </h1>
+            </FadeIn>
 
-                <FadeSection delay={0.3}>
-                  <div className="mt-8 max-w-xl">
-                    <SearchBar />
-                  </div>
-                </FadeSection>
+            <FadeIn delay={0.16}>
+              <p className="max-w-md text-sm leading-relaxed text-muted sm:text-base">
+                Enter any URL and fingerprint the technologies powering it &mdash;
+                frameworks, CMS, analytics, hosting, and more.
+              </p>
+            </FadeIn>
 
-                <FadeSection delay={0.4}>
-                  <div className="mt-5 flex flex-wrap items-center gap-2">
-                    {EXAMPLE_SITES.map((site) => (
-                      <button key={site} className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.03] active:scale-[0.97]">
-                        <img src={`https://www.google.com/s2/favicons?domain=${site}&sz=32`} alt="" className="h-4 w-4 rounded-sm" />
-                        <span className="font-mono text-xs text-muted group-hover:text-fg transition-colors">{site}</span>
-                        <span className="text-[10px] text-faint group-hover:text-accent/60 transition-colors">&rarr;</span>
-                      </button>
-                    ))}
-                  </div>
-                </FadeSection>
+            <FadeIn delay={0.24}>
+              <div className="max-w-xl">
+                <SearchBar />
               </div>
+            </FadeIn>
 
-              <div className="hidden lg:block w-[360px] flex-shrink-0">
-                <FadeSection delay={0.5}>
-                  <LiveScanPreview />
-                </FadeSection>
+            <FadeIn delay={0.32}>
+              <div className="flex flex-wrap items-center gap-2">
+                {SITES.map((site) => (
+                  <a
+                    key={site.label}
+                    href={`/results?site=${encodeURIComponent(site.label)}`}
+                    className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.03] active:scale-[0.97]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`https://www.google.com/s2/favicons?domain=${site.label}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    <span className="font-mono text-xs text-muted transition-colors group-hover:text-fg">{site.label}</span>
+                    <svg className="h-2.5 w-2.5 text-faint transition-all group-hover:translate-x-0.5 group-hover:text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M5 12h14M13 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                ))}
               </div>
-            </div>
+            </FadeIn>
+          </div>
+
+          <div className="hidden shrink-0 lg:block lg:w-[42%]">
+            <FadeIn delay={0.35}>
+              <LiveScanPreview />
+            </FadeIn>
           </div>
         </section>
 
-        {/* STATS */}
-        <FadeSection>
-          <section className="max-w-5xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] bg-white/[0.06] rounded-2xl overflow-hidden">
-              <StatCell icon={STAT_SVGS[0]} value={2300} suffix="+" label="Detection rules" />
-              <StatCell icon={STAT_SVGS[1]} value={92} label="Categories" />
-              <StatCell icon={STAT_SVGS[2]} value={2} suffix="s" label="Avg scan time" />
-              <StatCell icon={STAT_SVGS[3]} value="No signup" label="Required" isText />
+        {/* ═══════════ STATS ═══════════ */}
+        <FadeIn>
+          <section className="mx-auto max-w-5xl px-6">
+            <div className="grid grid-cols-2 gap-[1px] bg-white/[0.06] sm:grid-cols-4">
+              {[
+                { value: 2300, suffix: '+', label: 'Detection rules', icon: 'M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5' },
+                { value: 92, label: 'Categories', icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z' },
+                { value: 2, suffix: 's', label: 'Avg scan time', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' },
+                { label: 'No signup', icon: 'M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z' },
+              ].map((stat, i) => (
+                <div key={i} className="group relative flex flex-col items-center gap-2 bg-[#0a0a0e] px-4 py-6 text-center transition-colors hover:bg-[#0e0e12]">
+                  <svg className="h-4 w-4 text-accent/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={stat.icon} />
+                  </svg>
+                  <div className="font-mono text-2xl font-bold tracking-tight text-fg sm:text-3xl">
+                    {stat.value !== undefined ? <Counter end={stat.value} suffix={stat.suffix || ''} /> : (
+                      <svg className="mx-auto h-6 w-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M5 12l5 5L20 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-faint">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </section>
-        </FadeSection>
+        </FadeIn>
 
-        {/* USE CASES */}
-        <section className="max-w-7xl mx-auto px-6 mt-24">
-          <FadeSection>
-            <div className="mb-10">
-              <div className="mb-2 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint">[ USE CASES ]</div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Built for <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">real workflows</span></h2>
-              <p className="mt-2 max-w-lg text-sm text-muted">Whether you&apos;re auditing security or researching competitors, TechStack Finder gives you the data you need in seconds.</p>
+        {/* ═══════════ USE CASES ═══════════ */}
+        <section className="mx-auto max-w-7xl px-6 pt-20 sm:pt-28">
+          <FadeIn>
+            <div className="mb-8">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                Use cases
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Built for <span style={GRADIENT_STYLE}>real workflows</span>
+              </h2>
             </div>
-          </FadeSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {USE_CASES.map((uc, i) => <UseCaseCard key={uc.title} useCase={uc} idx={i} />)}
+          </FadeIn>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {USE_CASES.map((uc, i) => (
+              <FadeIn key={uc.title} delay={i * 0.06}>
+                <div className={`group relative overflow-hidden rounded-2xl border bg-white/[0.02] p-5 transition-all duration-300 hover:bg-white/[0.03] ${
+                  uc.accent ? 'border-accent/10 bg-accent/[0.02]' : 'border-white/[0.05] hover:border-white/[0.1]'
+                }`}>
+                  <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300 ${
+                    uc.accent ? 'border border-accent/20 bg-accent/10 text-accent' : 'border border-white/[0.06] bg-white/[0.03] text-muted group-hover:border-accent/15 group-hover:text-accent'
+                  }`}>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d={uc.icon} />
+                    </svg>
+                  </div>
+                  <h3 className="mb-1.5 text-sm font-semibold text-fg/90 transition-colors group-hover:text-fg">{uc.title}</h3>
+                  <p className="text-xs leading-relaxed text-muted">{uc.desc}</p>
+                </div>
+              </FadeIn>
+            ))}
           </div>
         </section>
 
-        {/* HOW IT WORKS */}
-        <section className="max-w-7xl mx-auto px-6 mt-24">
-          <FadeSection>
-            <div className="mb-10">
-              <div className="mb-2 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint">[ HOW IT WORKS ]</div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Three steps. <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">Zero guesswork.</span></h2>
+        {/* ═══════════ HOW IT WORKS ═══════════ */}
+        <section className="mx-auto max-w-7xl px-6 pt-20 sm:pt-28">
+          <FadeIn>
+            <div className="mb-8">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                Pipeline
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                How the <span style={GRADIENT_STYLE}>engine works</span>
+              </h2>
             </div>
-          </FadeSection>
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-3 space-y-3">
+          </FadeIn>
+
+          <div className="grid gap-4 lg:grid-cols-5">
+            <div className="space-y-3 lg:col-span-3">
               {STEPS.map((step, i) => (
-                <FadeSection key={step.n} delay={i * 0.1}>
-                  <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-[1px] transition-all duration-300 hover:border-accent/15">
-                    <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-5 flex items-start gap-4">
-                      <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                        <div className="h-9 w-9 rounded-xl border border-accent/20 bg-accent/10 flex items-center justify-center font-mono text-xs font-bold text-accent">{step.n}</div>
-                        <span className="rounded-full border border-accent/10 bg-accent/5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.15em] text-accent">{step.tag}</span>
+                <FadeIn key={step.n} delay={i * 0.08}>
+                  <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all duration-300 hover:border-white/[0.12]">
+                    <div className="flex items-start gap-4">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 font-mono text-xs font-bold text-accent">
+                          {step.n}
+                        </div>
+                        <span className="rounded-full border border-accent/10 bg-accent/5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.15em] text-accent">
+                          {step.tag}
+                        </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold text-fg">{step.title}</h3>
-                        <p className="text-xs leading-relaxed text-muted mt-1">{step.body}</p>
-                        <div className="mt-3 flex items-center gap-1.5 font-mono text-[10px] text-faint">
-                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-semibold">{step.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-muted">{step.body}</p>
+                        <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.1em] text-faint">
+                          <svg className="h-3 w-3 text-accent/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                          </svg>
                           {step.stats}
                         </div>
                       </div>
                     </div>
                   </div>
-                </FadeSection>
+                </FadeIn>
               ))}
             </div>
             <div className="lg:col-span-2">
-              <FadeSection delay={0.2}>
+              <FadeIn delay={0.2}>
                 <TerminalScanner />
-              </FadeSection>
+              </FadeIn>
             </div>
           </div>
         </section>
 
-        {/* COMPARISON */}
-        <section className="max-w-7xl mx-auto px-6 mt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-            <FadeSection>
-              <div>
-                <div className="mb-2 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint">[ COMPARE ]</div>
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Side by side <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">comparison</span></h2>
-                <p className="mt-3 max-w-md text-sm text-muted leading-relaxed">Compare the tech stacks of two websites. See shared technologies and unique choices at a glance.</p>
-                <a href="/compare" className="mt-5 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent transition-all duration-300 hover:bg-accent/20 active:scale-[0.97]">
-                  Try comparison
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                </a>
-              </div>
-            </FadeSection>
-            <FadeSection delay={0.15}>
-              <ComparisonCard />
-            </FadeSection>
-          </div>
-        </section>
-
-        {/* CATEGORIES */}
-        <section className="max-w-7xl mx-auto px-6 mt-24">
-          <FadeSection>
+        {/* ═══════════ CATEGORIES ═══════════ */}
+        <section className="mx-auto max-w-7xl px-6 pt-20 sm:pt-28">
+          <FadeIn>
             <CategoryGrid />
-          </FadeSection>
+          </FadeIn>
         </section>
 
-        {/* EXPORT & SHARE */}
-        <section className="max-w-7xl mx-auto px-6 mt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-            <FadeSection>
+        {/* ═══════════ EXPORT ═══════════ */}
+        <section className="mx-auto max-w-7xl px-6 pt-20 sm:pt-28">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <FadeIn>
               <div>
-                <div className="mb-2 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint">[ EXPORT ]</div>
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Share your <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">findings</span></h2>
-                <p className="mt-3 max-w-md text-sm text-muted leading-relaxed">Export scan results as JSON, CSV, or PDF. Embed a live badge on your site to show what powers it.</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {['JSON', 'CSV', 'PDF', 'Badge'].map((fmt) => (
-                    <span key={fmt} className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-muted">{fmt}</span>
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                  Export
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Share your <span style={GRADIENT_STYLE}>findings</span>
+                </h2>
+                <p className="mt-2 max-w-md text-sm text-muted">
+                  Export reports as JSON or CSV. Generate PDFs. Embed a live badge on your site or README.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {['JSON export', 'CSV export', 'PDF report', 'Embed badge'].map((tag) => (
+                    <span key={tag} className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-xs text-muted transition-colors hover:border-accent/15 hover:text-fg">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
-            </FadeSection>
-            <FadeSection delay={0.15}>
-              <BadgePreviewCard />
-            </FadeSection>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <div className="flex items-center justify-center">
+                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 text-center backdrop-blur-sm">
+                  <div className="mb-3 font-mono text-[10px] uppercase tracking-wider text-faint">Badge preview</div>
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-accent/20 bg-accent/5 px-4 py-2.5">
+                    <svg className="h-4 w-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 7l8-4 8 4-8 4-8-4z" />
+                    </svg>
+                    <span className="font-sans text-sm font-semibold text-fg">github.com</span>
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent">12 techs</span>
+                  </div>
+                  <div className="mt-3 font-mono text-[10px] text-faint">
+                    Embed this badge in your README or site
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
           </div>
         </section>
 
-        {/* BOTTOM CTA */}
-        <section className="max-w-3xl mx-auto px-6 mt-32 mb-20 text-center">
-          <FadeSection>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-              Start <span className="bg-gradient-to-r from-accent via-accent to-accent/40 bg-clip-text text-transparent">scanning</span>
+        {/* ═══════════ BOTTOM CTA ═══════════ */}
+        <section className="mx-auto max-w-3xl px-6 pb-20 pt-28 text-center sm:pt-36">
+          <FadeIn>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
+              Start <span style={GRADIENT_STYLE}>scanning</span>
             </h2>
             <p className="mt-3 text-sm text-muted">Paste any URL and discover every technology behind it.</p>
-            <div className="mt-8 max-w-xl mx-auto">
+            <div className="mx-auto mt-8 max-w-xl">
               <SearchBar />
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -448,19 +356,20 @@ export default function HomePage() {
                 </span>
               ))}
             </div>
-          </FadeSection>
+          </FadeIn>
         </section>
+
       </main>
 
       <Footer />
 
-      {/* LIVE STATUS BAR */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-white/[0.04] bg-zinc-950/80 backdrop-blur-xl px-6 py-2.5">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      {/* Live Status Bar */}
+      <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-white/[0.04] bg-zinc-950/70 px-6 py-2.5 backdrop-blur-xl">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-pulse-glow rounded-full bg-accent" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
         </span>
-        <span className="font-mono text-[11px] text-faint">System online</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">System online</span>
         <span className="ml-auto"><LiveClock /></span>
       </div>
     </div>

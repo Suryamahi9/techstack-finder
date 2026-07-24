@@ -1,43 +1,3 @@
-function computeScore(seo, performance, security) {
-  let score = 0;
-  let max = 0;
-
-  if (seo) {
-    score += (seo.score || 0) * 0.4;
-    max += 100 * 0.4;
-  }
-
-  if (performance) {
-    let perfScore = 0;
-    if (performance.isHttps) perfScore += 20;
-    if (performance.compression && performance.compression !== 'none') perfScore += 20;
-    if (performance.cacheControl && performance.cacheControl !== 'none') perfScore += 20;
-    if (performance.httpVersion && performance.httpVersion !== 'unknown') perfScore += 20;
-    if (performance.keepAlive && performance.keepAlive !== 'unknown') perfScore += 20;
-    score += perfScore * 0.3;
-    max += 100 * 0.3;
-  }
-
-  if (security) {
-    let secScore = 0;
-    const headers = [
-      security.contentSecurityPolicy,
-      security.strictTransportSecurity,
-      security.xFrameOptions,
-      security.xContentTypeOptions,
-      security.referrerPolicy,
-      security.permissionsPolicy,
-      security.xssProtection,
-    ];
-    const present = headers.filter((h) => h && h !== 'missing' && h !== 'not set').length;
-    secScore = (present / headers.length) * 100;
-    score += secScore * 0.3;
-    max += 100 * 0.3;
-  }
-
-  return max > 0 ? Math.round((score / max) * 100) : 0;
-}
-
 function getGrade(score) {
   if (score >= 90) return { grade: 'A+', color: '#10b981', label: 'Excellent' };
   if (score >= 80) return { grade: 'A', color: '#10b981', label: 'Great' };
@@ -48,10 +8,11 @@ function getGrade(score) {
   return { grade: 'F', color: '#ef4444', label: 'Poor' };
 }
 
-export default function StackScore({ seo, performance, security }) {
-  if (!seo && !performance && !security) return null;
+export default function StackScore({ seo, performance, security, healthScore, cveSummary, dnsTls, gdpr }) {
+  const score = typeof healthScore === 'number' ? healthScore : 0;
 
-  const score = computeScore(seo, performance, security);
+  if (score === 0 && !seo && !performance && !security) return null;
+
   const { grade, color, label } = getGrade(score);
 
   const circumference = 2 * Math.PI * 52;
@@ -83,7 +44,7 @@ export default function StackScore({ seo, performance, security }) {
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold tracking-tight">Stack Health</h3>
+          <h3 className="text-lg font-bold tracking-tight">Stack Health Score</h3>
           <p className="mt-1 text-sm text-muted">{label}</p>
           <div className="mt-4 space-y-2">
             {seo && (
@@ -157,6 +118,64 @@ export default function StackScore({ seo, performance, security }) {
                       100
                   )}
                 </span>
+              </div>
+            )}
+            {dnsTls && dnsTls.tls && (
+              <div className="flex items-center gap-3 text-xs">
+                <span className="w-16 text-faint">TLS</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full bg-emerald-400 transition-all duration-700"
+                    style={{
+                      width: `${(() => {
+                        let t = 0;
+                        if (dnsTls.tls.authorized) t += 30;
+                        if (dnsTls.tls.protocol && !dnsTls.tls.protocol.includes('SSLv')) t += 25;
+                        if (dnsTls.tls.cipher && dnsTls.tls.cipher.bits >= 256) t += 20;
+                        if (dnsTls.tls.daysRemaining && dnsTls.tls.daysRemaining > 30) t += 25;
+                        return t;
+                      })()}%`,
+                    }}
+                  />
+                </div>
+                <span className="w-8 text-right font-mono text-muted">
+                  {(() => {
+                    let t = 0;
+                    if (dnsTls.tls.authorized) t += 30;
+                    if (dnsTls.tls.protocol && !dnsTls.tls.protocol.includes('SSLv')) t += 25;
+                    if (dnsTls.tls.cipher && dnsTls.tls.cipher.bits >= 256) t += 20;
+                    if (dnsTls.tls.daysRemaining && dnsTls.tls.daysRemaining > 30) t += 25;
+                    return t;
+                  })()}
+                </span>
+              </div>
+            )}
+            {cveSummary && cveSummary.totalCves > 0 && (
+              <div className="flex items-center gap-3 text-xs">
+                <span className="w-16 text-faint">CVEs</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full bg-red-400 transition-all duration-700"
+                    style={{
+                      width: `${Math.min(cveSummary.totalCves * 20 + cveSummary.critical * 30 + cveSummary.high * 15, 100)}%`,
+                    }}
+                  />
+                </div>
+                <span className="w-8 text-right font-mono text-red-400 text-[10px]">
+                  {cveSummary.totalCves} CVE{cveSummary.totalCves !== 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+            {gdpr && (
+              <div className="flex items-center gap-3 text-xs">
+                <span className="w-16 text-faint">GDPR</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full bg-cyan-400 transition-all duration-700"
+                    style={{ width: `${gdpr.complianceScore}%` }}
+                  />
+                </div>
+                <span className="w-8 text-right font-mono text-muted">{gdpr.complianceScore}</span>
               </div>
             )}
           </div>

@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
-import Skeleton from '../../components/Skeleton';
+import ScanProgress from '../../components/ScanProgress';
 import SiteIdentity from '../../components/SiteIdentity';
 import SitePreview from '../../components/ScreenshotGallery';
 import CompanyProfile from '../../components/CompanyProfile';
@@ -29,6 +29,11 @@ import ExportButtons from '../../components/ExportButtons';
 import BookmarkButton from '../../components/BookmarkButton';
 import ShareButton from '../../components/ShareButton';
 import StackScore from '../../components/StackScore';
+import VulnerabilityPanel from '../../components/VulnerabilityPanel';
+import DnsTlsPanel from '../../components/DnsTlsPanel';
+import AdsTxtPanel from '../../components/AdsTxtPanel';
+import GdprAudit from '../../components/GdprAudit';
+import PartialResultsBanner from '../../components/PartialResultsBanner';
 
 import BadgeDisplay from '../../components/BadgeDisplay';
 import EmbedWidget from '../../components/EmbedWidget';
@@ -153,7 +158,7 @@ function ResultsContent() {
           <SearchBar initialValue={site || ''} size="small" />
         </div>
 
-        {loading && <Skeleton />}
+        {loading && <ScanProgress site={site} />}
 
         {!loading && error && (
           <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">
@@ -176,6 +181,9 @@ function ResultsContent() {
 
         {!loading && !error && data && (
           <div className="animate-fade-in">
+            {/* Partial results banner */}
+            <PartialResultsBanner data={data} />
+
             {/* Site header — always visible */}
             <div className="mb-4">
               <SiteIdentity site={data.site} summary={data.summary} cached={data.cached} />
@@ -189,7 +197,17 @@ function ResultsContent() {
             {/* ═══ Overview Tab ═══ */}
             {activeTab === 'overview' && (
               <div className="space-y-8">
-                <StackScore seo={data.seo} performance={data.performance} security={data.security} />
+                <StackScore seo={data.seo} performance={data.performance} security={data.security} healthScore={data.healthScore} cveSummary={data.cveSummary} dnsTls={data.dnsTls} gdpr={data.gdpr} />
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.dnsTls && <DnsTlsPanel dnsTls={data.dnsTls} />}
+                  {data.cveSummary && <VulnerabilityPanel cveSummary={data.cveSummary} versionScores={data.versionScores} />}
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.adsTxt && <AdsTxtPanel adsTxt={data.adsTxt} />}
+                  {data.gdpr && <GdprAudit gdpr={data.gdpr} />}
+                </div>
 
                 {data.company && (
                   <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />
@@ -307,7 +325,7 @@ export default function ResultsPage() {
         <div>
           <Header />
           <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-            <Skeleton />
+            <div className="skeleton h-32 rounded-2xl" />
           </main>
           <Footer />
         </div>

@@ -1,0 +1,11 @@
+node_modules
+.next
+.ruflo
+.git
+.claude
+.claude-flow
+ruflo
+*.md
+.env
+.env.*
+!.env.example

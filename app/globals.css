@@ -1294,3 +1294,188 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   opacity: 0.03;
   animation: ambientDrift 35s ease-in-out infinite reverse;
 }
+
+/* ═══ Scan Progress ═══ */
+.scan-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+.scan-card {
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--elevated);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 0 60px -10px var(--accent-glow);
+}
+
+.scan-radar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.scan-radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed var(--border-strong);
+}
+.scan-radar-ring.r1 { inset: 0; }
+.scan-radar-ring.r2 { inset: 15%; }
+.scan-radar-ring.r3 { inset: 30%; }
+
+.scan-radar-sweep {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 25%, transparent 50%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  pointer-events: none;
+  animation: scannerSweep 2s linear infinite;
+}
+
+@keyframes scannerSweep {
+  to { transform: rotate(360deg); }
+}
+
+.scan-radar-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+  animation: radarPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes radarPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.6; }
+}
+
+.scan-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scan-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.scan-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.scan-timer {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.scan-bar-track {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.scan-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.scan-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.scan-step {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.scan-step:last-child {
+  border-bottom: none;
+}
+
+.scan-step.active,
+.scan-step.done {
+  opacity: 1;
+}
+
+.scan-step-dot {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.scan-step-idle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+
+.scan-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  animation: scanSpin 0.8s linear infinite;
+}
+
+@keyframes scanSpin {
+  to { transform: rotate(360deg); }
+}
+
+.scan-step.done .scan-step-dot {
+  color: var(--accent);
+}
+
+.scan-step.done .scan-step-label {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--faint);
+}
+
+.scan-step.active .scan-step-label {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.scan-step-label {
+  font-size: 0.8rem;
+  color: var(--faint);
+}
