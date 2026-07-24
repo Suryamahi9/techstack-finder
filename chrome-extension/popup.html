@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #08080a;
+      color: #f4f4ee;
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #222;
+    }
+    .header svg { width: 22px; height: 22px; color: #c5fb45; }
+    .header h1 { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+    .header span { font-size: 10px; color: #9a9aa0; }
+    .url-bar {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #9a9aa0;
+      margin-bottom: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #c5fb45;
+      background: rgba(197, 251, 69, 0.1);
+      color: #c5fb45;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 10px;
+    }
+    .btn:hover { background: rgba(197, 251, 69, 0.2); }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary {
+      border-color: #333;
+      background: transparent;
+      color: #9a9aa0;
+    }
+    .btn-secondary:hover { border-color: #555; color: #f4f4ee; }
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .loading.active { display: block; }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid #222;
+      border-top-color: #c5fb45;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 11px; color: #9a9aa0; }
+    .results { display: none; }
+    .results.active { display: block; }
+    .error { display: none; color: #ef4444; font-size: 11px; padding: 12px 0; text-align: center; }
+    .error.active { display: block; }
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .tech-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #222;
+      background: #111;
+      font-size: 10px;
+      font-weight: 500;
+      color: #ccc;
+    }
+    .tech-badge.frontend { border-color: rgba(96, 165, 250, 0.3); color: #60a5fa; }
+    .tech-badge.backend { border-color: rgba(52, 211, 153, 0.3); color: #34d399; }
+    .tech-badge.infra { border-color: rgba(167, 139, 250, 0.3); color: #a78bfa; }
+    .score-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .score-track {
+      flex: 1;
+      height: 6px;
+      background: #1a1a1a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s;
+    }
+    .score-label {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'SF Mono', monospace;
+      min-width: 28px;
+      text-align: right;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 4px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .summary-row:last-child { border: none; }
+    .summary-row span:first-child { color: #9a9aa0; }
+    .summary-row span:last-child { font-weight: 600; }
+    .footer-link {
+      display: block;
+      text-align: center;
+      font-size: 10px;
+      color: #9a9aa0;
+      margin-top: 12px;
+      text-decoration: none;
+    }
+    .footer-link:hover { color: #c5fb45; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
+    </svg>
+    <div>
+      <h1>TechStack Finder</h1>
+      <span>Chrome Extension</span>
+    </div>
+  </div>
+
+  <div class="url-bar" id="currentUrl">Loading...</div>
+
+  <button class="btn" id="scanBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+    </svg>
+    Scan This Site
+  </button>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Scanning technology stack...</div>
+  </div>
+
+  <div class="error" id="error"></div>
+
+  <div class="results" id="results">
+    <div class="score-bar">
+      <div class="score-track">
+        <div class="score-fill" id="scoreFill" style="width: 0%; background: #c5fb45;"></div>
+      </div>
+      <div class="score-label" id="scoreLabel">0</div>
+    </div>
+
+    <div class="tech-grid" id="techGrid"></div>
+
+    <div id="summaryRows"></div>
+
+    <a class="footer-link" id="fullReportLink" href="#" target="_blank">
+      Open full report &rarr;
+    </a>
+  </div>
+
+  <button class="btn btn-secondary" id="historyBtn" style="margin-top: 8px;">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" />
+    </svg>
+    Scan History
+  </button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

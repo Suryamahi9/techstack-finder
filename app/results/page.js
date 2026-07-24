@@ -39,6 +39,10 @@ import ImpliedTechs from '../../components/ImpliedTechs';
 import IndustryBadge from '../../components/IndustryBadge';
 import AiBuilderBadge from '../../components/AiBuilderBadge';
 import CanonicalTechs from '../../components/CanonicalTechs';
+import MarketTrends from '../../components/MarketTrends';
+import HistoricalAdoption from '../../components/HistoricalAdoption';
+import CompanyEnrichment from '../../components/CompanyEnrichment';
+import JobInference from '../../components/JobInference';
 
 import BadgeDisplay from '../../components/BadgeDisplay';
 import EmbedWidget from '../../components/EmbedWidget';
@@ -227,6 +231,18 @@ function ResultsContent() {
                 )}
 
                 {data.canonicalTechs && <CanonicalTechs technologies={data.canonicalTechs} />}
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  <MarketTrends technologies={data.technologies} />
+                  <HistoricalAdoption technologies={data.technologies} />
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {(data.jobInference || data.stackInference) && (
+                    <JobInference jobInference={data.jobInference} stackInference={data.stackInference} />
+                  )}
+                  {data.company && <CompanyEnrichment company={data.company} />}
+                </div>
 
                 {data.company && (
                   <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />

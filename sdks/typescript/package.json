@@ -1,0 +1,16 @@
+{
+  "name": "techstack-finder-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for TechStack Finder — detect any website's technology stack",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["tech-stack", "website-analysis", "technology-detection"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
