@@ -5,6 +5,8 @@ import Footer from '../../../components/Footer';
 import TechRadar from '../../../components/TechRadar';
 import StackVisualization from '../../../components/StackVisualization';
 import EmbedWidget from '../../../components/EmbedWidget';
+import ShareButton from '../../../components/ShareButton';
+import BookmarkButton from '../../../components/BookmarkButton';
 
 function PublicProfileContent({ domain }) {
   const [data, setData] = useState(null);
@@ -31,6 +33,67 @@ function PublicProfileContent({ domain }) {
     run();
   }, [domain]);
 
+  useEffect(() => {
+    if (!data) return;
+    document.title = `${domain} — Tech Stack | TechStack Finder`;
+
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const desc = `${domain} uses ${(data.summary?.total || 0)} technologies: ${(data.categories || []).slice(0, 3).map(c => c.category).join(', ')}. View the full tech stack profile.`;
+    if (metaDesc) metaDesc.setAttribute('content', desc);
+    else {
+      const m = document.createElement('meta');
+      m.name = 'description';
+      m.content = desc;
+      document.head.appendChild(m);
+    }
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogD = document.querySelector('meta[property="og:description"]');
+    const ogImg = document.querySelector('meta[property="og:image"]');
+    const twCard = document.querySelector('meta[name="twitter:card"]');
+    const canonical = document.querySelector('link[rel="canonical"]');
+
+    const setMeta = (attr, name, val) => {
+      let el = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!el) { el = document.createElement('meta'); el.setAttribute(attr, name); document.head.appendChild(el); }
+      el.setAttribute('content', val);
+    };
+
+    setMeta('property', 'og:title', `${domain} Tech Stack Profile`);
+    setMeta('property', 'og:description', desc);
+    setMeta('property', 'og:image', `https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:url', `https://techstackfinder.com/site/${domain}`);
+    setMeta('name', 'twitter:card', 'summary');
+    setMeta('name', 'twitter:title', `${domain} Tech Stack Profile`);
+    setMeta('name', 'twitter:description', desc);
+
+    if (!canonical) {
+      const link = document.createElement('link');
+      link.rel = 'canonical';
+      link.href = `https://techstackfinder.com/site/${domain}`;
+      document.head.appendChild(link);
+    }
+
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: `${domain} Tech Stack`,
+      description: desc,
+      url: `https://${domain}`,
+      applicationCategory: 'DeveloperApplication',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    };
+    const existingLd = document.querySelector('script[type="application/ld+json"]');
+    if (existingLd) existingLd.textContent = JSON.stringify(ld);
+    else {
+      const s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.textContent = JSON.stringify(ld);
+      document.head.appendChild(s);
+    }
+  }, [data, domain]);
+
   const allTechs = useMemo(() => {
     if (!data) return [];
     return (data.categories || []).flatMap((c) => c.technologies.map((t) => ({ ...t, category: c.category })));
@@ -56,7 +119,7 @@ function PublicProfileContent({ domain }) {
             <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
               <h2 className="text-lg font-semibold">Unable to load profile</h2>
               <p className="mt-2 text-sm text-muted">{error}</p>
-              <a href="/" className="mt-4 inline-block text-xs text-accent hover:underline">← Back to home</a>
+              <a href="/" className="mt-4 inline-block text-xs text-accent hover:underline">&larr; Back to home</a>
             </div>
           ) : (
             <>
@@ -66,11 +129,16 @@ function PublicProfileContent({ domain }) {
                 </div>
                 <div className="text-left">
                   <h1 className="text-2xl font-bold tracking-tight">{domain}</h1>
-                  <p className="text-xs text-muted">TechStack Profile · {data.site?.url}</p>
+                  <p className="text-xs text-muted">TechStack Profile &middot; {data.site?.url}</p>
                 </div>
               </div>
 
-              <div className="mt-6 mb-8 flex justify-center gap-4">
+              <div className="mt-6 mb-6 flex justify-center gap-3">
+                <BookmarkButton data={data} />
+                <ShareButton site={domain} />
+              </div>
+
+              <div className="mt-2 mb-8 flex justify-center gap-4">
                 {[
                   { label: 'Total', value: data.summary?.total || 0, color: 'text-accent' },
                   { label: 'Frontend', value: techCounts.frontend, color: 'text-blue-400' },
@@ -113,10 +181,18 @@ function PublicProfileContent({ domain }) {
                 <EmbedWidget domain={domain} />
               </div>
 
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <a href={`/results?site=${encodeURIComponent(domain)}`} className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-bg hover:brightness-110 transition-all">
-                  View Full Report →
+                  View Full Report &rarr;
                 </a>
+                <button
+                  onClick={() => {
+                    navigator.clipboard?.writeText(`https://techstackfinder.com/site/${domain}`);
+                  }}
+                  className="rounded-xl border border-border bg-elevated px-6 py-3 text-sm font-medium text-muted hover:border-border-strong transition-all"
+                >
+                  Copy Shareable Link
+                </button>
               </div>
             </>
           )}

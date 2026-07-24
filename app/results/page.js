@@ -34,6 +34,11 @@ import DnsTlsPanel from '../../components/DnsTlsPanel';
 import AdsTxtPanel from '../../components/AdsTxtPanel';
 import GdprAudit from '../../components/GdprAudit';
 import PartialResultsBanner from '../../components/PartialResultsBanner';
+import AiInsights from '../../components/AiInsights';
+import ImpliedTechs from '../../components/ImpliedTechs';
+import IndustryBadge from '../../components/IndustryBadge';
+import AiBuilderBadge from '../../components/AiBuilderBadge';
+import CanonicalTechs from '../../components/CanonicalTechs';
 
 import BadgeDisplay from '../../components/BadgeDisplay';
 import EmbedWidget from '../../components/EmbedWidget';
@@ -208,6 +213,20 @@ function ResultsContent() {
                   {data.adsTxt && <AdsTxtPanel adsTxt={data.adsTxt} />}
                   {data.gdpr && <GdprAudit gdpr={data.gdpr} />}
                 </div>
+
+                {data.aiBuilders && data.aiBuilders.length > 0 && (
+                  <AiBuilderBadge builders={data.aiBuilders} />
+                )}
+
+                {data.industry && <IndustryBadge industry={data.industry} />}
+
+                {data.insights && <AiInsights insights={data.insights} />}
+
+                {data.impliedTechs && data.impliedTechs.length > 0 && (
+                  <ImpliedTechs implied={data.impliedTechs} />
+                )}
+
+                {data.canonicalTechs && <CanonicalTechs technologies={data.canonicalTechs} />}
 
                 {data.company && (
                   <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />
