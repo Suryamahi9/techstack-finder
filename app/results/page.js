@@ -172,7 +172,7 @@ function ResultsContent() {
         <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
       </div>
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+      <main id="main-content" className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
         <div className="mb-6 max-w-2xl">
           <SearchBar initialValue={site || ''} size="small" />
         </div>
@@ -290,6 +290,8 @@ function ResultsContent() {
                 {data.openSourceAlts && data.openSourceAlts.alternatives.length > 0 && (
                   <OpenSourceAlts alternatives={data.openSourceAlts} />
                 )}
+
+                <StackHealthTimeline domain={data.site?.domain} currentScore={data.healthScore} />
 
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                   <BookmarkButton data={data} />

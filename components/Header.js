@@ -100,6 +100,7 @@ export default function Header() {
       <header className="fixed left-0 right-0 top-0 z-50 hidden lg:block">
         <div className="mx-auto w-max max-w-[calc(100vw-2rem)] pt-6">
           <nav
+            aria-label="Main navigation"
             className={`header-pill header-border-glow nav-spotlight flex items-center gap-1.5 overflow-x-auto rounded-full border px-4 py-2 backdrop-blur-2xl transition-all duration-500 xl:gap-2 xl:px-5 ${
               scrolled
                 ? 'border-white/[0.08] bg-bg/80 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)]'

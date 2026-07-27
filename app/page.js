@@ -120,7 +120,7 @@ export default function Home() {
         <FloatingLogos />
       </div>
 
-      <main className="relative z-10">
+      <main id="main-content" className="relative z-10">
 
         {/* ═══════════ HERO ═══════════ */}
         <section className="flex flex-col items-center gap-6 px-6 pt-28 pb-16 sm:pt-36 lg:flex-row lg:items-start lg:gap-12 lg:px-12">

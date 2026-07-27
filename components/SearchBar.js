@@ -137,6 +137,8 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         <input
           ref={inputRef}
           type="text"
+          aria-label="Website URL to scan"
+          role="searchbox"
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
