@@ -34,6 +34,22 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-lg focus:border focus:border-accent focus:bg-bg focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent">Skip to content</a>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'TechStack Finder',
+              url: 'https://techstack-finder.vercel.app',
+              description: 'Fingerprint any website\'s technology stack in seconds. Detect frameworks, CMS, analytics, hosting, and more.',
+              applicationCategory: 'DeveloperApplication',
+              operatingSystem: 'Web',
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            }),
+          }}
+        />
         <SessionProvider>
           <BackgroundManager />
           <div className="noise-overlay" />

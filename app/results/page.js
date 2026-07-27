@@ -43,6 +43,16 @@ import MarketTrends from '../../components/MarketTrends';
 import HistoricalAdoption from '../../components/HistoricalAdoption';
 import CompanyEnrichment from '../../components/CompanyEnrichment';
 import JobInference from '../../components/JobInference';
+import CostEstimator from '../../components/CostEstimator';
+import TechLifecycle from '../../components/TechLifecycle';
+import ComplexityScore from '../../components/ComplexityScore';
+import OpenSourceAlts from '../../components/OpenSourceAlts';
+import StackFingerprint from '../../components/StackFingerprint';
+import TeamEstimator from '../../components/TeamEstimator';
+import TechDebtDetector from '../../components/TechDebtDetector';
+import MigrationPath from '../../components/MigrationPath';
+import CompetitorRadar from '../../components/CompetitorRadar';
+import StackHealthTimeline from '../../components/StackHealthTimeline';
 
 import BadgeDisplay from '../../components/BadgeDisplay';
 import EmbedWidget from '../../components/EmbedWidget';
@@ -256,6 +266,30 @@ function ResultsContent() {
                 {data.pageMetadata && <PageMetadata metadata={data.pageMetadata} />}
 
                 <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.costEstimate && <CostEstimator costEstimate={data.costEstimate} />}
+                  {data.complexity && <ComplexityScore complexity={data.complexity} />}
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.lifecycle && <TechLifecycle lifecycle={data.lifecycle} />}
+                  {data.techDebt && <TechDebtDetector techDebt={data.techDebt} />}
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.competitorRadar && <CompetitorRadar radar={data.competitorRadar} />}
+                  {data.fingerprint && <StackFingerprint fingerprint={data.fingerprint} />}
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                  {data.teamEstimate && <TeamEstimator teamEstimate={data.teamEstimate} />}
+                  {data.migrationData && data.migrationData.migrations.length > 0 && <MigrationPath migrationData={data.migrationData} />}
+                </div>
+
+                {data.openSourceAlts && data.openSourceAlts.alternatives.length > 0 && (
+                  <OpenSourceAlts alternatives={data.openSourceAlts} />
+                )}
 
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                   <BookmarkButton data={data} />
