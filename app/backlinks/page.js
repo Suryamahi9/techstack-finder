@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { getScanHistory, fetchServerHistory } from '../../lib/scan-history';
+import BackButton from '../../components/BackButton';
 
 const BACKLINK_TOOLS = [
   { name: 'Ahrefs', url: (d) => `https://ahrefs.com/backlink-checker/${d}`, color: '#ff6b35' },
@@ -153,6 +154,9 @@ export default function BacklinksPage() {
   return (
     <div className="min-h-screen bg-base">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">

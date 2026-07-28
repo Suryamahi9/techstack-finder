@@ -4,6 +4,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import MergedPdfButton from '../../components/MergedPdfButton';
 import Skeleton from '../../components/Skeleton';
+import BackButton from '../../components/BackButton';
 
 async function scan(url) {
   const res = await fetch('/api/scan', {
@@ -228,6 +229,9 @@ export default function CompareContent() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8 max-w-3xl">
           <h1 className="text-2xl font-bold tracking-tight">Compare Stacks</h1>
           <p className="mt-1 text-sm text-muted">

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import BackButton from '../../components/BackButton';
 
 const BOOKMARK_KEY = 'tsf-bookmarks';
 const TRENDS_KEY = 'tsf-scan-trends';
@@ -212,6 +213,9 @@ export default function DigestPage() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-4xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Weekly Digest</h1>
           <p className="mt-1 text-sm text-muted">

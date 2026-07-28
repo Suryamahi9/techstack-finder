@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import BackButton from '../../components/BackButton';
 
 function Section({ title, children }) {
   return (
@@ -163,6 +164,9 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <div className="mx-auto max-w-2xl px-4 py-16">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <h1 className="mb-8 text-xl font-bold text-fg">Account Settings</h1>
 
         <div className="flex flex-col gap-5">

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import BackButton from '../../components/BackButton';
 
 const CODE_EXAMPLES = {
   curl: {
@@ -104,6 +105,9 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <div className="mx-auto max-w-4xl px-4 py-16">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-12">
           <h1 className="text-3xl font-bold text-fg">API Documentation</h1>
           <p className="mt-2 text-sm text-muted">

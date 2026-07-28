@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import BackButton from '../../components/BackButton';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -46,6 +47,9 @@ export default function SignupPage() {
         <div className="gradient-mesh absolute inset-0" />
       </div>
       <main className="relative z-10 mx-auto max-w-md px-4 pb-24 pt-28 sm:px-6">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="rounded-2xl border border-border bg-elevated p-8">
           <h1 className="mb-1 text-xl font-bold tracking-tight">Create account</h1>
           <p className="mb-6 text-sm text-muted">Start scanning websites for free</p>

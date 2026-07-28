@@ -2,6 +2,7 @@
 import { Suspense, useState, useEffect, useMemo } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import BackButton from '../../components/BackButton';
 
 const ADOPTION = {
   'Next.js': 'adopt', 'React': 'adopt', 'TypeScript': 'adopt', 'Tailwind CSS': 'adopt', 'Node.js': 'adopt',
@@ -77,6 +78,9 @@ function RadarPageContent() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-5xl px-4 pt-28 pb-20 sm:px-6">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Tech <span className="text-accent">Radar</span>

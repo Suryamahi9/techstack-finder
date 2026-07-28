@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import BackButton from '../../components/BackButton';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,9 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-4">
       <div className="w-full max-w-sm">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8 text-center">
           <h1 className="text-xl font-bold text-fg">Forgot Password</h1>
           <p className="mt-2 text-sm text-muted">Enter your email and we&apos;ll send a reset link.</p>

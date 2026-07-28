@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import BackButton from '../../components/BackButton';
 
 async function scanOne(url) {
   const res = await fetch('/api/scan', {
@@ -83,6 +84,9 @@ export default function BulkScanPage() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Bulk Scan</h1>
           <p className="mt-1 text-sm text-muted">

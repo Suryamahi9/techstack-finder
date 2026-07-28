@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getScanHistory, fetchServerHistory } from '../../lib/scan-history';
+import BackButton from '../../components/BackButton';
 
 function getTrends() {
   try { return JSON.parse(localStorage.getItem('tsf-scan-trends') || '[]'); } catch { return []; }
@@ -66,6 +67,9 @@ export default function LeaderboardPage() {
         <div className="gradient-mesh absolute inset-0" />
       </div>
       <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Leaderboard</h1>
           <p className="mt-1 text-sm text-muted">{totalScans} scans · {uniqueTechs} unique technologies · {uniqueSites} sites scanned</p>

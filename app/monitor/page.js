@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import BackButton from '../../components/BackButton';
 
 const STORAGE_KEY = 'tsf-monitors';
 
@@ -147,6 +148,9 @@ export default function MonitorPage() {
         <div className="gradient-mesh absolute inset-0" />
       </div>
       <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Monitor</h1>
           <p className="mt-1 text-sm text-muted">Track changes to your monitored sites over time.</p>

@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import browseData from '../../lib/browse-data.json';
+import BackButton from '../../components/BackButton';
 
 const { categories, popular } = browseData;
 
@@ -82,6 +83,9 @@ export default function BrowsePage() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Browse <span className="text-accent">Categories</span>

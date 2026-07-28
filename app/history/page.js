@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { getScanHistory, getHistoryForDomain, diffScans, clearScanHistory, fetchServerHistory, clearServerHistory } from '../../lib/scan-history';
+import BackButton from '../../components/BackButton';
 
 export default function HistoryPage() {
   const { data: session } = useSession();
@@ -70,6 +71,9 @@ export default function HistoryPage() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Scan History</h1>

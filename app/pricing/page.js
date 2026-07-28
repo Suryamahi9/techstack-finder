@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import BackButton from '../../components/BackButton';
 
 const PLANS = [
   {
@@ -207,6 +208,9 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <div className="mx-auto max-w-5xl px-4 py-20">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="mb-14 text-center">
           <span className="mb-3 inline-block rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
             Pricing
