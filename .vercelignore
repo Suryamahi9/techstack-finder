@@ -1,0 +1,11 @@
+.claude
+.claude-flow
+.mcp.json
+.swarm
+ruflo
+chrome-extension
+sdks
+deploy
+scripts
+*.md
+CLAUDE.md
