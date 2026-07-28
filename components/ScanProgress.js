@@ -13,7 +13,7 @@ const STEPS = [
   { id: 'results', label: 'Building results', duration: 1000 },
 ];
 
-export default function ScanProgress({ site }) {
+export default function ScanProgress({ site, onCancel }) {
   const [currentStep, setCurrentStep] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [elapsed, setElapsed] = useState(0);
@@ -98,6 +98,12 @@ export default function ScanProgress({ site }) {
               );
             })}
           </div>
+
+          {onCancel && (
+            <button onClick={onCancel} className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-muted transition-all duration-300 hover:border-red-500/30 hover:text-red-400 active:scale-95">
+              Cancel scan
+            </button>
+          )}
         </div>
       </div>
     </div>

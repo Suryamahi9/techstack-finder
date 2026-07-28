@@ -1,6 +1,6 @@
 'use client';
-import { Suspense, useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
@@ -68,11 +68,14 @@ import { saveScanSnapshot } from '../../lib/scan-history';
 function ResultsContent() {
   const searchParams = useSearchParams();
   const site = searchParams.get('site');
+  const router = useRouter();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [cancelled, setCancelled] = useState(false);
+  const abortRef = useRef(null);
 
   const customHeaders = searchParams.get('headers');
   const customCookies = searchParams.get('cookies');
@@ -85,10 +88,14 @@ function ResultsContent() {
       return;
     }
 
+    setCancelled(false);
     let cancelled = false;
     setLoading(true);
     setError(null);
     setData(null);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const body = { url: site };
     if (customHeaders) body.headers = customHeaders;
@@ -99,6 +106,7 @@ function ResultsContent() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      signal: controller.signal,
     })
       .then(async (r) => {
         const json = await r.json();
@@ -150,16 +158,29 @@ function ResultsContent() {
         } catch {}
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message || 'Failed to scan site.');
+        if (!cancelled) setError(err.name === 'AbortError' ? 'Scan cancelled.' : err.message || 'Failed to scan site.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
+        abortRef.current = null;
       });
 
     return () => {
       cancelled = true;
+      controller.abort();
+      abortRef.current = null;
     };
   }, [site, customHeaders, customCookies, customProxy]);
+
+  const handleCancel = useCallback(() => {
+    setCancelled(true);
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    setLoading(false);
+    setError('Scan cancelled.');
+  }, []);
 
   return (
     <div className="relative min-h-screen">
@@ -173,11 +194,16 @@ function ResultsContent() {
       </div>
 
       <main id="main-content" className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
-        <div className="mb-6 max-w-2xl">
-          <SearchBar initialValue={site || ''} size="small" />
+        <div className="mb-6 flex items-center gap-3">
+          <button onClick={() => router.push('/')} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted transition-all duration-300 hover:border-accent/20 hover:text-fg active:scale-95" aria-label="Back to home">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+          </button>
+          <div className="flex-1">
+            <SearchBar initialValue={site || ''} size="small" />
+          </div>
         </div>
 
-        {loading && <ScanProgress site={site} />}
+        {loading && <ScanProgress site={site} onCancel={handleCancel} />}
 
         {!loading && error && (
           <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">
