@@ -5,11 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0f0b06;
-  --elevated: #1a140e;
-  --fg: #f0e8dc;
-  --muted: #a09080;
-  --faint: #605448;
+  --bg: #0a0e17;
+  --elevated: #0f172a;
+  --fg: #e2e8f0;
+  --muted: #94a3b8;
+  --faint: #64748b;
   --border: rgba(255, 255, 255, 0.06);
   --border-strong: rgba(255, 255, 255, 0.12);
   --accent: #d97706;
@@ -18,11 +18,11 @@
 }
 
 [data-theme='warm'] {
-  --bg: #0f0b06;
-  --elevated: #1a140e;
-  --fg: #f0e8dc;
-  --muted: #a09080;
-  --faint: #605448;
+  --bg: #0a0e17;
+  --elevated: #0f172a;
+  --fg: #e2e8f0;
+  --muted: #94a3b8;
+  --faint: #64748b;
   --border: rgba(255, 255, 255, 0.06);
   --border-strong: rgba(255, 255, 255, 0.12);
   --accent: #d97706;
@@ -30,12 +30,12 @@
   --accent-glow: rgba(217, 119, 6, 0.3);
 }
 [data-theme='warm'] .dot-grid-bg {
-  background-image: radial-gradient(circle, rgba(217, 119, 6, 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
 }
 [data-theme='warm'] .gradient-mesh {
   background:
-    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(217, 119, 6, 0.05) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(200, 100, 10, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(217, 119, 6, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(100, 116, 139, 0.04) 0%, transparent 50%);
 }
 
 [data-theme='light'] {

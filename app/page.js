@@ -190,6 +190,7 @@ export default function Home() {
         <section className="relative overflow-hidden pb-12 pt-28 sm:pt-36">
           <div className="pointer-events-none absolute inset-0 z-[-1]">
             <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.02] via-transparent to-transparent" />
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url(https://picsum.photos/seed/datacenter/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           </div>
 
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 text-center">
@@ -299,7 +300,8 @@ export default function Home() {
         </section>
 
         {/* ═══════ FEATURES GRID ═══════ */}
-        <section className="mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+        <section className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+          <div className="pointer-events-none absolute inset-0 z-[-1] opacity-[0.02]" style={{ backgroundImage: 'url(https://picsum.photos/seed/circuits/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <FadeIn>
             <div className="mb-14 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -329,7 +331,8 @@ export default function Home() {
         </section>
 
         {/* ═══════ HOW IT WORKS ═══════ */}
-        <section className="mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+        <section className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+          <div className="pointer-events-none absolute inset-0 z-[-1] opacity-[0.015]" style={{ backgroundImage: 'url(https://picsum.photos/seed/network/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-start">
             <div className="flex-1">
               <FadeIn>
@@ -370,7 +373,8 @@ export default function Home() {
         </section>
 
         {/* ═══════ TESTIMONIALS ═══════ */}
-        <section className="mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+        <section className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+          <div className="pointer-events-none absolute inset-0 z-[-1] opacity-[0.02]" style={{ backgroundImage: 'url(https://picsum.photos/seed/abstract/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <FadeIn>
             <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -405,7 +409,8 @@ export default function Home() {
         </section>
 
         {/* ═══════ PRICING ═══════ */}
-        <section className="mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+        <section className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32">
+          <div className="pointer-events-none absolute inset-0 z-[-1] opacity-[0.015]" style={{ backgroundImage: 'url(https://picsum.photos/seed/dataflow/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <FadeIn>
             <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
