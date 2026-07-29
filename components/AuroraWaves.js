@@ -18,9 +18,10 @@ export default function AuroraWaves() {
     };
 
     const hexToRgb = (hex) => {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
+      if (!hex || typeof hex !== 'string' || hex.length < 7) return { r: 217, g: 119, b: 6 };
+      const r = parseInt(hex.slice(1, 3), 16) || 217;
+      const g = parseInt(hex.slice(3, 5), 16) || 119;
+      const b = parseInt(hex.slice(5, 7), 16) || 6;
       return { r, g, b };
     };
 
