@@ -7,3 +7,8 @@ node_modules/
 /lib/generated/prisma
 
 .vercel
+
+.claude-flow/
+.claude/
+*.backup
+*.bak
