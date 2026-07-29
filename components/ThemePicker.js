@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const THEMES = [
-  { id: 'warm', name: 'Warm Dark', bg: '#0f0b06', fg: '#f0e8dc', accent: '#d97706', desc: 'Amber dark' },
+  { id: 'warm', name: 'Navy Dark', bg: '#0a0e17', fg: '#e2e8f0', accent: '#d97706', desc: 'Amber on navy' },
   { id: 'dark', name: 'Midnight', bg: '#08080a', fg: '#f4f4ee', accent: '#c5fb45', desc: 'Default dark' },
   { id: 'terminal', name: 'Terminal', bg: '#0a0a0a', fg: '#33ff33', accent: '#33ff33', desc: 'Phosphor green' },
   { id: 'blueprint', name: 'Blueprint', bg: '#0a1628', fg: '#e8f0fe', accent: '#4da6ff', desc: 'Technical drawing' },

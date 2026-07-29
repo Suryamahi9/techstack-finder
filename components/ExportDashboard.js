@@ -26,7 +26,7 @@ function flattenToCsv(data) {
 
 function buildHtmlReport(data) {
   const techRows = (data.categories || []).map((cat) => `
-    <tr><td colspan="6" style="background:#1a140e;color:#d97706;font-weight:600;padding:8px">${cat.category}</td></tr>
+    <tr><td colspan="6" style="background:#0f172a;color:#d97706;font-weight:600;padding:8px">${cat.category}</td></tr>
     ${(cat.technologies || []).map((t) => `
       <tr>
         <td style="padding:6px 8px;border-bottom:1px solid #222">${t.name}</td>
