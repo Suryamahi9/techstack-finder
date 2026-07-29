@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
-import LiveScanPreview from '../components/LiveScanPreview';
 import TerminalScanner from '../components/TerminalScanner';
 import MouseGlow from '../components/MouseGlow';
 import FloatingLogos from '../components/FloatingLogos';
 import CategoryGrid from '../components/CategoryGrid';
 import OnboardingTour from '../components/OnboardingTour';
+import ResultsMockup from '../components/ResultsMockup';
+import TechStackShowcase from '../components/TechStackShowcase';
 import useInView from '../lib/useInView';
 
 const SITES = [
@@ -124,14 +125,14 @@ export default function Home() {
       <main id="main-content" className="relative z-10">
 
         {/* ═══════════ HERO ═══════════ */}
-        <section className="flex flex-col items-center gap-6 px-6 pt-28 pb-16 sm:pt-36 lg:flex-row lg:items-start lg:gap-12 lg:px-12">
-          <div className="w-full flex-1 space-y-4 lg:max-w-4xl">
+        <section className="relative flex flex-col items-center gap-10 px-6 pt-28 pb-16 sm:pt-36 lg:flex-row lg:items-start lg:gap-16 lg:px-12">
+          <div className="w-full flex-1 space-y-4 lg:max-w-3xl">
             <FadeIn>
               <TypewriterBadge />
             </FadeIn>
 
             <FadeIn delay={0.08}>
-              <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[4rem]">
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[4.5rem]">
                 What&apos;s it<br />
                 <span style={GRADIENT_STYLE}>built with</span><span className="text-muted">?</span>
               </h1>
@@ -170,16 +171,51 @@ export default function Home() {
             </FadeIn>
           </div>
 
-          <div className="hidden shrink-0 lg:block lg:w-[42%]">
+          <div className="w-full shrink-0 lg:w-[50%]">
             <FadeIn delay={0.35}>
-              <LiveScanPreview />
+              <div className="relative">
+                <div className="pointer-events-none absolute -inset-4 z-[-1]">
+                  <div className="absolute inset-0 bg-gradient-to-l from-accent/10 via-transparent to-transparent opacity-40 blur-3xl" />
+                </div>
+                <ResultsMockup />
+              </div>
             </FadeIn>
           </div>
+
+          {/* Decorative tech badges floating on left */}
+          <div className="pointer-events-none absolute left-0 top-1/2 hidden -translate-y-1/2 lg:block">
+            <div className="space-y-2 opacity-30">
+              {['React', 'Node', 'Python', 'Go'].map((t, i) => (
+                <div
+                  key={t}
+                  className="rounded-r-lg border border-white/[0.04] border-l-accent/30 bg-white/[0.02] px-3 py-1.5 font-mono text-[10px] text-faint"
+                  style={{ animation: `fadeIn 0.5s ${i * 0.1}s both` }}
+                >
+                  {t}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════ TECH SHOWCASE ═══════════ */}
+        <section className="mx-auto max-w-7xl px-6 pt-16">
+          <FadeIn>
+            <div className="mb-6 text-center">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+                2,300+ technologies
+              </div>
+              <p className="text-xs text-muted">Every framework, platform, and tool we can detect</p>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <TechStackShowcase />
+          </FadeIn>
         </section>
 
         {/* ═══════════ STATS ═══════════ */}
         <FadeIn>
-          <section className="mx-auto max-w-5xl px-6">
+          <section className="mx-auto max-w-5xl px-6 pt-16">
             <div className="grid grid-cols-2 gap-[1px] bg-white/[0.06] sm:grid-cols-4">
               {[
                 { value: 2300, suffix: '+', label: 'Detection rules', icon: 'M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5' },
