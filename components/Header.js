@@ -7,12 +7,14 @@ import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
 
 const HOME_NAV_ITEMS = [
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/docs', label: 'Docs' },
   { href: '/browse', label: 'Browse' },
 ];
 
 const FULL_NAV_ITEMS = [
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/docs', label: 'Docs' },
   { href: '/bookmarks', label: 'Bookmarks' },

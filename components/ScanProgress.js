@@ -13,13 +13,14 @@ const STEPS = [
   { id: 'results', label: 'Building results', duration: 1000 },
 ];
 
-export default function ScanProgress({ site, onCancel }) {
+export default function ScanProgress({ site, onCancel, streamUrl }) {
   const [currentStep, setCurrentStep] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [elapsed, setElapsed] = useState(0);
   const timers = useRef([]);
 
   useEffect(() => {
+    if (streamUrl) return;
     let stepIdx = 0;
 
     function advance() {
@@ -43,7 +44,36 @@ export default function ScanProgress({ site, onCancel }) {
       timers.current.forEach(clearInterval);
       timers.current = [];
     };
-  }, []);
+  }, [streamUrl]);
+
+  useEffect(() => {
+    if (!streamUrl) return;
+    const es = new EventSource(streamUrl);
+    es.addEventListener('progress', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.step) {
+          const idx = STEPS.findIndex((s) => s.id === data.step);
+          if (idx >= 0) {
+            setCurrentStep(idx);
+            setCompletedSteps((prev) => {
+              if (prev.includes(data.step)) return prev;
+              return [...prev, data.step];
+            });
+          }
+        }
+      } catch {}
+    });
+    es.addEventListener('done', () => {
+      setCurrentStep(STEPS.length);
+      setCompletedSteps(STEPS.map((s) => s.id));
+      es.close();
+    });
+    es.addEventListener('error', () => {
+      es.close();
+    });
+    return () => { es.close(); };
+  }, [streamUrl]);
 
   const done = completedSteps.length;
   const pct = Math.min((done / STEPS.length) * 100, 100);

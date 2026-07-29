@@ -239,6 +239,17 @@ export default function SettingsPage() {
               </div>
             )}
           </Section>
+          <Section title="Onboarding">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-fg">Reset onboarding tour</p>
+                <p className="mt-1 text-xs text-muted">Re-trigger the step-by-step walkthrough on the homepage.</p>
+              </div>
+              <Button onClick={() => { localStorage.removeItem('tsf-onboarding-done'); window.location.href = '/'; }}>
+                Restart Tour
+              </Button>
+            </div>
+          </Section>
         </div>
       </div>
     </div>

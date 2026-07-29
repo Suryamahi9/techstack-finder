@@ -8,6 +8,7 @@ import TerminalScanner from '../components/TerminalScanner';
 import MouseGlow from '../components/MouseGlow';
 import FloatingLogos from '../components/FloatingLogos';
 import CategoryGrid from '../components/CategoryGrid';
+import OnboardingTour from '../components/OnboardingTour';
 import useInView from '../lib/useInView';
 
 const SITES = [
@@ -359,6 +360,7 @@ export default function Home() {
           </FadeIn>
         </section>
 
+        <OnboardingTour />
       </main>
 
       <Footer />

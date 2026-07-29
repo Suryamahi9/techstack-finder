@@ -25,7 +25,7 @@ import DesignTokens from '../../components/DesignTokens';
 import ThirdPartyAnalysis from '../../components/ThirdPartyAnalysis';
 import TechTab from '../../components/TechTab';
 import DownloadPdfButton from '../../components/DownloadPdfButton';
-import ExportButtons from '../../components/ExportButtons';
+import ExportDashboard from '../../components/ExportDashboard';
 import BookmarkButton from '../../components/BookmarkButton';
 import ShareButton from '../../components/ShareButton';
 import StackScore from '../../components/StackScore';
@@ -62,6 +62,7 @@ import WhiteLabelPdf from '../../components/WhiteLabelPdf';
 import TechStackGenerator from '../../components/TechStackGenerator';
 import ReverseLookup from '../../components/ReverseLookup';
 import ResultsTabs from '../../components/ResultsTabs';
+import CompareDropZone from '../../components/CompareDropZone';
 import { saveScanTrend } from '../trends/page';
 import { saveScanSnapshot } from '../../lib/scan-history';
 
@@ -203,7 +204,7 @@ function ResultsContent() {
           </div>
         </div>
 
-        {loading && <ScanProgress site={site} onCancel={handleCancel} />}
+        {loading && <ScanProgress site={site} onCancel={handleCancel} streamUrl={`/api/scan-stream?url=${encodeURIComponent(site || '')}`} />}
 
         {!loading && error && (
           <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">
@@ -323,7 +324,7 @@ function ResultsContent() {
                   <BookmarkButton data={data} />
                   <ShareButton site={site} />
                   <DownloadPdfButton data={data} fileName={data.site?.domain || 'report'} />
-                  <ExportButtons data={data} fileName={data.site?.domain || 'report'} />
+                  <ExportDashboard data={data} fileName={data.site?.domain || 'report'} />
                 </div>
               </div>
             )}
@@ -411,6 +412,7 @@ function ResultsContent() {
       </main>
 
       <Footer />
+      <CompareDropZone />
     </div>
   );
 }

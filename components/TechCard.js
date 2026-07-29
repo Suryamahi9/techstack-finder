@@ -78,7 +78,9 @@ export default function TechCard({ tech, index = 0 }) {
 
   return (
     <div
-      className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-elevated p-4 sm:p-5 sm:gap-4 transition-all duration-300 hover:border-border-strong hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.3)] animate-fade-up"
+      draggable
+      onDragStart={(e) => e.dataTransfer.setData('application/json', JSON.stringify(tech))}
+      className="group relative flex flex-col gap-3 rounded-2xl border border-border bg-elevated p-4 sm:p-5 sm:gap-4 transition-all duration-300 hover:border-border-strong hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.3)] animate-fade-up cursor-grab active:cursor-grabbing"
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
