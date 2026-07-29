@@ -6,15 +6,18 @@
 
 :root {
   --bg: #0a0e17;
+  --surface: #0c1522;
   --elevated: #0f172a;
   --fg: #e2e8f0;
   --muted: #94a3b8;
   --faint: #64748b;
   --border: rgba(255, 255, 255, 0.06);
   --border-strong: rgba(255, 255, 255, 0.12);
-  --accent: #d97706;
-  --accent-soft: rgba(217, 119, 6, 0.12);
-  --accent-glow: rgba(217, 119, 6, 0.3);
+  --accent: #f59e0b;
+  --accent-soft: rgba(245, 158, 11, 0.12);
+  --accent-glow: rgba(245, 158, 11, 0.3);
+  --secondary: #6366f1;
+  --secondary-soft: rgba(99, 102, 241, 0.12);
 }
 
 .dot-grid-bg {
@@ -64,15 +67,12 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
 .grid-bg {
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
   background-size: 56px 56px;
   background-position: -1px -1px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 80%);
 }
-
 .dot-grid-bg {
   background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -300,8 +300,8 @@ body {
 
 .gradient-mesh {
   background:
-    radial-gradient(ellipse 65% 45% at 15% 25%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 50% at 80% 70%, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 55%);
+    radial-gradient(ellipse 65% 45% at 15% 25%, rgba(245, 158, 11, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 50% at 80% 70%, rgba(245, 158, 11, 0.03) 0%, transparent 55%);
 }
 
 .light-bg-art {
@@ -744,7 +744,7 @@ html {
 
 /* Gradient text utility */
 .gradient-text-animated {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, color-mix(in srgb, var(--accent) 40%, transparent) 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, rgba(245, 158, 11, 0.4) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -893,15 +893,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   background-size: 256px 256px;
 }
 
-/* Grid background pattern */
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%);
-}
 
 /* Ambient glow orbs */
 .ambient-orb {

@@ -5,7 +5,7 @@ export const metadata = {
   title: 'TechStack Finder — What is any website built with?',
   description:
     'Enter a URL and instantly see the technologies powering it: frameworks, CMS, analytics, hosting, and more.',
-  metadataBase: new URL('https://techstack-finder.local'),
+  metadataBase: new URL('https://techstack-finder.vercel.app'),
   openGraph: {
     title: 'TechStack Finder',
     description: 'Fingerprint any website\'s technology stack in seconds.',
@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="warm" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-lg focus:border focus:border-accent focus:bg-bg focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent">Skip to content</a>
         <script

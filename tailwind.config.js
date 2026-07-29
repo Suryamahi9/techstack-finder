@@ -12,6 +12,7 @@ module.exports = {
         border: 'var(--border)',
         accent: 'var(--accent)',
         'accent-soft': 'var(--accent-soft)',
+        surface: 'var(--surface)',
       },
       fontFamily: {
         sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
@@ -62,34 +63,11 @@ module.exports = {
           '33%': { transform: 'translate(-30px, 40px)' },
           '66%': { transform: 'translate(20px, -20px)' },
         },
-        orbDrift3: {
-          '0%, 100%': { transform: 'translate(0, 0)' },
-          '50%': { transform: 'translate(40px, -30px)' },
-        },
-        sweepRotate: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' },
-        },
-        fadeScale: {
-          '0%': { opacity: '0', transform: 'scale(0.92)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
-        },
-        pingSlow: {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.4' },
-          '50%': { transform: 'scale(1.5)', opacity: '0' },
-        },
-        floatSubtle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-4px)' },
-        },
-        tickerScroll: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
         fadeInView: {
           '0%': { opacity: '0', transform: 'translateY(40px) scale(0.97)' },
           '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
         },
+      },
       },
     },
   },

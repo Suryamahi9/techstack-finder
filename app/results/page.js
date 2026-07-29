@@ -61,6 +61,7 @@ import WebhookPanel from '../../components/WebhookPanel';
 import WhiteLabelPdf from '../../components/WhiteLabelPdf';
 import TechStackGenerator from '../../components/TechStackGenerator';
 import ReverseLookup from '../../components/ReverseLookup';
+import SectionGroup from '../../components/SectionGroup';
 import ResultsTabs from '../../components/ResultsTabs';
 import CompareDropZone from '../../components/CompareDropZone';
 import { saveScanTrend } from '../trends/page';
@@ -190,7 +191,6 @@ function ResultsContent() {
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="dot-grid-bg absolute inset-0" />
         <div className="gradient-mesh absolute inset-0" />
-        <div className="light-bg-art"><div className="art-blob" /><div className="art-blob" /><div className="art-blob" /></div>
         <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
       </div>
 
@@ -245,81 +245,105 @@ function ResultsContent() {
               <div className="space-y-8">
                 <StackScore seo={data.seo} performance={data.performance} security={data.security} healthScore={data.healthScore} cveSummary={data.cveSummary} dnsTls={data.dnsTls} gdpr={data.gdpr} />
 
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.dnsTls && <DnsTlsPanel dnsTls={data.dnsTls} />}
-                  {data.cveSummary && <VulnerabilityPanel cveSummary={data.cveSummary} versionScores={data.versionScores} />}
-                </div>
+                {/* ─────── Stack & Technologies ─────── */}
+                <SectionGroup title="Stack & Technologies" badge={data.summary?.total} defaultOpen icon={<><path d="M4 7l8-4 8 4-8 4-8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 17l8 4 8-4"/></>}>
+                  <TechTab data={data} />
+                </SectionGroup>
 
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.adsTxt && <AdsTxtPanel adsTxt={data.adsTxt} />}
-                  {data.gdpr && <GdprAudit gdpr={data.gdpr} />}
-                </div>
+                {/* ─────── Security & Compliance ─────── */}
+                <SectionGroup title="Security & Compliance" defaultOpen icon={<><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></>}>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.dnsTls && <DnsTlsPanel dnsTls={data.dnsTls} />}
+                      {data.cveSummary && <VulnerabilityPanel cveSummary={data.cveSummary} versionScores={data.versionScores} />}
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.adsTxt && <AdsTxtPanel adsTxt={data.adsTxt} />}
+                      {data.gdpr && <GdprAudit gdpr={data.gdpr} />}
+                    </div>
+                  </div>
+                </SectionGroup>
 
-                {data.aiBuilders && data.aiBuilders.length > 0 && (
-                  <AiBuilderBadge builders={data.aiBuilders} />
-                )}
+                {/* ─────── Performance & SEO ─────── */}
+                <SectionGroup title="Performance & SEO" icon={<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.seo && <SeoAnalysis seo={data.seo} />}
+                      {data.performance && <PerformanceInsights performance={data.performance} />}
+                    </div>
+                    {data.security && <SecurityHeaders security={data.security} />}
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      <PageWeightAnalysis pageMetadata={data.pageMetadata} categories={data.categories} seo={data.seo} />
+                      {data.a11y && <AccessibilityReport a11y={data.a11y} />}
+                    </div>
+                    <CoreWebVitals url={data.site?.url} />
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      <StackPopularity categories={data.categories} />
+                      <IndustryBenchmark domain={data.site?.domain} categories={data.categories} />
+                    </div>
+                    <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
+                  </div>
+                </SectionGroup>
 
-                {data.industry && <IndustryBadge industry={data.industry} />}
+                {/* ─────── Business Intelligence ─────── */}
+                <SectionGroup title="Business Intelligence" icon={<><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></>}>
+                  <div className="space-y-6">
+                    {(data.jobInference || data.stackInference) && (
+                      <JobInference jobInference={data.jobInference} stackInference={data.stackInference} />
+                    )}
+                    {data.company && <CompanyEnrichment company={data.company} />}
+                    {data.company && (
+                      <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />
+                    )}
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      <MarketTrends technologies={data.technologies} />
+                      <HistoricalAdoption technologies={data.technologies} />
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      <AiStackSummary domain={data.site?.domain} categories={data.categories} summary={data.summary} company={data.company} />
+                      <AutoCategorization domain={data.site?.domain} categories={data.categories} summary={data.summary} />
+                    </div>
+                    {data.canonicalTechs && <CanonicalTechs technologies={data.canonicalTechs} />}
+                    {data.impliedTechs && data.impliedTechs.length > 0 && (
+                      <ImpliedTechs implied={data.impliedTechs} />
+                    )}
+                    {data.industry && <IndustryBadge industry={data.industry} />}
+                    {data.insights && <AiInsights insights={data.insights} />}
+                    {data.aiBuilders && data.aiBuilders.length > 0 && (
+                      <AiBuilderBadge builders={data.aiBuilders} />
+                    )}
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.lifecycle && <TechLifecycle lifecycle={data.lifecycle} />}
+                      {data.techDebt && <TechDebtDetector techDebt={data.techDebt} />}
+                    </div>
+                  </div>
+                </SectionGroup>
 
-                {data.insights && <AiInsights insights={data.insights} />}
+                {/* ─────── Recommendations & Migration ─────── */}
+                <SectionGroup title="Recommendations & Stack Health" icon={<><path d="M12 20V10"/><path d="M18 20V5"/><path d="M6 20v-4"/></>}>
+                  <div className="space-y-6">
+                    <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
+                    <StackHealthTimeline domain={data.site?.domain} currentScore={data.healthScore} />
+                    {data.openSourceAlts && data.openSourceAlts.alternatives.length > 0 && (
+                      <OpenSourceAlts alternatives={data.openSourceAlts} />
+                    )}
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.costEstimate && <CostEstimator costEstimate={data.costEstimate} />}
+                      {data.complexity && <ComplexityScore complexity={data.complexity} />}
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.teamEstimate && <TeamEstimator teamEstimate={data.teamEstimate} />}
+                      {data.migrationData && data.migrationData.migrations.length > 0 && <MigrationPath migrationData={data.migrationData} />}
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                      {data.competitorRadar && <CompetitorRadar radar={data.competitorRadar} />}
+                      {data.fingerprint && <StackFingerprint fingerprint={data.fingerprint} />}
+                    </div>
+                    {data.pageMetadata && <PageMetadata metadata={data.pageMetadata} />}
+                  </div>
+                </SectionGroup>
 
-                {data.impliedTechs && data.impliedTechs.length > 0 && (
-                  <ImpliedTechs implied={data.impliedTechs} />
-                )}
-
-                {data.canonicalTechs && <CanonicalTechs technologies={data.canonicalTechs} />}
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  <MarketTrends technologies={data.technologies} />
-                  <HistoricalAdoption technologies={data.technologies} />
-                </div>
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {(data.jobInference || data.stackInference) && (
-                    <JobInference jobInference={data.jobInference} stackInference={data.stackInference} />
-                  )}
-                  {data.company && <CompanyEnrichment company={data.company} />}
-                </div>
-
-                {data.company && (
-                  <CompanyProfile company={data.company} summary={data.summary} categories={data.categories} />
-                )}
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  <AiStackSummary domain={data.site?.domain} categories={data.categories} summary={data.summary} company={data.company} />
-                  <AutoCategorization domain={data.site?.domain} categories={data.categories} summary={data.summary} />
-                </div>
-
-                {data.pageMetadata && <PageMetadata metadata={data.pageMetadata} />}
-
-                <StackRecommendations categories={data.categories} security={data.security} performance={data.performance} a11y={data.a11y} />
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.costEstimate && <CostEstimator costEstimate={data.costEstimate} />}
-                  {data.complexity && <ComplexityScore complexity={data.complexity} />}
-                </div>
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.lifecycle && <TechLifecycle lifecycle={data.lifecycle} />}
-                  {data.techDebt && <TechDebtDetector techDebt={data.techDebt} />}
-                </div>
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.competitorRadar && <CompetitorRadar radar={data.competitorRadar} />}
-                  {data.fingerprint && <StackFingerprint fingerprint={data.fingerprint} />}
-                </div>
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.teamEstimate && <TeamEstimator teamEstimate={data.teamEstimate} />}
-                  {data.migrationData && data.migrationData.migrations.length > 0 && <MigrationPath migrationData={data.migrationData} />}
-                </div>
-
-                {data.openSourceAlts && data.openSourceAlts.alternatives.length > 0 && (
-                  <OpenSourceAlts alternatives={data.openSourceAlts} />
-                )}
-
-                <StackHealthTimeline domain={data.site?.domain} currentScore={data.healthScore} />
-
+                {/* ─────── Action Bar ─────── */}
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                   <BookmarkButton data={data} />
                   <ShareButton site={site} />
@@ -337,26 +361,15 @@ function ResultsContent() {
             {/* ═══ Analysis Tab ═══ */}
             {activeTab === 'analysis' && (
               <div className="space-y-8">
-                {data.seo && <SeoAnalysis seo={data.seo} />}
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {data.performance && <PerformanceInsights performance={data.performance} />}
-                  {data.security && <SecurityHeaders security={data.security} />}
+                <div className="rounded-xl border border-border bg-elevated/40 p-6 text-center">
+                  <p className="text-sm text-muted">
+                    Detailed analysis reports are now available in the Overview tab under
+                    <span className="mx-1.5 font-medium text-fg">Performance &amp; SEO</span>
+                    and
+                    <span className="mx-1.5 font-medium text-fg">Security &amp; Compliance</span>
+                    sections.
+                  </p>
                 </div>
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  <PageWeightAnalysis pageMetadata={data.pageMetadata} categories={data.categories} seo={data.seo} />
-                  {data.a11y && <AccessibilityReport a11y={data.a11y} />}
-                </div>
-
-                <CoreWebVitals url={data.site?.url} />
-
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  <StackPopularity categories={data.categories} />
-                  <IndustryBenchmark domain={data.site?.domain} categories={data.categories} />
-                </div>
-
-                <ThirdPartyAnalysis categories={data.categories} pageMetadata={data.pageMetadata} />
 
                 {(data.responseHeaders.server || data.responseHeaders.poweredBy || data.responseHeaders.generator) && (
                   <div className="rounded-xl border border-border bg-elevated/40 p-5">

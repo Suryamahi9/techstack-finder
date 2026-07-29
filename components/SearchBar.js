@@ -169,22 +169,22 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
       {showSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] dark:border-gray-700/60 dark:bg-gray-900 dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]"
+          className="absolute left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-white/[0.08] bg-elevated shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]"
           style={{ animation: 'suggestionsSlideIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)' }}
         >
           {isValidInput && (
             <button
               type="button"
               onMouseDown={handleSubmit}
-              className="flex w-full items-center gap-3 border-b border-gray-100 px-4 py-3 text-left text-sm font-mono transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/60"
+              className="flex w-full items-center gap-3 border-b border-white/[0.06] px-4 py-3 text-left text-sm font-mono transition-colors hover:bg-white/[0.03]"
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                 <svg className="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </span>
-              <span className="text-gray-900 dark:text-white">Scan <span className="font-semibold">{trimmedValue}</span></span>
-              <span className="ml-auto text-[10px] text-gray-400 dark:text-gray-500 font-mono">Enter</span>
+              <span className="text-fg">Scan <span className="font-semibold">{trimmedValue}</span></span>
+              <span className="ml-auto text-[10px] text-faint font-mono">Enter</span>
             </button>
           )}
 
@@ -197,8 +197,8 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
                   onMouseDown={() => selectSuggestion(site)}
                   className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
                     i === selectedIndex
-                      ? 'bg-accent/8 text-accent'
-                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/60'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-muted hover:bg-white/[0.03] hover:text-fg'
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -210,7 +210,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
                   />
                   <span className="flex-1 truncate">{site}</span>
                   {i < 3 && (
-                    <span className="text-[10px] text-gray-300 dark:text-gray-600">{i + 1}</span>
+                    <span className="text-[10px] text-faint/40">{i + 1}</span>
                   )}
                 </button>
               ))}
@@ -218,22 +218,22 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           )}
 
           {!isValidInput && suggestions.length === 0 && (
-            <div className="px-4 py-3 text-center text-xs text-gray-400 dark:text-gray-500">
+            <div className="px-4 py-3 text-center text-xs text-faint">
               Type a website URL to scan (e.g. flipkart.com)
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-4 py-2 dark:border-gray-800">
-            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">↑↓</kbd>
+          <div className="flex items-center justify-end gap-3 border-t border-white/[0.06] px-4 py-2">
+            <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">↑↓</kbd>
               navigate
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">Enter</kbd>
+            <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">Enter</kbd>
               scan
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-gray-200 bg-gray-50 px-1 text-[9px] dark:border-gray-700 dark:bg-gray-800">Esc</kbd>
+            <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">Esc</kbd>
               close
             </span>
           </div>

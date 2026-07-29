@@ -2,184 +2,139 @@ function getGrade(score) {
   if (score >= 90) return { grade: 'A+', color: '#10b981', label: 'Excellent' };
   if (score >= 80) return { grade: 'A', color: '#10b981', label: 'Great' };
   if (score >= 70) return { grade: 'B+', color: '#22d3ee', label: 'Good' };
-  if (score >= 60) return { grade: 'B', color: '#3b82f6', label: 'Good' };
+  if (score >= 60) return { grade: 'B', color: '#3b82f6', label: 'Decent' };
   if (score >= 50) return { grade: 'C', color: '#f59e0b', label: 'Fair' };
   if (score >= 30) return { grade: 'D', color: '#f97316', label: 'Needs Work' };
   return { grade: 'F', color: '#ef4444', label: 'Poor' };
 }
 
+function calcSecurityScore(security) {
+  if (!security) return 0;
+  const passed = [
+    security.contentSecurityPolicy,
+    security.strictTransportSecurity,
+    security.xFrameOptions,
+    security.xContentTypeOptions,
+    security.referrerPolicy,
+    security.permissionsPolicy,
+    security.xssProtection,
+  ].filter((h) => h && h !== 'missing' && h !== 'not set').length;
+  return Math.round((passed / 7) * 100);
+}
+
+function calcPerformanceScore(p) {
+  if (!p) return 0;
+  return Math.round(
+    ((p.isHttps ? 20 : 0) +
+      (p.compression && p.compression !== 'none' ? 20 : 0) +
+      (p.cacheControl && p.cacheControl !== 'none' ? 20 : 0) +
+      (p.httpVersion && p.httpVersion !== 'unknown' ? 20 : 0) +
+      (p.keepAlive && p.keepAlive !== 'unknown' ? 20 : 0)) /
+      5
+  );
+}
+
+function KpiBlock({ value, label, suffix, icon, color }) {
+  return (
+    <div className="flex flex-col items-center gap-1 p-3 min-w-0">
+      <div className="flex items-center gap-1.5">
+        {icon && (
+          <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            {icon}
+          </svg>
+        )}
+        <span className="font-mono text-lg font-bold tracking-tight text-fg" style={color ? { color } : undefined}>
+          {value}{suffix || ''}
+        </span>
+      </div>
+      <span className="text-[10px] uppercase tracking-wider text-faint truncate max-w-full">{label}</span>
+    </div>
+  );
+}
+
 export default function StackScore({ seo, performance, security, healthScore, cveSummary, dnsTls, gdpr }) {
   const score = typeof healthScore === 'number' ? healthScore : 0;
 
-  if (score === 0 && !seo && !performance && !security) return null;
+  if (score === 0 && !seo && !performance && !security && !dnsTls && !cveSummary && !gdpr) return null;
 
-  const { grade, color, label } = getGrade(score);
-
-  const circumference = 2 * Math.PI * 52;
-  const offset = circumference - (score / 100) * circumference;
+  const { grade, color } = getGrade(score);
+  const seoScore = seo?.score || 0;
+  const perfScore = calcPerformanceScore(performance);
+  const secScore = calcSecurityScore(security);
+  const tlsScore = dnsTls?.tls ? (() => {
+    let t = 0;
+    if (dnsTls.tls.authorized) t += 30;
+    if (dnsTls.tls.protocol && !dnsTls.tls.protocol.includes('SSLv')) t += 25;
+    if (dnsTls.tls.cipher && dnsTls.tls.cipher.bits >= 256) t += 20;
+    if (dnsTls.tls.daysRemaining && dnsTls.tls.daysRemaining > 30) t += 25;
+    return t;
+  })() : null;
 
   return (
-    <div className="rounded-2xl border border-border bg-elevated p-6 animate-fade-up">
-      <div className="flex items-center gap-6">
-        <div className="relative shrink-0">
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" strokeWidth="8" />
-            <circle
-              cx="60"
-              cy="60"
-              r="52"
-              fill="none"
-              stroke={color}
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              transform="rotate(-90 60 60)"
-              style={{ transition: 'stroke-dashoffset 1s ease' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-extrabold" style={{ color }}>{grade}</span>
-            <span className="text-[10px] font-mono text-faint">{score}/100</span>
-          </div>
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold tracking-tight">Stack Health Score</h3>
-          <p className="mt-1 text-sm text-muted">{label}</p>
-          <div className="mt-4 space-y-2">
-            {seo && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">SEO</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-amber-400 transition-all duration-700"
-                    style={{ width: `${seo.score || 0}%` }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-muted">{seo.score || 0}</span>
-              </div>
-            )}
-            {performance && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">Perf</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-emerald-400 transition-all duration-700"
-                    style={{
-                      width: `${
-                        (performance.isHttps ? 20 : 0) +
-                        (performance.compression && performance.compression !== 'none' ? 20 : 0) +
-                        (performance.cacheControl && performance.cacheControl !== 'none' ? 20 : 0) +
-                        (performance.httpVersion && performance.httpVersion !== 'unknown' ? 20 : 0) +
-                        (performance.keepAlive && performance.keepAlive !== 'unknown' ? 20 : 0)
-                      }%`,
-                    }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-muted">
-                  {Math.round(
-                    ((performance.isHttps ? 20 : 0) +
-                      (performance.compression && performance.compression !== 'none' ? 20 : 0) +
-                      (performance.cacheControl && performance.cacheControl !== 'none' ? 20 : 0) +
-                      (performance.httpVersion && performance.httpVersion !== 'unknown' ? 20 : 0) +
-                      (performance.keepAlive && performance.keepAlive !== 'unknown' ? 20 : 0)) /
-                      5
-                  )}
-                </span>
-              </div>
-            )}
-            {security && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">Security</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-sky-400 transition-all duration-700"
-                    style={{
-                      width: `${
-                        ([
-                          security.contentSecurityPolicy,
-                          security.strictTransportSecurity,
-                          security.xFrameOptions,
-                          security.xContentTypeOptions,
-                          security.referrerPolicy,
-                          security.permissionsPolicy,
-                          security.xssProtection,
-                        ].filter((h) => h && h !== 'missing' && h !== 'not set').length /
-                          7) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-muted">
-                  {Math.round(
-                    ([security.contentSecurityPolicy, security.strictTransportSecurity, security.xFrameOptions, security.xContentTypeOptions, security.referrerPolicy, security.permissionsPolicy, security.xssProtection].filter((h) => h && h !== 'missing' && h !== 'not set').length /
-                      7) *
-                      100
-                  )}
-                </span>
-              </div>
-            )}
-            {dnsTls && dnsTls.tls && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">TLS</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-emerald-400 transition-all duration-700"
-                    style={{
-                      width: `${(() => {
-                        let t = 0;
-                        if (dnsTls.tls.authorized) t += 30;
-                        if (dnsTls.tls.protocol && !dnsTls.tls.protocol.includes('SSLv')) t += 25;
-                        if (dnsTls.tls.cipher && dnsTls.tls.cipher.bits >= 256) t += 20;
-                        if (dnsTls.tls.daysRemaining && dnsTls.tls.daysRemaining > 30) t += 25;
-                        return t;
-                      })()}%`,
-                    }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-muted">
-                  {(() => {
-                    let t = 0;
-                    if (dnsTls.tls.authorized) t += 30;
-                    if (dnsTls.tls.protocol && !dnsTls.tls.protocol.includes('SSLv')) t += 25;
-                    if (dnsTls.tls.cipher && dnsTls.tls.cipher.bits >= 256) t += 20;
-                    if (dnsTls.tls.daysRemaining && dnsTls.tls.daysRemaining > 30) t += 25;
-                    return t;
-                  })()}
-                </span>
-              </div>
-            )}
-            {cveSummary && cveSummary.totalCves > 0 && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">CVEs</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-red-400 transition-all duration-700"
-                    style={{
-                      width: `${Math.min(cveSummary.totalCves * 20 + cveSummary.critical * 30 + cveSummary.high * 15, 100)}%`,
-                    }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-red-400 text-[10px]">
-                  {cveSummary.totalCves} CVE{cveSummary.totalCves !== 1 ? 's' : ''}
-                </span>
-              </div>
-            )}
-            {gdpr && (
-              <div className="flex items-center gap-3 text-xs">
-                <span className="w-16 text-faint">GDPR</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-cyan-400 transition-all duration-700"
-                    style={{ width: `${gdpr.complianceScore}%` }}
-                  />
-                </div>
-                <span className="w-8 text-right font-mono text-muted">{gdpr.complianceScore}</span>
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] animate-fade-up overflow-hidden">
+      <div className="grid grid-cols-2 divide-x divide-white/[0.06] sm:grid-cols-6">
+        <KpiBlock
+          value={grade}
+          label="Stack Health"
+          color={color}
+          icon={<><path d="M12 20V10" /><path d="M18 20V5" /><path d="M6 20v-4" /></>}
+        />
+        {seo && (
+          <KpiBlock
+            value={seoScore}
+            suffix="%"
+            label="SEO"
+            icon={<><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></>}
+            color={seoScore >= 80 ? '#10b981' : seoScore >= 50 ? '#f59e0b' : '#ef4444'}
+          />
+        )}
+        {performance && (
+          <KpiBlock
+            value={perfScore}
+            suffix="%"
+            label="Performance"
+            icon={<><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></>}
+            color={perfScore >= 80 ? '#10b981' : perfScore >= 50 ? '#f59e0b' : '#ef4444'}
+          />
+        )}
+        <KpiBlock
+          value={secScore}
+          suffix="%"
+          label="Security"
+          icon={<><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /></>}
+          color={secScore >= 80 ? '#10b981' : secScore >= 50 ? '#f59e0b' : '#ef4444'}
+        />
+        {tlsScore !== null && (
+          <KpiBlock
+            value={tlsScore}
+            suffix="%"
+            label="TLS"
+            icon={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>}
+            color={tlsScore >= 80 ? '#10b981' : tlsScore >= 50 ? '#f59e0b' : '#ef4444'}
+          />
+        )}
+        {cveSummary && cveSummary.totalCves > 0 ? (
+          <KpiBlock
+            value={cveSummary.totalCves}
+            label="CVEs"
+            icon={<><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></>}
+            color="#ef4444"
+          />
+        ) : gdpr ? (
+          <KpiBlock
+            value={gdpr.complianceScore}
+            suffix="%"
+            label="GDPR"
+            icon={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>}
+            color={gdpr.complianceScore >= 80 ? '#10b981' : '#f59e0b'}
+          />
+        ) : (
+          <KpiBlock
+            value="—"
+            label="Compliance"
+            icon={<><path d="M9 12l2 2 4-4" /></>}
+          />
+        )}
       </div>
     </div>
   );
