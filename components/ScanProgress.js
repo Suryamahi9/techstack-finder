@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import OrbitalLoader from './OrbitalLoader';
 
 const STEPS = [
   { id: 'resolve', label: 'Resolving domain', duration: 800 },
@@ -81,12 +82,14 @@ export default function ScanProgress({ site, onCancel, streamUrl }) {
   return (
     <div className="scan-wrap animate-fade-in">
       <div className="scan-card">
-        <div className="scan-radar">
-          <div className="scan-radar-ring r1" />
-          <div className="scan-radar-ring r2" />
-          <div className="scan-radar-ring r3" />
-          <div className="scan-radar-sweep" />
-          <div className="scan-radar-dot" />
+        <div className="scan-radar-alt">
+          <div className="scan-radar-alt-ring" />
+          <div className="scan-radar-alt-ring" />
+          <div className="scan-radar-alt-ring" />
+          <div className="scan-radar-alt-dot" />
+          <div className="scan-radar-alt-particle p1" />
+          <div className="scan-radar-alt-particle p2" />
+          <div className="scan-radar-alt-particle p3" />
         </div>
 
         <div className="scan-body">
@@ -118,7 +121,7 @@ export default function ScanProgress({ site, onCancel, streamUrl }) {
                     {isDone ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7" /></svg>
                     ) : isActive ? (
-                      <div className="scan-spinner" />
+                      <OrbitalLoader size="sm" />
                     ) : (
                       <div className="scan-step-idle" />
                     )}

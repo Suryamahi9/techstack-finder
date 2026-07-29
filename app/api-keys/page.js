@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import OrbitalLoader from '../../components/OrbitalLoader';
 import { useSession } from 'next-auth/react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -222,7 +223,7 @@ export default function ApiKeysPage() {
             {/* Keys list */}
             {loading ? (
               <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
-                <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+                <div className="mx-auto mb-4 flex justify-center"><OrbitalLoader size="lg" /></div>
                 <p className="text-sm text-muted">Loading keys...</p>
               </div>
             ) : keys.length === 0 ? (

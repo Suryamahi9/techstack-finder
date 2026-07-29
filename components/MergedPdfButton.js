@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import OrbitalLoader from './OrbitalLoader';
 
 function escapeXml(str) {
   if (!str) return '';
@@ -170,7 +171,7 @@ export default function MergedPdfButton({ dataA, dataB }) {
       className="flex items-center gap-2 rounded-lg border border-border bg-elevated px-3 py-1.5 font-mono text-xs text-muted hover:border-border-strong hover:text-fg transition-colors disabled:opacity-40"
     >
       {generating ? (
-        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
+        <OrbitalLoader size="sm" />
       ) : (
         <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />

@@ -606,13 +606,21 @@ html {
 
 .skeleton {
   background: linear-gradient(
-    90deg,
+    135deg,
     var(--elevated) 0%,
-    var(--border) 50%,
+    var(--border) 25%,
+    var(--elevated) 50%,
+    var(--border) 75%,
     var(--elevated) 100%
   );
-  background-size: 1000px 100%;
-  animation: shimmer 1.6s linear infinite;
+  background-size: 600px 100%;
+  animation: skeletonWave 1.8s ease-in-out infinite;
+}
+
+@keyframes skeletonWave {
+  0% { background-position: -200px 0; opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { background-position: 800px 0; opacity: 0.6; }
 }
 
 .social-icon {
@@ -998,37 +1006,43 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow: 0 0 60px -10px var(--accent-glow);
 }
 
-.scan-radar {
+.scan-radar-alt {
   position: relative;
   width: 80px;
   height: 80px;
 }
 
-.scan-radar-ring {
+.scan-radar-alt-ring {
   position: absolute;
+  inset: 0;
   border-radius: 50%;
-  border: 1px dashed var(--border-strong);
-}
-.scan-radar-ring.r1 { inset: 0; }
-.scan-radar-ring.r2 { inset: 15%; }
-.scan-radar-ring.r3 { inset: 30%; }
-
-.scan-radar-sweep {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 25%, transparent 50%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  pointer-events: none;
-  animation: scannerSweep 2s linear infinite;
+  border: 1.5px solid transparent;
 }
 
-@keyframes scannerSweep {
+.scan-radar-alt-ring:nth-child(1) {
+  border-top-color: var(--accent);
+  animation: altRingSpin 2.4s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite;
+}
+
+.scan-radar-alt-ring:nth-child(2) {
+  inset: 8px;
+  border-right-color: var(--accent);
+  opacity: 0.5;
+  animation: altRingSpin 3.2s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite reverse;
+}
+
+.scan-radar-alt-ring:nth-child(3) {
+  inset: 16px;
+  border-bottom-color: var(--accent);
+  opacity: 0.25;
+  animation: altRingSpin 4s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite;
+}
+
+@keyframes altRingSpin {
   to { transform: rotate(360deg); }
 }
 
-.scan-radar-dot {
+.scan-radar-alt-dot {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1037,13 +1051,55 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-  animation: radarPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
+  animation: altDotPulse 1.8s ease-in-out infinite;
 }
 
-@keyframes radarPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.6; }
+@keyframes altDotPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+}
+
+.scan-radar-alt-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px var(--accent);
+}
+
+.scan-radar-alt-particle.p1 {
+  inset: 50%;
+  margin-left: -1.5px;
+  margin-top: -1.5px;
+  animation: particleOrbit1 2.8s linear infinite;
+}
+
+.scan-radar-alt-particle.p2 {
+  inset: 50%;
+  margin-left: -1.5px;
+  margin-top: -1.5px;
+  animation: particleOrbit2 3.6s linear infinite;
+}
+
+.scan-radar-alt-particle.p3 {
+  inset: 50%;
+  margin-left: -1.5px;
+  margin-top: -1.5px;
+  animation: particleOrbit3 4.4s linear infinite;
+}
+
+@keyframes particleOrbit1 {
+  to { transform: rotate(360deg) translateX(32px) rotate(-360deg); }
+}
+
+@keyframes particleOrbit2 {
+  to { transform: rotate(360deg) translateX(24px) rotate(-360deg); }
+}
+
+@keyframes particleOrbit3 {
+  to { transform: rotate(360deg) translateX(16px) rotate(-360deg); }
 }
 
 .scan-body {
@@ -1074,18 +1130,26 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 
 .scan-bar-track {
   width: 100%;
-  height: 3px;
-  border-radius: 2px;
+  height: 4px;
+  border-radius: 3px;
   background: var(--border);
   overflow: hidden;
+  position: relative;
 }
 
 .scan-bar-fill {
   height: 100%;
-  border-radius: 2px;
-  background: var(--accent);
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), #fbbf24, var(--accent));
+  background-size: 200% 100%;
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 0 8px var(--accent-glow);
+  animation: barShimmer 2s linear infinite;
+}
+
+@keyframes barShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .scan-steps {
@@ -1160,4 +1224,102 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .scan-step-label {
   font-size: 0.8rem;
   color: var(--faint);
+}
+
+/* ═══ Orbital Loader ═══ */
+.loader-ring {
+  --loader-size: 32px;
+  --loader-thickness: 2px;
+  --loader-dot: 5px;
+  position: relative;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-ring-sm { --loader-size: 16px; --loader-thickness: 1.5px; --loader-dot: 3px; }
+.loader-ring-md { --loader-size: 24px; --loader-thickness: 2px; --loader-dot: 4px; }
+.loader-ring-lg { --loader-size: 40px; --loader-thickness: 2.5px; --loader-dot: 6px; }
+
+.loader-orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: var(--loader-thickness) solid transparent;
+}
+
+.loader-orbit:nth-child(1) {
+  border-top-color: var(--accent);
+  animation: orbitSpin 1.4s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite;
+}
+
+.loader-orbit:nth-child(2) {
+  border-right-color: var(--accent);
+  opacity: 0.6;
+  animation: orbitSpin 1.8s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite reverse;
+  inset: 3px;
+}
+
+.loader-orbit:nth-child(3) {
+  border-bottom-color: var(--accent);
+  opacity: 0.3;
+  animation: orbitSpin 2.2s cubic-bezier(0.45, 0.05, 0.2, 0.95) infinite;
+  inset: 6px;
+}
+
+.loader-core {
+  width: var(--loader-dot);
+  height: var(--loader-dot);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow, rgba(245, 158, 11, 0.4)), 0 0 12px var(--accent-glow, rgba(245, 158, 11, 0.2));
+  animation: corePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes orbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes corePulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+/* ═══ Morph Dots ═══ */
+.morph-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.morph-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: morphDot 1.4s ease-in-out infinite;
+}
+
+.morph-dot:nth-child(2) { animation-delay: 0.2s; }
+.morph-dot:nth-child(3) { animation-delay: 0.4s; }
+.morph-dot:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes morphDot {
+  0%, 100% {
+    border-radius: 50%;
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    border-radius: 2px;
+    transform: scaleY(2.5) scaleX(0.6);
+    opacity: 1;
+  }
+  50% {
+    border-radius: 50%;
+    transform: scale(1);
+    opacity: 0.4;
+  }
 }
