@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import ThemeToggle from './ThemeToggle';
+
 
 const HOME_NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -157,8 +157,6 @@ export default function Header() {
               Source
             </a>
 
-              <ThemeToggle />
-
               {session ? (
                 <div className="relative" ref={userMenuRef}>
                   <button
@@ -230,7 +228,6 @@ export default function Header() {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             {session ? (
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}

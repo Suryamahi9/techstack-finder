@@ -1,5 +1,4 @@
 import './globals.css';
-import BackgroundManager from '../components/BackgroundManager';
 import SessionProvider from '../components/SessionProvider';
 
 export const metadata = {
@@ -17,22 +16,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="warm" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var t = localStorage.getItem('tsf-theme');
-                  if (['dark','terminal','blueprint','solarized','neon','monochrome','sakura','ocean','lavender','ember','arctic','crimson','mint','amber','light','warm'].indexOf(t) !== -1) {
-                    document.documentElement.setAttribute('data-theme', t);
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-lg focus:border focus:border-accent focus:bg-bg focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent">Skip to content</a>
         <script
@@ -51,7 +34,6 @@ export default function RootLayout({ children }) {
           }}
         />
         <SessionProvider>
-          <BackgroundManager />
           <div className="noise-overlay" />
           {children}
         </SessionProvider>
