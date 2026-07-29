@@ -996,54 +996,110 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   align-items: center;
   gap: 1.5rem;
   box-shadow: 0 0 60px -10px var(--accent-glow);
-}
-
-.scan-radar {
   position: relative;
-  width: 80px;
-  height: 80px;
+  overflow: hidden;
 }
 
-.scan-radar-ring {
+.scan-card::before {
+  content: '';
   position: absolute;
-  border-radius: 50%;
-  border: 1px dashed var(--border-strong);
-}
-.scan-radar-ring.r1 { inset: 0; }
-.scan-radar-ring.r2 { inset: 15%; }
-.scan-radar-ring.r3 { inset: 30%; }
-
-.scan-radar-sweep {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 25%, transparent 50%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 40%, var(--accent) 50%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   pointer-events: none;
-  animation: scannerSweep 2s linear infinite;
+  animation: cardBorderGlow 3s ease-in-out infinite;
+  background-size: 200% 200%;
 }
 
-@keyframes scannerSweep {
-  to { transform: rotate(360deg); }
+@keyframes cardBorderGlow {
+  0%, 100% { background-position: 0% 0%; opacity: 0.4; }
+  50% { background-position: 100% 100%; opacity: 0.8; }
 }
 
-.scan-radar-dot {
+.scan-viz {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scan-viz-bg {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
+  inset: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.08;
+  animation: vizBgPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes vizBgPulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.05; }
+  50% { transform: scale(1.1); opacity: 0.12; }
+}
+
+.scan-viz-line {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 20%, var(--accent) 80%, transparent 100%);
+  opacity: 0.3;
+  border-radius: 1px;
+}
+
+.scan-viz-line.l1 { top: 32%; animation: vizLine 1.6s ease-in-out infinite; }
+.scan-viz-line.l2 { top: 50%; margin-top: -0.5px; animation: vizLine 1.6s ease-in-out infinite 0.3s; }
+.scan-viz-line.l3 { top: calc(68% - 1px); animation: vizLine 1.6s ease-in-out infinite 0.6s; }
+
+@keyframes vizLine {
+  0%, 100% { transform: scaleX(0.4); opacity: 0.15; }
+  25% { transform: scaleX(1); opacity: 0.4; }
+  50% { transform: scaleX(0.6); opacity: 0.2; }
+  75% { transform: scaleX(0.9); opacity: 0.35; }
+}
+
+.scan-viz-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scan-viz-ring {
+  animation: vizRingExpand 2.4s ease-out infinite;
+}
+
+.scan-viz-ring.r2 {
+  animation: vizRingExpand 2.4s ease-out infinite 0.8s;
+}
+
+@keyframes vizRingExpand {
+  0% { transform: scale(0.2); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.scan-viz-core {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-  animation: radarPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--accent-glow), 0 0 20px var(--accent-glow);
+  animation: vizCorePulse 1.6s ease-in-out infinite;
+  z-index: 1;
 }
 
-@keyframes radarPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.6; }
+@keyframes vizCorePulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 1; }
 }
 
 .scan-body {
@@ -1083,9 +1139,16 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .scan-bar-fill {
   height: 100%;
   border-radius: 2px;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), #fbbf24, var(--accent));
+  background-size: 200% 100%;
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 0 8px var(--accent-glow);
+  animation: barFlow 2s linear infinite;
+}
+
+@keyframes barFlow {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .scan-steps {
@@ -1129,17 +1192,18 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   background: var(--border-strong);
 }
 
-.scan-spinner {
-  width: 14px;
-  height: 14px;
+.scan-pulse-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid var(--border-strong);
-  border-top-color: var(--accent);
-  animation: scanSpin 0.8s linear infinite;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  animation: pulseDot 1s ease-in-out infinite;
 }
 
-@keyframes scanSpin {
-  to { transform: rotate(360deg); }
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.4); opacity: 1; }
 }
 
 .scan-step.done .scan-step-dot {

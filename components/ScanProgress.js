@@ -81,12 +81,14 @@ export default function ScanProgress({ site, onCancel, streamUrl }) {
   return (
     <div className="scan-wrap animate-fade-in">
       <div className="scan-card">
-        <div className="scan-radar">
-          <div className="scan-radar-ring r1" />
-          <div className="scan-radar-ring r2" />
-          <div className="scan-radar-ring r3" />
-          <div className="scan-radar-sweep" />
-          <div className="scan-radar-dot" />
+        <div className="scan-viz">
+          <div className="scan-viz-bg" />
+          <div className="scan-viz-line l1" />
+          <div className="scan-viz-line l2" />
+          <div className="scan-viz-line l3" />
+          <div className="scan-viz-ring" />
+          <div className="scan-viz-ring r2" />
+          <div className="scan-viz-core" />
         </div>
 
         <div className="scan-body">
@@ -118,7 +120,7 @@ export default function ScanProgress({ site, onCancel, streamUrl }) {
                     {isDone ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7" /></svg>
                     ) : isActive ? (
-                      <div className="scan-spinner" />
+                      <div className="scan-pulse-dot" />
                     ) : (
                       <div className="scan-step-idle" />
                     )}
