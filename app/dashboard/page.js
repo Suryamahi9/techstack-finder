@@ -8,7 +8,7 @@ const STORAGE_KEY = 'tsf-pinned-widgets';
 const HISTORY_KEY = 'tsf-scan-history';
 
 const WIDGET_MAP = {
-  'health-score': { title: 'Health Score', icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', color: '#c5fb45' },
+  'health-score': { title: 'Health Score', icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', color: '#d97706' },
   'tech-radar': { title: 'Tech Radar', icon: 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2', color: '#60a5fa' },
   'cost-estimator': { title: 'Cost Estimator', icon: 'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42', color: '#f59e0b' },
   'complexity': { title: 'Complexity Score', icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', color: '#a78bfa' },
@@ -70,7 +70,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {pinned.map((widget) => {
-              const meta = WIDGET_MAP[widget.id] || { title: widget.title, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', color: '#c5fb45' };
+              const meta = WIDGET_MAP[widget.id] || { title: widget.title, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', color: '#d97706' };
               return (
                 <div key={widget.id} className="group relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-5 transition-all duration-300 hover:border-white/[0.12]">
                   <button onClick={() => removeWidget(widget.id)} className="absolute right-3 top-3 opacity-0 transition-opacity group-hover:opacity-100 text-muted hover:text-red-400">

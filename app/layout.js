@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="lavender" suppressHydrationWarning>
+    <html lang="en" data-theme="warm" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
               (function() {
                 try {
                   var t = localStorage.getItem('tsf-theme');
-                  if (['dark','terminal','blueprint','solarized','neon','monochrome','sakura','ocean','lavender','ember','arctic','crimson','mint','amber','light'].indexOf(t) !== -1) {
+                  if (['dark','terminal','blueprint','solarized','neon','monochrome','sakura','ocean','lavender','ember','arctic','crimson','mint','amber','light','warm'].indexOf(t) !== -1) {
                     document.documentElement.setAttribute('data-theme', t);
                   }
                 } catch (e) {}

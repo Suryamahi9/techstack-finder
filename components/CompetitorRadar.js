@@ -51,7 +51,7 @@ export default function CompetitorRadar({ radar }) {
             const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
             return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(angle)} y2={cy + r * Math.sin(angle)} stroke="var(--border)" strokeWidth="0.5" />;
           })}
-          <polygon points={polygonPoints} fill="rgba(197,251,69,0.15)" stroke="var(--accent)" strokeWidth="1.5" />
+          <polygon points={polygonPoints} fill="rgba(217,119,6,0.15)" stroke="var(--accent)" strokeWidth="1.5" />
           {points.map((p, i) => (
             <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--accent)" />
           ))}

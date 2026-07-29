@@ -36,7 +36,7 @@ export default function CompareDropZone() {
         onDragLeave={handleDragLeave}
         className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border text-sm font-medium transition-all duration-300 ${
           dragging
-            ? 'scale-110 border-accent bg-accent/20 text-accent shadow-[0_0_24px_-4px_rgba(197,251,69,0.3)]'
+            ? 'scale-110 border-accent bg-accent/20 text-accent shadow-[0_0_24px_-4px_rgba(217,119,6,0.3)]'
             : 'border-white/10 bg-white/5 text-muted hover:border-accent/20 hover:text-fg'
         }`}
         onClick={() => items.length > 0 && setOpen(true)}

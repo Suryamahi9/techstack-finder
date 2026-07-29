@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const THEMES = [
+  { id: 'warm', name: 'Warm Dark', bg: '#0f0b06', fg: '#f0e8dc', accent: '#d97706', desc: 'Amber dark' },
   { id: 'dark', name: 'Midnight', bg: '#08080a', fg: '#f4f4ee', accent: '#c5fb45', desc: 'Default dark' },
   { id: 'terminal', name: 'Terminal', bg: '#0a0a0a', fg: '#33ff33', accent: '#33ff33', desc: 'Phosphor green' },
   { id: 'blueprint', name: 'Blueprint', bg: '#0a1628', fg: '#e8f0fe', accent: '#4da6ff', desc: 'Technical drawing' },
@@ -17,7 +18,7 @@ const THEMES = [
   { id: 'crimson', name: 'Crimson', bg: '#120408', fg: '#ffe8ec', accent: '#e03060', desc: 'Deep red' },
   { id: 'mint', name: 'Mint', bg: '#041210', fg: '#d8f8ee', accent: '#3cdca0', desc: 'Fresh green' },
   { id: 'amber', name: 'Amber', bg: '#120e04', fg: '#fff4e0', accent: '#e8b820', desc: 'Golden warm' },
-  { id: 'light', name: 'Light', bg: '#faf9f4', fg: '#0a0a0b', accent: '#4d7a00', desc: 'Clean light' },
+  { id: 'light', name: 'Light', bg: '#faf7f0', fg: '#0a0a0b', accent: '#b45309', desc: 'Clean light' },
 ];
 
 export default function ThemePicker({ currentTheme, onSelect, onClose, justOpened }) {

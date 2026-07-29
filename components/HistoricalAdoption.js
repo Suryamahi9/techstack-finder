@@ -41,8 +41,8 @@ function AdoptionChart({ data, name }) {
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
         <defs>
           <linearGradient id={`adopt-${name.replace(/[^a-zA-Z0-9]/g, '')}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isGrowing ? '#c5fb45' : '#ef4444'} stopOpacity="0.2" />
-            <stop offset="100%" stopColor={isGrowing ? '#c5fb45' : '#ef4444'} stopOpacity="0" />
+            <stop offset="0%" stopColor={isGrowing ? '#d97706' : '#ef4444'} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={isGrowing ? '#d97706' : '#ef4444'} stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -58,10 +58,10 @@ function AdoptionChart({ data, name }) {
         })}
 
         <path d={areaD} fill={`url(#adopt-${name.replace(/[^a-zA-Z0-9]/g, '')})`} />
-        <path d={pathD} fill="none" stroke={isGrowing ? '#c5fb45' : '#ef4444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke={isGrowing ? '#d97706' : '#ef4444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
-        <circle cx={points[0].x} cy={points[0].y} r="2.5" fill="var(--bg)" stroke={isGrowing ? '#c5fb45' : '#ef4444'} strokeWidth="1.5" />
-        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" fill={isGrowing ? '#c5fb45' : '#ef4444'} />
+        <circle cx={points[0].x} cy={points[0].y} r="2.5" fill="var(--bg)" stroke={isGrowing ? '#d97706' : '#ef4444'} strokeWidth="1.5" />
+        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" fill={isGrowing ? '#d97706' : '#ef4444'} />
 
         <text x={points[0].x} y={pad.top + innerH + 12} textAnchor="middle" className="fill-faint" fontSize="7" fontFamily="var(--font-mono)">{firstYear}</text>
         <text x={points[points.length - 1].x} y={pad.top + innerH + 12} textAnchor="middle" className="fill-faint" fontSize="7" fontFamily="var(--font-mono)">{lastYear}</text>

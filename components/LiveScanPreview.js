@@ -107,7 +107,7 @@ export default function LiveScanPreview() {
               key={tech.name}
               className={`group flex items-center gap-3 rounded-lg px-2.5 py-2 transition-all duration-300 ${
                 i === activeIndex
-                  ? 'bg-accent/[0.06] border border-accent/10 shadow-[inset_0_1px_0_rgba(197,251,69,0.05)]'
+                  ? 'bg-accent/[0.06] border border-accent/10 shadow-[inset_0_1px_0_rgba(217,119,6,0.05)]'
                   : 'border border-transparent hover:bg-white/[0.02]'
               }`}
               style={{ animationDelay: `${i * 80}ms` }}

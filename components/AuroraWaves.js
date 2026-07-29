@@ -14,7 +14,7 @@ export default function AuroraWaves() {
 
     const getAccent = () => {
       const s = getComputedStyle(document.documentElement);
-      return s.getPropertyValue('--accent').trim() || '#c5fb45';
+      return s.getPropertyValue('--accent').trim() || '#d97706';
     };
 
     const hexToRgb = (hex) => {

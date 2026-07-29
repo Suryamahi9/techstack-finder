@@ -250,7 +250,7 @@ function BrutalistScanPreview() {
             ) : line.startsWith('$') ? (
               <span style={{ color: '#888' }}>{line}</span>
             ) : line.startsWith('[ DONE ]') ? (
-              <span style={{ color: '#c5fb45' }}>{line}</span>
+              <span style={{ color: '#d97706' }}>{line}</span>
             ) : line.startsWith('[') ? (
               <span>
                 <span style={{ color: RED }}>{line.split(']')[0]}]</span>

@@ -26,7 +26,7 @@ function flattenToCsv(data) {
 
 function buildHtmlReport(data) {
   const techRows = (data.categories || []).map((cat) => `
-    <tr><td colspan="6" style="background:#1a1a1e;color:#c5fb45;font-weight:600;padding:8px">${cat.category}</td></tr>
+    <tr><td colspan="6" style="background:#1a140e;color:#d97706;font-weight:600;padding:8px">${cat.category}</td></tr>
     ${(cat.technologies || []).map((t) => `
       <tr>
         <td style="padding:6px 8px;border-bottom:1px solid #222">${t.name}</td>
@@ -40,7 +40,7 @@ function buildHtmlReport(data) {
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>TechStack Report - ${data.site?.domain || 'Report'}</title>
 <style>body{font-family:system-ui,sans-serif;background:#08080a;color:#f4f4ee;max-width:900px;margin:0 auto;padding:24px}
-h1{font-size:24px;color:#c5fb45}table{width:100%;border-collapse:collapse;margin-top:16px}
+h1{font-size:24px;color:#d97706}table{width:100%;border-collapse:collapse;margin-top:16px}
 th{text-align:left;padding:8px;border-bottom:2px solid #333;color:#9a9aa0;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
 .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
 .stat{border:1px solid #222;border-radius:8px;padding:12px;background:#0c0c10}

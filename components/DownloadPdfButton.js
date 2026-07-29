@@ -32,7 +32,7 @@ function buildHtml(data, theme) {
   var dim = isDark ? '#64748b' : '#9ca3af';
   var cardBg = isDark ? '#1e293b' : '#f8fafc';
   var border = isDark ? '#334155' : '#e5e7eb';
-  var accent = '#c5fb45';
+  var accent = '#d97706';
   var red = '#ef4444';
 
   var total = safeNum(data.summary?.total);

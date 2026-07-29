@@ -140,8 +140,8 @@ export default function StackVisualization({ categories }) {
 
       if (isCenter) {
         const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r);
-        grad.addColorStop(0, 'rgba(197,251,69,0.4)');
-        grad.addColorStop(1, 'rgba(197,251,69,0.1)');
+        grad.addColorStop(0, 'rgba(217,119,6,0.4)');
+        grad.addColorStop(1, 'rgba(217,119,6,0.1)');
         ctx.fillStyle = grad;
       } else if (isCat) {
         ctx.fillStyle = isHovered ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.2)';
