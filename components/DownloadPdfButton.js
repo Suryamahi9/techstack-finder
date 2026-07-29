@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react';
-import OrbitalLoader from './OrbitalLoader';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -398,7 +397,7 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         >
           {generating ? (
             <>
-              <OrbitalLoader size="sm" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
               Generating PDF…
             </>
           ) : (

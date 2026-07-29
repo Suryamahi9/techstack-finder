@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import OrbitalLoader from './OrbitalLoader';
 
 const VIEWPORTS = [
   { key: 'mobile', label: 'Mobile', width: 'w-[200px]', icon: 'M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm5 18.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z', dims: '375×667' },
@@ -43,7 +42,7 @@ export default function ScreenshotGallery({ url, domain }) {
       <div className="relative overflow-hidden rounded-xl border border-border bg-bg">
         {!loaded[active] && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <OrbitalLoader size="sm" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent/40 border-t-accent" />
           </div>
         )}
         {/* eslint-disable-next-line @next/next/no-img-element */}

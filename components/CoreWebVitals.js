@@ -1,6 +1,5 @@
 'use client';
 import { useState, useCallback } from 'react';
-import OrbitalLoader from './OrbitalLoader';
 
 function VitalCard({ label, value, unit, rating, description, threshold }) {
   const ratingColors = {
@@ -128,7 +127,10 @@ export default function CoreWebVitals({ url }) {
         >
           {loading ? (
             <span className="flex items-center gap-1.5">
-              <OrbitalLoader size="sm" inline />
+              <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="9" opacity="0.3" />
+                <path d="M12 3a9 9 0 0 1 9 9" />
+              </svg>
               Measuring...
             </span>
           ) : vitals ? 'Re-measure' : 'Measure now'}

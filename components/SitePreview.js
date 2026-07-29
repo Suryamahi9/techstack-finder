@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import OrbitalLoader from './OrbitalLoader';
 
 export default function SitePreview({ url, domain }) {
   const [loaded, setLoaded] = useState(false);
@@ -35,7 +34,7 @@ export default function SitePreview({ url, domain }) {
         {!loaded && !error && (
           <div className="flex h-[300px] items-center justify-center sm:h-[400px]">
             <div className="flex flex-col items-center gap-3">
-              <OrbitalLoader size="sm" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
               <span className="text-xs text-faint">Loading preview...</span>
             </div>
           </div>

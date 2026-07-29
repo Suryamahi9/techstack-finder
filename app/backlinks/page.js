@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
-import OrbitalLoader from '../../components/OrbitalLoader';
 import { useSession } from 'next-auth/react';
 import { getScanHistory, fetchServerHistory } from '../../lib/scan-history';
 import BackButton from '../../components/BackButton';
@@ -241,7 +240,7 @@ export default function BacklinksPage() {
         {/* Sites Table */}
         {loading ? (
           <div className="rounded-xl border border-border bg-elevated p-12 text-center">
-            <div className="mx-auto mb-4 flex justify-center"><OrbitalLoader size="lg" /></div>
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
             <p className="text-sm text-muted">Loading sites...</p>
           </div>
         ) : (
