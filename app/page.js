@@ -124,57 +124,44 @@ export default function Home() {
       <main id="main-content" className="relative z-10">
 
         {/* ═══════════ HERO ═══════════ */}
-        <section className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-6 pt-28 pb-20 sm:pt-36 lg:flex-row lg:items-center lg:gap-16">
-          <div className="flex-1 space-y-5">
-            <FadeIn>
-              <TypewriterBadge />
-            </FadeIn>
-            <FadeIn delay={0.08}>
-              <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[4rem]">
-                What&apos;s it<br />
-                <span className="text-fg">built with</span><span className="text-muted">?</span>
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.16}>
-              <p className="max-w-md text-sm leading-relaxed text-muted sm:text-base">
-                Enter any URL and fingerprint the technologies powering it &mdash;
-                frameworks, CMS, analytics, hosting, and more.
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.24}>
-              <div className="max-w-xl">
-                <SearchBar />
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.32}>
-              <div className="flex flex-wrap items-center gap-2">
-                {SITES.map((site) => (
-                  <a
-                    key={site.label}
-                    href={`/results?site=${encodeURIComponent(site.label)}`}
-                    className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.04] active:scale-[0.97]"
-                  >
-                    <img src={`https://www.google.com/s2/favicons?domain=${site.label}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                    <span className="font-mono text-xs text-muted transition-colors group-hover:text-fg">{site.label}</span>
-                    <svg className="h-2.5 w-2.5 text-faint transition-all group-hover:translate-x-0.5 group-hover:text-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M5 12h14M13 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                ))}
-              </div>
-            </FadeIn>
-          </div>
-
-          <div className="w-full shrink-0 lg:w-[45%]">
-            <FadeIn delay={0.4}>
-              <div className="relative">
-                <div className="pointer-events-none absolute -inset-10 z-[-1]">
-                  <div className="absolute inset-0 bg-gradient-to-l from-accent/[0.03] via-transparent to-transparent blur-3xl" />
-                </div>
-                <TerminalScanner />
-              </div>
-            </FadeIn>
-          </div>
+        <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-6 pt-28 pb-20 text-center sm:pt-36">
+          <FadeIn>
+            <TypewriterBadge />
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <h1 className="text-4xl font-bold leading-[1.05] tracking-tighter sm:text-5xl lg:text-[5rem]">
+              What&apos;s it<br />
+              <span className="text-fg">built with</span><span className="text-muted">?</span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.16}>
+            <p className="max-w-lg text-sm leading-relaxed text-muted sm:text-base">
+              Enter any URL and fingerprint the technologies powering it &mdash;
+              frameworks, CMS, analytics, hosting, and more.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.24}>
+            <div className="w-full max-w-xl">
+              <SearchBar />
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.32}>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {SITES.map((site) => (
+                <a
+                  key={site.label}
+                  href={`/results?site=${encodeURIComponent(site.label)}`}
+                  className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.04] active:scale-[0.97]"
+                >
+                  <img src={`https://www.google.com/s2/favicons?domain=${site.label}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                  <span className="font-mono text-xs text-muted transition-colors group-hover:text-fg">{site.label}</span>
+                  <svg className="h-2.5 w-2.5 text-faint transition-all group-hover:translate-x-0.5 group-hover:text-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M5 12h14M13 5l7 7-7 7" />
+                  </svg>
+                </a>
+              ))}
+            </div>
+          </FadeIn>
         </section>
 
         {/* ═══════════ STATS ═══════════ */}
