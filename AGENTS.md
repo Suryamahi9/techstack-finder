@@ -92,6 +92,20 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - In-memory TTL cache: 10 min, max 2,000 entries
 - `maxDuration = 60` (Vercel serverless timeout)
 
+## Trends API endpoint (`/api/trends`)
+- **Read-only, public, no auth** — serves the trends/market data to the MCP server and external consumers
+- Query params: `?tech=<name|slug>` (detail: market-share series + related + country breakdown), `?search=`, `?category=` (exact tag), `?sort=liveSites|name`, `?limit=` (1–100, default 50)
+- Reuses `lib/trends-data.js` + `lib/market-share.js` directly — no DB
+- IP rate limit: 60 req/min (in-memory)
+
+## MCP server (`mcp/`)
+- Standalone Node MCP package (own `package.json`; `node_modules/` gitignored). Thin client over the site's HTTP API — **it cannot run as a Vercel function**, run the process anywhere (local, Hetzner VPS, pm2, Render/Fly)
+- Tools: `scan_website`, `list_technologies`, `get_technology`, `get_trends_overview`, `compare_technologies` — see `mcp/README.md`
+- Transports: **stdio** (default; Claude Desktop/Cursor/opencode) and **Streamable HTTP** (`--transport http --port 3001`, stateless, JSON responses)
+- Env: `TSF_API_URL` (default `https://techstack-finder.vercel.app`), `TSF_API_KEY` (recommended for scans), `TSF_TRANSPORT/PORT/HOST`
+- SDK gotchas: `McpServer.registerTool` requires **zod** schemas (plain JSON Schema throws); stateless HTTP needs a **fresh server + transport per request** (`Protocol.connect` throws on a second connect); enable `enableJsonResponse: true` for plain-JSON POST responses
+- `next lint` does not traverse `mcp/` (only app/components/lib/...), so mcp code is lint-checked manually with `node --check`
+
 ## Verification (Playwright)
 - `playwright` / `playwright-core` are installed in project `node_modules`; `chromium.launch()` works headless
 - Scripts outside the repo (e.g. temp files) can't `require('playwright')` — run with `$env:NODE_PATH = "<repo>\node_modules"` or put the script inside the repo
