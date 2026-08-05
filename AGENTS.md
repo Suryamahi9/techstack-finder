@@ -78,7 +78,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - No WebGL/canvas on the homepage (HeroScene3D/TiltCard/ScrollImageReel deleted; ScanConsole also deleted when the fingerprint replaced it). A one-off `Extra attributes from the server: style` console warning during dev hot-reload on the SearchBar input is a compile artifact, not a bug
 
 ## Trends feature (market-data hub)
-- `app/trends/page.js` — `'use client'` BuiltWith-style hub: country selector (`TrendsCountryBar`), Spotlight cards, Technology Groups tag filter (`TechGroupFilter`), Popular Technologies directory (`TechDirectoryList`), plus the personal "Your Scan Trends" localStorage analytics
+- `app/trends/page.js` — `'use client'` BuiltWith-style hub: Spotlight cards, Technology Groups tag filter (`TechGroupFilter`), Popular Technologies directory (`TechDirectoryList`, fixed India counts), plus the personal "Your Scan Trends" localStorage analytics
 - `app/trends/[slug]/page.js` — **server component** detail pages: `generateStaticParams()` from `allTechSlugs()`, `dynamicParams = true`, `notFound()` on unknown slugs; per-tech stats, country breakdown, market-share YoY badge (`lib/market-share.js`), related techs, working CTAs
 - Directory renders **sorted by `liveSites` descending** — the sort lives in `TechDirectoryList.js`, not in the data file
 - `countrySites(tech, code)`: `IN` → `indianSites`; US/GB/DE/CA/AU/BR/JP → deterministic multiplier of `liveSites`; other codes → `null`

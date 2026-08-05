@@ -3,15 +3,12 @@ import { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import BackButton from '../../components/BackButton';
-import TrendsCountryBar from '../../components/TrendsCountryBar';
 import TechGroupFilter from '../../components/TechGroupFilter';
 import TechDirectoryList from '../../components/TechDirectoryList';
 import {
   SPOTLIGHT_TECHNOLOGIES,
   TECH_DIRECTORY,
   TECH_GROUPS,
-  COUNTRIES,
-  totalLiveSites,
 } from '../../lib/trends-data';
 import { getScanTrends } from '../../lib/scan-trends';
 import { formatCount } from '../../lib/format';
@@ -24,11 +21,6 @@ function getHistory() {
   } catch {
     return [];
   }
-}
-
-function countryName(code) {
-  const c = COUNTRIES.find((x) => x.code === code);
-  return c ? c.name : 'Worldwide';
 }
 
 function BarChart({ items, maxVal }) {
@@ -94,7 +86,6 @@ function TimelineDot({ entry, index }) {
 export default function TrendsPage() {
   const [history, setHistory] = useState([]);
   const [trends, setTrends] = useState([]);
-  const [country, setCountry] = useState('IN');
   const [activeTag, setActiveTag] = useState(null);
 
   useEffect(() => {
@@ -172,20 +163,6 @@ export default function TrendsPage() {
           </p>
         </div>
 
-        <section className="mt-10 border border-border bg-elevated p-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-fg">
-                {country === 'IN' ? 'Trends in India' : country === 'WW' ? 'Trends Worldwide' : `Trends in ${countryName(country)}`}
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                {formatCount(totalLiveSites())} total live-site instances tracked across the directory.
-              </p>
-            </div>
-            <TrendsCountryBar value={country} onChange={setCountry} />
-          </div>
-        </section>
-
         <section className="mt-10">
           <h2 className="mb-1 text-lg font-semibold text-fg">Spotlight Technologies</h2>
           <p className="mb-4 text-sm text-muted">
@@ -246,13 +223,12 @@ export default function TrendsPage() {
         <section id="popular-technologies" className="mt-10 scroll-mt-24">
           <h2 className="mb-1 text-lg font-semibold text-fg">Popular Technologies</h2>
           <p className="mb-4 text-sm text-muted">
-            Live-site and {country === 'IN' ? 'India' : countryName(country)} site counts for the
-            technologies in the directory.
+            Live-site and India site counts for the technologies in the directory.
           </p>
           <TechDirectoryList
             techs={TECH_DIRECTORY}
-            country={country}
-            countryName={countryName(country)}
+            country="IN"
+            countryName="India"
             activeTag={activeTag}
             onSelectTag={setActiveTag}
           />
