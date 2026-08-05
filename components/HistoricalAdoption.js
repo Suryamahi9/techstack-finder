@@ -102,7 +102,7 @@ export default function HistoricalAdoption({ technologies }) {
         </div>
         <div>
           <h3 className="text-sm font-semibold">Historical Adoption</h3>
-          <p className="text-xs text-faint">2018&ndash;2025 market share trajectory for detected techs</p>
+          <p className="text-xs text-faint">2018&ndash;2026 market share trajectory for detected techs</p>
         </div>
       </div>
 

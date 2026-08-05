@@ -176,7 +176,7 @@ export default function TrendsPage() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold text-fg">
-                {country === 'IN' ? 'Trends in India' : `Trends in ${countryName(country)}`}
+                {country === 'IN' ? 'Trends in India' : country === 'WW' ? 'Trends Worldwide' : `Trends in ${countryName(country)}`}
               </h2>
               <p className="mt-1 text-sm text-muted">
                 {formatCount(totalLiveSites())} total live-site instances tracked across the directory.
