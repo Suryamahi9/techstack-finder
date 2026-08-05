@@ -66,6 +66,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - `lib/scan-trends.js` — localStorage scan-trend helpers (`saveScanTrend`, `getScanTrends`); `results/page.js` writes here (do NOT import from a page component to reuse a helper — extract to `lib/`)
 - `lib/trends-data.js` — Trends hub data: 65-tech directory (live + India site counts), spotlight techs, 5 taxonomy groups, country math
 - `app/api/scan/route.js` — Main scan API endpoint
+- `components/ScanProgress.js` — Loading animation shown during `/api/scan` on the results page: etches a site-seeded fingerprint ring-by-ring (9 ridges, one per scan step) with a glowing active ring, then locks to `fingerprint #XXXX-XXXX`; self-driving timers (EventSource/`scan-stream` dependency removed — it was flaky under StrictMode), honors `prefers-reduced-motion`
 - `app/results/page.js` — 5-tab results page (wraps in Suspense)
 
 ## Homepage (`app/page.js`)

@@ -204,7 +204,7 @@ function ResultsContent() {
           </div>
         </div>
 
-        {loading && <ScanProgress site={site} onCancel={handleCancel} streamUrl={`/api/scan-stream?url=${encodeURIComponent(site || '')}`} />}
+        {loading && <ScanProgress site={site} onCancel={handleCancel} />}
 
         {!loading && error && (
           <div className="animate-fade-up rounded-2xl border border-border bg-elevated p-8 sm:p-12">

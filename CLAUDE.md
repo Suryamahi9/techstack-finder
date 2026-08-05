@@ -44,7 +44,7 @@ npm run lint      # next lint (eslint-config-next)
 3. 10-min in-memory TTL result cache (max 2,000 entries).
 4. `detectTechnologies()` (`lib/detect.js`): fetch HTML via Cheerio → detect challenge/blocked pages → **Playwright headless fallback** → deep CSS/JS fetch + path probes (`lib/deep-scan.js`) → rule engine → post-processors (tech-analysis, cve-db, gdpr-audit, company-enrichment, cost/team/lifecycle estimates) → result.
 5. Logs a `UsageLog`, increments `user.scansThisMonth`.
-- `app/api/scan-stream/route.js` — SSE progress feed for the results page loading UI.
+- **`components/ScanProgress.js`** — self-driving loading animation (no SSE dependency): etches a site-seeded fingerprint ring-by-ring (9 ridges, one per scan step), glowing active ring, then locks to `fingerprint #XXXX-XXXX` on completion; honors `prefers-reduced-motion`. `app/api/scan-stream/route.js` (SSE feed) is now unused by the UI.
 - **Vercel-awareness:** `process.env.VERCEL` skips Playwright, CSS/JS deep fetch, and path probes (unavailable on serverless). Scan routes set `maxDuration = 60`. Keep new scan steps behind the same guard.
 
 ### Auth & routing
