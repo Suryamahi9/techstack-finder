@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import OnboardingTour from '../components/OnboardingTour';
 import FeaturedStacks from '../components/FeaturedStacks';
-import ScanConsole from '../components/ScanConsole';
+import FingerprintWhorl from '../components/FingerprintWhorl';
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -62,8 +62,8 @@ function AnimatedCounter({ end, suffix = '' }) {
 function RevealHeadline() {
   const [ref, inView] = useInView(0.05);
   const parts = [
-    { text: 'See what the web', em: false },
-    { text: 'is made of.', em: true },
+    { text: 'Every website leaves', em: false },
+    { text: 'a fingerprint.', em: true },
   ];
   return (
     <h1 ref={ref} className="hero-headline text-4xl sm:text-5xl lg:text-6xl">
@@ -246,8 +246,8 @@ export default function Home() {
 
             <FadeIn delay={0.25}>
               <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
-                Paste any URL. We fingerprint the frameworks, CMS, analytics,
-                hosting, and infrastructure behind it — in seconds.
+                TechStack Finder reads the frameworks, CMS, analytics, hosting,
+                and infrastructure behind any URL — in seconds.
               </p>
             </FadeIn>
 
@@ -268,9 +268,9 @@ export default function Home() {
           </div>
 
           <FadeIn delay={0.18} className="lg:pl-2">
-            <ScanConsole />
+            <FingerprintWhorl />
             <p className="mt-3 text-center font-mono text-[10px] text-faint">
-              Live scan of stripe.com · 12 technologies · fingerprint #F1NG3R
+              A deterministic fingerprint of stripe.com&apos;s stack · hover to rescan
             </p>
           </FadeIn>
         </main>

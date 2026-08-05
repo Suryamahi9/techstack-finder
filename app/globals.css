@@ -1257,68 +1257,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HOMEPAGE — SCAN CONSOLE + MOTION SYSTEM
+   HOMEPAGE — MOTION SYSTEM
    ═══════════════════════════════════════════════════════════════ */
-
-/* ——— Scan console (hero signature): the sweeping scanner beam ——— */
-.scan-console { position: relative; }
-.scan-console .scan-beam {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 34px;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(200, 242, 78, 0.10) 42%,
-    rgba(200, 242, 78, 0.30) 50%,
-    rgba(200, 242, 78, 0.10) 58%,
-    transparent
-  );
-  border-top: 1px solid rgba(200, 242, 78, 0.35);
-  box-shadow: 0 0 26px rgba(200, 242, 78, 0.28);
-  opacity: 0;
-  animation: scanSweep 3.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-.scan-console:hover .scan-beam { animation-duration: 1.7s; }
-@keyframes scanSweep {
-  0%   { transform: translateY(-46px); opacity: 0; }
-  8%   { opacity: 0.8; }
-  46%  { opacity: 0.8; }
-  55%  { opacity: 0; }
-  100% { transform: translateY(400px); opacity: 0; }
-}
-
-/* ——— Scan console rows: lock-in reveal + confidence bars ——— */
-.scan-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 3px 12px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--muted);
-  opacity: 0;
-  transform: translateX(6px);
-  transition: opacity 0.35s ease, transform 0.35s ease, background-color 0.2s ease;
-  border-radius: 4px;
-}
-.scan-row-shown { opacity: 1; transform: translateX(0); }
-.scan-row-active { background: var(--accent-soft); }
-.scan-row-mark { width: 14px; flex-shrink: 0; color: var(--accent); }
-.scan-row-name { width: 128px; flex-shrink: 0; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.scan-row-bar { flex: 1; height: 3px; border-radius: 2px; background: rgba(148, 163, 184, 0.12); overflow: hidden; }
-.scan-row-fill {
-  display: block;
-  height: 100%;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--secondary), var(--accent));
-  transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.scan-row-conf { width: 38px; flex-shrink: 0; text-align: right; color: var(--faint); font-size: 10px; }
 
 /* ——— Headline word-mask reveal ——— */
 .word-mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.09em; margin-bottom: -0.09em; }
@@ -1356,7 +1296,78 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scan-console .scan-beam { animation: none; opacity: 0.2; }
   .cta-glow { animation: none; opacity: 0.35; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOMEPAGE — STACK FINGERPRINT (hero signature)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Slow-rotating dashed orbit ring with a traveling accent dot. */
+.stack-fingerprint .fp-orbit {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed var(--border-strong);
+  animation: fpOrbit 36s linear infinite;
+  pointer-events: none;
+}
+.stack-fingerprint .fp-orbit::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+@keyframes fpOrbit { to { transform: rotate(360deg); } }
+
+/* Soft chartreuse halo behind the fingerprint core. */
+.stack-fingerprint .fp-glow {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 65%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Expanding rings emanating from the core. */
+.stack-fingerprint .fp-pulse {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  animation: pulseRing 2.6s ease-out infinite;
+  pointer-events: none;
+}
+.stack-fingerprint .fp-pulse-2 { animation-delay: 1.3s; }
+
+/* Ridge segments assemble one-by-one from the seeded whorl. */
+.stack-fingerprint .fp-seg {
+  opacity: 0;
+  animation: fpSegIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fpSegIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Tech chips pop in under the fingerprint. */
+.stack-fingerprint .fp-chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(4px);
+  animation: fpChipIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fpChipIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stack-fingerprint .fp-orbit { animation: none; }
 }
 
