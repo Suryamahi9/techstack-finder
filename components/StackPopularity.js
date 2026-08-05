@@ -41,7 +41,7 @@ function PopularityRing({ score, size = 64 }) {
   const circumference = 2 * Math.PI * r;
   const offset = circumference - (score / 100) * circumference;
 
-  const color = score >= 70 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444';
+  const color = score >= 70 ? 'var(--tag-green-fg)' : score >= 40 ? 'var(--tag-yellow-fg)' : 'var(--tag-red-fg)';
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -139,7 +139,7 @@ export default function StackPopularity({ categories }) {
       <div className="space-y-1.5">
         {analysis.sorted.slice(0, 10).map((t) => {
           const pop = t.globalPop || 0;
-          const barColor = pop >= 70 ? '#10b981' : pop >= 40 ? '#f59e0b' : '#ef4444';
+          const barColor = pop >= 70 ? 'var(--tag-green-fg)' : pop >= 40 ? 'var(--tag-yellow-fg)' : 'var(--tag-red-fg)';
           return (
             <div key={t.name} className="flex items-center gap-2">
               <span className="w-28 shrink-0 truncate text-xs text-muted">{t.name}</span>

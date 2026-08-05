@@ -101,9 +101,9 @@ export default function ExportDashboard({ data, fileName = 'report' }) {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-[9998] bg-fg/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            <div className="animate-fade-up mx-auto w-full max-w-sm rounded-2xl border border-white/[0.08] bg-[#0c0c10] p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
+            <div className="animate-fade-up mx-auto w-full max-w-sm rounded-lg border border-border bg-surface p-6 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Export scan data</h3>
                 <button onClick={() => setOpen(false)} className="text-muted hover:text-fg">
@@ -112,22 +112,22 @@ export default function ExportDashboard({ data, fileName = 'report' }) {
               </div>
               <p className="mb-4 text-xs text-muted">Download or copy the full scan report for {data.site?.domain || fileName}</p>
               <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => handleExport('csv')} className="flex flex-col items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
+                <button onClick={() => handleExport('csv')} className="flex flex-col items-center gap-2 rounded-md border border-border bg-surface px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
                   <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" /></svg>
                   <span className="text-xs font-medium">CSV</span>
                   <span className="text-[10px] text-muted">Spreadsheet</span>
                 </button>
-                <button onClick={() => handleExport('json')} className="flex flex-col items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
+                <button onClick={() => handleExport('json')} className="flex flex-col items-center gap-2 rounded-md border border-border bg-surface px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
                   <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" /></svg>
                   <span className="text-xs font-medium">JSON</span>
                   <span className="text-[10px] text-muted">Raw data</span>
                 </button>
-                <button onClick={() => handleExport('html')} className="flex flex-col items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
+                <button onClick={() => handleExport('html')} className="flex flex-col items-center gap-2 rounded-md border border-border bg-surface px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
                   <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /></svg>
                   <span className="text-xs font-medium">HTML</span>
                   <span className="text-[10px] text-muted">Report</span>
                 </button>
-                <button onClick={() => handleExport('copy-json')} className="flex flex-col items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
+                <button onClick={() => handleExport('copy-json')} className="flex flex-col items-center gap-2 rounded-md border border-border bg-surface px-4 py-5 transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 active:scale-95">
                   <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                   <span className="text-xs font-medium">{copied ? 'Copied!' : 'Copy JSON'}</span>
                   <span className="text-[10px] text-muted">Clipboard</span>

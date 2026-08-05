@@ -23,8 +23,8 @@ export default function ComparePreview() {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-[1px] backdrop-blur-sm">
-      <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-4 sm:p-5">
+    <div className="rounded-lg border border-border bg-surface shadow-sm">
+      <div className="p-4 sm:p-5">
         <div className="mb-4 flex items-center gap-2">
           <svg className="h-3.5 w-3.5 text-accent/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
@@ -40,7 +40,7 @@ export default function ComparePreview() {
               className={`flex-1 rounded-xl border px-3 py-2.5 text-left transition-all duration-300 ${
                 i === active
                   ? 'border-accent/20 bg-accent/[0.05]'
-                  : 'border-white/[0.04] bg-white/[0.01] hover:border-white/[0.08]'
+                  : 'border-border bg-surface hover:border-border-strong'
               }`}
             >
               <div className="mb-2 flex items-center gap-1.5">
@@ -59,7 +59,7 @@ export default function ComparePreview() {
           ))}
         </div>
 
-        <div className="mt-3 flex items-center justify-between border-t border-white/[0.04] pt-3">
+        <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
           <span className="font-mono text-[10px] text-faint">3 sites compared</span>
           <span className="font-mono text-[10px] text-accent/50">Try compare →</span>
         </div>

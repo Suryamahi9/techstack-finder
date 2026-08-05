@@ -20,9 +20,9 @@ const RULES = [
 
 function ViolationBadge({ severity }) {
   const colors = {
-    critical: 'bg-red-500/15 text-red-400 border-red-500/20',
-    serious: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-    moderate: 'bg-sky-500/15 text-sky-400 border-sky-500/20',
+    critical: 'bg-tag-red-bg text-tag-red-fg border-border-strong',
+    serious: 'bg-tag-yellow-bg text-tag-yellow-fg border-border-strong',
+    moderate: 'bg-tag-blue-bg text-tag-blue-fg border-border-strong',
   };
   return (
     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${colors[severity] || colors.moderate}`}>
@@ -39,10 +39,10 @@ export default function AccessibilityReport({ a11y }) {
   const score = Math.round((passed / RULES.length) * 100);
 
   const gradeColors = {
-    90: 'text-emerald-400',
-    75: 'text-amber-400',
-    50: 'text-orange-400',
-    0: 'text-red-400',
+    90: 'text-tag-green-fg',
+    75: 'text-tag-yellow-fg',
+    50: 'text-tag-yellow-fg',
+    0: 'text-tag-red-fg',
   };
   const gradeColor = Object.entries(gradeColors)
     .sort((a, b) => b[0] - a[0])
@@ -66,12 +66,12 @@ export default function AccessibilityReport({ a11y }) {
       </div>
 
       {violations.length === 0 ? (
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-center">
-          <svg className="mx-auto mb-2 h-6 w-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="rounded-xl border border-border bg-tag-green-bg p-4 text-center">
+          <svg className="mx-auto mb-2 h-6 w-6 text-tag-green-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
             <path d="M22 4L12 14.01l-3-3" />
           </svg>
-          <p className="text-xs font-medium text-emerald-400">No violations detected</p>
+          <p className="text-xs font-medium text-tag-green-fg">No violations detected</p>
           <p className="mt-1 text-[10px] text-muted">All {RULES.length} checks passed</p>
         </div>
       ) : (

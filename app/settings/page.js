@@ -6,7 +6,7 @@ import BackButton from '../../components/BackButton';
 
 function Section({ title, children }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+    <div className="rounded-xl border border-border bg-surface p-5">
       <h2 className="mb-4 text-sm font-semibold text-fg">{title}</h2>
       {children}
     </div>
@@ -19,7 +19,7 @@ function Input({ label, ...props }) {
       <label className="mb-1 block text-xs text-muted">{label}</label>
       <input
         {...props}
-        className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-fg outline-none transition-colors focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
+        className="w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-fg outline-none transition-colors focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
       />
     </div>
   );
@@ -28,8 +28,8 @@ function Input({ label, ...props }) {
 function Button({ children, variant = 'default', loading, ...props }) {
   const base = 'rounded-lg px-4 py-2 text-sm font-medium transition-all active:scale-[0.98] disabled:opacity-50';
   const variants = {
-    default: 'border border-white/10 bg-white/5 text-fg hover:bg-white/10',
-    accent: 'bg-accent text-black hover:brightness-110',
+    default: 'border border-border bg-surface text-fg hover:bg-border/40',
+    accent: 'bg-accent text-bg hover:opacity-90',
     danger: 'border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20',
   };
   return (
@@ -162,7 +162,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-2xl px-4 py-16">
         <div className="mb-4">
           <BackButton />
@@ -180,7 +180,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex gap-2">
                 {tier === 'free' ? (
-                  <Link href="/pricing" className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-black hover:brightness-110">Upgrade</Link>
+                  <Link href="/pricing" className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg hover:brightness-110 active:scale-[0.97]">Upgrade</Link>
                 ) : (
                   <ManageBillingButton />
                 )}

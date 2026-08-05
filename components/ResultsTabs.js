@@ -26,7 +26,7 @@ const TABS = [
 export default function ResultsTabs({ active, onChange, summary }) {
   return (
     <div className="sticky top-16 z-30 mb-6 -mx-4 sm:top-20 sm:mx-0">
-      <div className="flex items-center gap-1 overflow-x-auto rounded-none border-b border-white/[0.06] bg-bg/80 px-4 py-0 backdrop-blur-xl sm:rounded-xl sm:border sm:border-border sm:bg-elevated/80 sm:p-1 sm:px-0 sm:justify-center" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+      <div className="flex items-center gap-1 overflow-x-auto rounded-none border-b border-border bg-bg/80 px-4 py-0 backdrop-blur-xl sm:rounded-xl sm:border sm:border-border sm:bg-elevated/80 sm:p-1 sm:px-0 sm:justify-center" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
         <div className="flex gap-1 sm:gap-0">
           {TABS.map((tab) => {
             const isActive = active === tab.id;
@@ -37,7 +37,7 @@ export default function ResultsTabs({ active, onChange, summary }) {
                 className={`relative flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 ${
                   isActive
                     ? 'bg-accent/10 text-accent shadow-sm shadow-accent/5'
-                    : 'text-muted hover:text-fg hover:bg-white/[0.03]'
+                    : 'text-muted hover:text-fg hover:bg-border/40'
                 }`}
                 role="tab"
                 aria-selected={isActive}

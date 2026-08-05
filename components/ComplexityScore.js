@@ -5,7 +5,7 @@ export default function ComplexityScore({ complexity }) {
   const circumference = 2 * Math.PI * 36;
   const offset = circumference - (normalizedScore / 100) * circumference;
 
-  const barColor = normalizedScore <= 25 ? '#22c55e' : normalizedScore <= 50 ? '#3b82f6' : normalizedScore <= 75 ? '#eab308' : '#ef4444';
+  const barColor = normalizedScore <= 25 ? 'var(--tag-green-fg)' : normalizedScore <= 50 ? 'var(--tag-blue-fg)' : normalizedScore <= 75 ? 'var(--tag-yellow-fg)' : 'var(--tag-red-fg)';
 
   return (
     <div className="rounded-2xl border border-border bg-elevated p-6 animate-fade-up">
@@ -45,7 +45,7 @@ export default function ComplexityScore({ complexity }) {
       {suggestions.length > 0 && (
         <div className="mb-4 space-y-1">
           {suggestions.map((s, i) => (
-            <div key={i} className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-1.5 text-[11px] text-yellow-400">{s}</div>
+            <div key={i} className="rounded-lg border border-border bg-tag-yellow-bg px-3 py-1.5 text-[11px] text-tag-yellow-fg">{s}</div>
           ))}
         </div>
       )}

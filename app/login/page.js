@@ -34,10 +34,6 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen">
       <Header />
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="dot-grid-bg absolute inset-0" />
-        <div className="gradient-mesh absolute inset-0" />
-      </div>
       <main className="relative z-10 mx-auto max-w-md px-4 pb-24 pt-28 sm:px-6">
         <div className="mb-4">
           <BackButton />
@@ -100,7 +96,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-accent/90 disabled:opacity-50"
+              className="w-full rounded-md bg-accent px-4 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent/90 disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

@@ -11,7 +11,7 @@ export default function CanonicalTechs({ technologies }) {
     <div className="rounded-2xl border border-border bg-elevated p-5 animate-fade-up">
       <div className="flex items-center gap-3 mb-4">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-bg">
-          <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="h-4 w-4 text-tag-green-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>

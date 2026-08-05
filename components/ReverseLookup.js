@@ -100,7 +100,7 @@ export default function ReverseLookup() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search a technology..."
-        className="mb-3 w-full rounded-xl border border-border bg-bg px-4 py-2.5 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none"
+        className="mb-3 w-full rounded-xl border border-border bg-bg px-4 py-2.5 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
       />
       <div className="mb-3 max-h-[120px] overflow-y-auto">
         <div className="flex flex-wrap gap-1.5">

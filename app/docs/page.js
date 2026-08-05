@@ -79,8 +79,8 @@ function CodeBlock({ code, language }) {
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="relative rounded-lg border border-white/[0.06] bg-white/[0.02]">
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2">
+    <div className="relative rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <span className="text-[10px] font-medium uppercase tracking-wider text-faint">{language}</span>
         <button
           onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
@@ -95,7 +95,7 @@ function CodeBlock({ code, language }) {
 }
 
 function MethodBadge({ method }) {
-  const colors = { GET: 'bg-blue-500/15 text-blue-400', POST: 'bg-green-500/15 text-green-400', PUT: 'bg-yellow-500/15 text-yellow-400', DELETE: 'bg-red-500/15 text-red-400' };
+  const colors = { GET: 'bg-tag-blue-bg text-tag-blue-fg', POST: 'bg-tag-green-bg text-tag-green-fg', PUT: 'bg-tag-yellow-bg text-tag-yellow-fg', DELETE: 'bg-tag-red-bg text-tag-red-fg' };
   return <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-bold ${colors[method] || colors.GET}`}>{method}</span>;
 }
 
@@ -103,7 +103,7 @@ export default function DocsPage() {
   const [activeExample, setActiveExample] = useState('curl');
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-4xl px-4 py-16">
         <div className="mb-4">
           <BackButton />
@@ -126,7 +126,7 @@ export default function DocsPage() {
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                   activeExample === key
                     ? 'bg-accent/10 text-accent border border-accent/25'
-                    : 'border border-white/[0.06] text-muted hover:text-fg'
+                    : 'border border-border text-muted hover:text-fg'
                 }`}
               >
                 {ex.label}
@@ -138,10 +138,10 @@ export default function DocsPage() {
 
         <div className="mb-10">
           <h2 className="mb-4 text-lg font-semibold text-fg">Rate Limits</h2>
-          <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+          <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-white/[0.02]">
+                <tr className="border-b border-border bg-surface">
                   <th className="px-4 py-3 font-medium text-muted">Tier</th>
                   <th className="px-4 py-3 font-medium text-muted">Rate Limit</th>
                   <th className="px-4 py-3 font-medium text-muted">Scans/Month</th>
@@ -151,7 +151,7 @@ export default function DocsPage() {
               </thead>
               <tbody>
                 {RATE_LIMITS.map((r) => (
-                  <tr key={r.tier} className="border-b border-white/[0.04] last:border-0">
+                  <tr key={r.tier} className="border-b border-border last:border-0">
                     <td className="px-4 py-3 font-medium text-fg">{r.tier}</td>
                     <td className="px-4 py-3 text-fg/80">{r.rate}</td>
                     <td className="px-4 py-3 text-fg/80">{r.scans}</td>
@@ -168,7 +168,7 @@ export default function DocsPage() {
           <h2 className="mb-4 text-lg font-semibold text-fg">Endpoints</h2>
           <div className="flex flex-col gap-4">
             {ENDPOINTS.map((ep) => (
-              <div key={ep.path + ep.method} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+              <div key={ep.path + ep.method} className="rounded-xl border border-border bg-surface p-5">
                 <div className="mb-3 flex items-center gap-3">
                   <MethodBadge method={ep.method} />
                   <code className="text-sm font-mono text-fg">{ep.path}</code>
@@ -178,10 +178,10 @@ export default function DocsPage() {
                 {ep.body && (
                   <div className="mb-3">
                     <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-faint">Body</p>
-                    <div className="overflow-x-auto rounded-lg border border-white/[0.04]">
+                    <div className="overflow-x-auto rounded-lg border border-border">
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-white/[0.06] bg-white/[0.02]">
+                          <tr className="border-b border-border bg-surface">
                             <th className="px-3 py-2 font-medium text-muted">Field</th>
                             <th className="px-3 py-2 font-medium text-muted">Type</th>
                             <th className="px-3 py-2 font-medium text-muted">Required</th>
@@ -190,7 +190,7 @@ export default function DocsPage() {
                         </thead>
                         <tbody>
                           {ep.body.map((f) => (
-                            <tr key={f.name} className="border-b border-white/[0.04] last:border-0">
+                            <tr key={f.name} className="border-b border-border last:border-0">
                               <td className="px-3 py-2 font-mono text-fg">{f.name}</td>
                               <td className="px-3 py-2 text-fg/60">{f.type}</td>
                               <td className="px-3 py-2">{f.required ? <span className="text-accent">Yes</span> : <span className="text-faint">No</span>}</td>
@@ -206,7 +206,7 @@ export default function DocsPage() {
                 {ep.response && (
                   <div>
                     <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-faint">Response</p>
-                    <pre className="overflow-x-auto rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-xs font-mono text-fg/70">{ep.response}</pre>
+                    <pre className="overflow-x-auto rounded-lg border border-border bg-surface p-3 text-xs font-mono text-fg/70">{ep.response}</pre>
                   </div>
                 )}
               </div>
@@ -214,13 +214,13 @@ export default function DocsPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-xl border border-border bg-surface p-5">
           <h2 className="mb-3 text-lg font-semibold text-fg">Authentication</h2>
           <p className="mb-3 text-xs text-muted">
             Include your API key in the <code className="text-fg/80">x-api-key</code> header. You can also authenticate via browser session by signing in at{' '}
             <a href="/login" className="text-accent hover:underline">/login</a>.
           </p>
-          <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-xs font-mono text-fg/70">
+          <div className="rounded-lg border border-border bg-surface p-3 text-xs font-mono text-fg/70">
             x-api-key: tsf_your_api_key_here
           </div>
           <p className="mt-3 text-xs text-muted">

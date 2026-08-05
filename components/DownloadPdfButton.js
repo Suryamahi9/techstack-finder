@@ -429,7 +429,7 @@ export default function DownloadPdfButton({ data, fileName = 'report' }) {
         </button>
       </div>
       {error && (
-        <p className="max-w-xs text-xs text-red-400">{error}</p>
+        <p className="max-w-xs text-xs text-tag-red-fg">{error}</p>
       )}
       <div
         ref={containerRef}

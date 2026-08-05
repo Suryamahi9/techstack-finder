@@ -2,9 +2,9 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 
 const TYPE_COLORS = {
-  frontend: '#3b82f6',
-  backend: '#10b981',
-  infra: '#f59e0b',
+  frontend: '#1f6c9f',
+  backend: '#346538',
+  infra: '#956400',
 };
 
 function buildGraph(categories) {
@@ -122,7 +122,7 @@ export default function StackVisualization({ categories }) {
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = hovered && (hovered === a.id || hovered === b.id) ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.06)';
+      ctx.strokeStyle = hovered && (hovered === a.id || hovered === b.id) ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.18)';
       ctx.lineWidth = hovered && (hovered === a.id || hovered === b.id) ? 1.5 : 0.5;
       ctx.stroke();
     });
@@ -132,7 +132,7 @@ export default function StackVisualization({ categories }) {
       const isCenter = n.type === 'center';
       const isCat = n.type === 'category';
 
-      let color = isCenter ? 'var(--accent)' : isCat ? '#6366f1' : (TYPE_COLORS[n.type] || '#8b5cf6');
+      let color = isCenter ? 'var(--accent)' : isCat ? 'var(--secondary)' : (TYPE_COLORS[n.type] || 'var(--faint)');
       let r = n.radius * (isHovered ? 1.2 : 1);
 
       ctx.beginPath();
@@ -140,13 +140,13 @@ export default function StackVisualization({ categories }) {
 
       if (isCenter) {
         const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r);
-        grad.addColorStop(0, 'rgba(217,119,6,0.4)');
-        grad.addColorStop(1, 'rgba(217,119,6,0.1)');
+        grad.addColorStop(0, 'rgba(11,14,20,0.9)');
+        grad.addColorStop(1, 'rgba(11,14,20,0.35)');
         ctx.fillStyle = grad;
       } else if (isCat) {
-        ctx.fillStyle = isHovered ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.2)';
+        ctx.fillStyle = isHovered ? 'rgba(139,147,167,0.55)' : 'rgba(139,147,167,0.18)';
       } else {
-        const alpha = isHovered ? 0.6 : 0.25;
+        const alpha = isHovered ? 0.7 : 0.3;
         const hex = color;
         const r2 = parseInt(hex.slice(1, 3), 16);
         const g2 = parseInt(hex.slice(3, 5), 16);
@@ -157,11 +157,11 @@ export default function StackVisualization({ categories }) {
 
       ctx.beginPath();
       ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = isHovered ? '#fff' : 'rgba(255,255,255,0.15)';
+      ctx.strokeStyle = isHovered ? 'var(--border-strong)' : 'var(--border)';
       ctx.lineWidth = isHovered ? 2 : 0.5;
       ctx.stroke();
 
-      ctx.fillStyle = isHovered ? '#fff' : isCenter ? '#fff' : isCat ? '#c7d2fe' : '#cbd5e1';
+      ctx.fillStyle = isHovered ? 'var(--fg)' : isCenter ? 'var(--fg)' : isCat ? 'var(--muted)' : 'var(--fg)';
       ctx.font = isCenter ? 'bold 11px sans-serif' : isCat ? '600 9px sans-serif' : '9px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -174,7 +174,7 @@ export default function StackVisualization({ categories }) {
       ctx.fillText(label, n.x, n.y);
 
       if (n.count && isCat) {
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillStyle = 'var(--faint)';
         ctx.font = '7px sans-serif';
         ctx.fillText(`${n.count}`, n.x, n.y + r + 10);
       }
@@ -240,13 +240,13 @@ export default function StackVisualization({ categories }) {
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-faint">Stack Graph</h3>
         <div className="flex items-center gap-3 text-[10px]">
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-sky-400" /> Frontend</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Backend</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Infra</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-indigo-400" /> Category</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-tag-blue-fg" /> Frontend</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-tag-green-fg" /> Backend</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-tag-yellow-fg" /> Infra</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-secondary" /> Category</span>
         </div>
       </div>
-      <div className="relative overflow-hidden rounded-xl border border-border bg-[#0a0e1a]">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface">
         <canvas
           ref={canvasRef}
           className="w-full"
@@ -255,7 +255,7 @@ export default function StackVisualization({ categories }) {
           onClick={handleClick}
         />
         {tooltip && (
-           <div className="pointer-events-none absolute left-4 top-4 rounded-lg border border-white/10 bg-zinc-950/80 px-3 py-2 text-xs backdrop-blur-sm">
+           <div className="pointer-events-none absolute left-4 top-4 rounded-lg border border-border bg-surface px-3 py-2 text-xs shadow-sm backdrop-blur-sm">
             <div className="font-semibold text-fg">{tooltip.label}</div>
             {tooltip.type !== 'center' && tooltip.type !== 'category' && (
               <div className="mt-0.5 text-muted">{tooltip.type} · {tooltip.id.split('_')[0]}</div>

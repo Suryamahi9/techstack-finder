@@ -1,10 +1,10 @@
 function StatusBadge({ status, label }) {
   const colors = {
     good: 'bg-accent/15 text-accent',
-    short: 'bg-amber-500/15 text-amber-300',
-    long: 'bg-amber-500/15 text-amber-300',
-    missing: 'bg-red-500/15 text-red-300',
-    multiple: 'bg-amber-500/15 text-amber-300',
+    short: 'bg-tag-yellow-bg text-tag-yellow-fg',
+    long: 'bg-tag-yellow-bg text-tag-yellow-fg',
+    missing: 'bg-tag-red-bg text-tag-red-fg',
+    multiple: 'bg-tag-yellow-bg text-tag-yellow-fg',
   };
   const labels = {
     good: 'Good',
@@ -112,7 +112,7 @@ export default function SeoAnalysis({ seo }) {
             {seo.images.missingAlt > 0 && (
               <>
                 <span className="mx-1 text-faint">·</span>
-                <span className="text-red-300">{seo.images.missingAlt}</span>{' '}
+                <span className="text-tag-red-fg">{seo.images.missingAlt}</span>{' '}
                 <span className="text-faint">missing alt</span>
               </>
             )}

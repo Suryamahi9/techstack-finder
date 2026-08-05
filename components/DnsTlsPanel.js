@@ -7,7 +7,7 @@ export default function DnsTlsPanel({ dnsTls }) {
     <div className="rounded-2xl border border-border bg-elevated p-6 animate-fade-up">
       <div className="flex items-center gap-3 mb-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-bg">
-          <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="h-4 w-4 text-tag-green-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
@@ -28,11 +28,11 @@ export default function DnsTlsPanel({ dnsTls }) {
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-faint">DNS Records</div>
           <div className="space-y-2">
             {dns.provider && (
-              <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
-                <svg className="h-3 w-3 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div className="flex items-center gap-2 rounded-lg border border-border-strong bg-tag-green-bg px-3 py-1.5">
+                <svg className="h-3 w-3 text-tag-green-fg shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span className="text-[11px] font-semibold text-emerald-400">{dns.provider}</span>
+                <span className="text-[11px] font-semibold text-tag-green-fg">{dns.provider}</span>
               </div>
             )}
 
@@ -79,7 +79,7 @@ export default function DnsTlsPanel({ dnsTls }) {
             )}
 
             {dns.dnssec && (
-              <div className="flex items-center gap-1.5 text-[11px] text-emerald-400">
+              <div className="flex items-center gap-1.5 text-[11px] text-tag-green-fg">
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
@@ -95,11 +95,11 @@ export default function DnsTlsPanel({ dnsTls }) {
           {tls ? (
             <div className="space-y-2">
               {tls.sslProvider && (
-                <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
-                  <svg className="h-3 w-3 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <div className="flex items-center gap-2 rounded-lg border border-border-strong bg-tag-green-bg px-3 py-1.5">
+                  <svg className="h-3 w-3 text-tag-green-fg shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  <span className="text-[11px] font-semibold text-emerald-400">{tls.sslProvider}</span>
+                  <span className="text-[11px] font-semibold text-tag-green-fg">{tls.sslProvider}</span>
                 </div>
               )}
 
@@ -124,21 +124,21 @@ export default function DnsTlsPanel({ dnsTls }) {
 
               {tls.daysRemaining !== null && (
                 <div className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 ${
-                  tls.isExpired ? 'border-red-500/20 bg-red-500/5' :
-                  tls.isExpiringSoon ? 'border-yellow-500/20 bg-yellow-500/5' :
-                  'border-emerald-500/20 bg-emerald-500/5'
+                  tls.isExpired ? 'border-border-strong bg-tag-red-bg' :
+                  tls.isExpiringSoon ? 'border-border-strong bg-tag-yellow-bg' :
+                  'border-border-strong bg-tag-green-bg'
                 }`}>
                   <svg className={`h-3 w-3 shrink-0 ${
-                    tls.isExpired ? 'text-red-400' :
-                    tls.isExpiringSoon ? 'text-yellow-400' :
-                    'text-emerald-400'
+                    tls.isExpired ? 'text-tag-red-fg' :
+                    tls.isExpiringSoon ? 'text-tag-yellow-fg' :
+                    'text-tag-green-fg'
                   }`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                   <span className={`text-[11px] font-semibold ${
-                    tls.isExpired ? 'text-red-400' :
-                    tls.isExpiringSoon ? 'text-yellow-400' :
-                    'text-emerald-400'
+                    tls.isExpired ? 'text-tag-red-fg' :
+                    tls.isExpiringSoon ? 'text-tag-yellow-fg' :
+                    'text-tag-green-fg'
                   }`}>
                     {tls.isExpired
                       ? 'Certificate expired'

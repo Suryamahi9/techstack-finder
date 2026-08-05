@@ -29,7 +29,7 @@ export default function ShareButton({ site }) {
       title="Copy shareable link"
     >
       {copied ? (
-        <svg className="h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="h-3.5 w-3.5 text-tag-green-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M20 6L9 17l-5-5" />
         </svg>
       ) : (

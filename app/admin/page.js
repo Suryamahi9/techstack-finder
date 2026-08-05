@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 function StatCard({ label, value, sub }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-border bg-surface p-4">
       <p className="text-xs text-muted">{label}</p>
       <p className="mt-1 text-2xl font-bold text-fg">{value}</p>
       {sub && <p className="mt-0.5 text-[10px] text-faint">{sub}</p>}
@@ -16,11 +16,11 @@ function StatCard({ label, value, sub }) {
 function Badge({ children, color = 'accent' }) {
   const colors = {
     accent: 'bg-accent/15 text-accent',
-    blue: 'bg-blue-500/15 text-blue-400',
-    red: 'bg-red-500/15 text-red-400',
-    yellow: 'bg-yellow-500/15 text-yellow-400',
-    green: 'bg-green-500/15 text-green-400',
-    muted: 'bg-white/5 text-muted',
+    blue: 'bg-tag-blue-bg text-tag-blue-fg',
+    red: 'bg-tag-red-bg text-tag-red-fg',
+    yellow: 'bg-tag-yellow-bg text-tag-yellow-fg',
+    green: 'bg-tag-green-bg text-tag-green-fg',
+    muted: 'bg-border/40 text-muted',
   };
   return <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${colors[color]}`}>{children}</span>;
 }
@@ -75,12 +75,12 @@ export default function AdminPage() {
     }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[var(--bg)]"><p className="text-sm text-muted">Loading admin panel...</p></div>;
-  if (error) return <div className="flex min-h-screen items-center justify-center bg-[var(--bg)]"><p className="text-sm text-red-400">{error}</p></div>;
-  if (!stats) return <div className="flex min-h-screen items-center justify-center bg-[var(--bg)]"><p className="text-sm text-red-400">Access denied.</p></div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center"><p className="text-sm text-muted">Loading admin panel...</p></div>;
+  if (error) return <div className="flex min-h-screen items-center justify-center"><p className="text-sm text-red-400">{error}</p></div>;
+  if (!stats) return <div className="flex min-h-screen items-center justify-center"><p className="text-sm text-red-400">Access denied.</p></div>;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-8">
           <h1 className="text-xl font-bold text-fg">Admin Dashboard</h1>
@@ -95,7 +95,7 @@ export default function AdminPage() {
         </div>
 
         {stats.users.byTier && Object.keys(stats.users.byTier).length > 0 && (
-          <div className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <div className="mb-8 rounded-xl border border-border bg-surface p-5">
             <h2 className="mb-3 text-sm font-semibold text-fg">Users by Tier</h2>
             <div className="flex gap-4">
               {Object.entries(stats.users.byTier).map(([tier, count]) => (
@@ -109,7 +109,7 @@ export default function AdminPage() {
         )}
 
         {stats.topDomains?.length > 0 && (
-          <div className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <div className="mb-8 rounded-xl border border-border bg-surface p-5">
             <h2 className="mb-3 text-sm font-semibold text-fg">Most Scanned Domains</h2>
             <div className="flex flex-col gap-1.5">
               {stats.topDomains.map((d, i) => (
@@ -128,14 +128,14 @@ export default function AdminPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); loadUsers(e.target.value); }}
             placeholder="Search by name or email..."
-            className="mb-3 w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-fg outline-none focus:border-accent/30 placeholder:text-faint"
+            className="mb-3 w-full max-w-md rounded-md border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
           />
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+        <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-white/[0.06] bg-white/[0.02]">
+              <tr className="border-b border-border bg-surface">
                 <th className="px-4 py-3 font-medium text-muted">User</th>
                 <th className="px-4 py-3 font-medium text-muted">Tier</th>
                 <th className="px-4 py-3 font-medium text-muted">Role</th>
@@ -146,7 +146,7 @@ export default function AdminPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-white/[0.04] last:border-0">
+                <tr key={u.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3">
                     <div className="font-medium text-fg">{u.name || 'Unnamed'}</div>
                     <div className="text-faint">{u.email}</div>
@@ -161,13 +161,13 @@ export default function AdminPage() {
                         <button onClick={() => updateUser(u.id, { tier: 'pro' })} className="rounded border border-accent/20 bg-accent/10 px-2 py-0.5 text-[10px] text-accent hover:bg-accent/20">Set Pro</button>
                       )}
                       {u.tier !== 'enterprise' && (
-                        <button onClick={() => updateUser(u.id, { tier: 'enterprise' })} className="rounded border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[10px] text-blue-400 hover:bg-blue-500/20">Set Enterprise</button>
+                        <button onClick={() => updateUser(u.id, { tier: 'enterprise' })} className="rounded border border-tag-blue-bg bg-tag-blue-bg px-2 py-0.5 text-[10px] text-tag-blue-fg hover:opacity-80">Set Enterprise</button>
                       )}
                       {u.tier !== 'free' && (
-                        <button onClick={() => updateUser(u.id, { tier: 'free' })} className="rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-muted hover:bg-white/10">Set Free</button>
+                        <button onClick={() => updateUser(u.id, { tier: 'free' })} className="rounded border border-border bg-surface px-2 py-0.5 text-[10px] text-muted hover:bg-border/40">Set Free</button>
                       )}
                       {u.role !== 'admin' && (
-                        <button onClick={() => updateUser(u.id, { role: 'admin' })} className="rounded border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-[10px] text-red-400 hover:bg-red-500/20">Make Admin</button>
+                        <button onClick={() => updateUser(u.id, { role: 'admin' })} className="rounded border border-tag-red-bg bg-tag-red-bg px-2 py-0.5 text-[10px] text-tag-red-fg hover:opacity-80">Make Admin</button>
                       )}
                     </div>
                   </td>

@@ -5,11 +5,11 @@ export default function JobInference({ jobInference, stackInference }) {
   if (!hasJob && !hasStack) return null;
 
   const confidenceColor = {
-    high: 'bg-emerald-500/10 text-emerald-400',
-    medium: 'bg-blue-500/10 text-blue-400',
+    high: 'bg-tag-green-bg text-tag-green-fg',
+    medium: 'bg-tag-blue-bg text-tag-blue-fg',
     low: 'bg-faint/10 text-faint',
     confirmed: 'bg-accent/10 text-accent',
-    inferred: 'bg-blue-500/10 text-blue-400',
+    inferred: 'bg-tag-blue-bg text-tag-blue-fg',
   };
 
   return (

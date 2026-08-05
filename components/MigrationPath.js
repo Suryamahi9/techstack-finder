@@ -1,7 +1,7 @@
 export default function MigrationPath({ migrationData }) {
   if (!migrationData || !migrationData.migrations || migrationData.migrations.length === 0) return null;
 
-  const riskColor = { low: 'text-emerald-400 bg-emerald-500/10', medium: 'text-yellow-400 bg-yellow-500/10', high: 'text-red-400 bg-red-500/10' };
+  const riskColor = { low: 'text-tag-green-fg bg-tag-green-bg', medium: 'text-tag-yellow-fg bg-tag-yellow-bg', high: 'text-tag-red-fg bg-tag-red-bg' };
 
   return (
     <div className="rounded-2xl border border-border bg-elevated p-6 animate-fade-up">

@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-4">
           <BackButton />
@@ -43,12 +43,12 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
+            className="rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
           />
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-accent py-2.5 text-sm font-semibold text-black hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+            className="rounded-md bg-accent py-2.5 text-sm font-semibold text-bg hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
           >
             {loading ? 'Sending...' : 'Send Reset Link'}
           </button>

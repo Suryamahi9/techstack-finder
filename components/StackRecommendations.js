@@ -157,9 +157,9 @@ const RECOMMENDATIONS = [
 
 function PriorityBadge({ priority }) {
   const colors = {
-    high: 'bg-red-500/15 text-red-400 border-red-500/20',
-    medium: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-    low: 'bg-sky-500/15 text-sky-400 border-sky-500/20',
+    high: 'bg-tag-red-bg text-tag-red-fg border-border-strong',
+    medium: 'bg-tag-yellow-bg text-tag-yellow-fg border-border-strong',
+    low: 'bg-tag-blue-bg text-tag-blue-fg border-border-strong',
   };
   return (
     <span className={`rounded-full border px-2 py-0.5 text-[9px] font-semibold ${colors[priority]}`}>

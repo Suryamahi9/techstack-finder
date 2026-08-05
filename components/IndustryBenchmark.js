@@ -88,7 +88,7 @@ function detectIndustry(domain, categories) {
 function MatchBadge({ present, count }) {
   return (
     <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
-      present ? 'bg-emerald-500/15 text-emerald-400' : 'bg-border/50 text-faint'
+      present ? 'bg-tag-green-bg text-tag-green-fg' : 'bg-border/50 text-faint'
     }`}>
       {present ? `${count} match${count !== 1 ? 'es' : ''}` : 'none'}
     </span>
@@ -141,7 +141,7 @@ export default function IndustryBenchmark({ domain, categories }) {
             className="h-full rounded-full transition-all duration-700"
             style={{
               width: `${analysis.matchRate}%`,
-              backgroundColor: analysis.matchRate >= 70 ? '#10b981' : analysis.matchRate >= 40 ? '#f59e0b' : '#ef4444',
+              backgroundColor: analysis.matchRate >= 70 ? 'var(--tag-green-fg)' : analysis.matchRate >= 40 ? 'var(--tag-yellow-fg)' : 'var(--tag-red-fg)',
             }}
           />
         </div>
@@ -159,11 +159,11 @@ export default function IndustryBenchmark({ domain, categories }) {
                 key={tech}
                 className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
                   present
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                    ? 'border-border-strong bg-tag-green-bg text-tag-green-fg'
                     : 'border-border bg-bg text-faint'
                 }`}
               >
-                {present && <span className="h-1 w-1 rounded-full bg-emerald-400" />}
+                {present && <span className="h-1 w-1 rounded-full bg-tag-green-fg" />}
                 {tech}
               </span>
             );
@@ -172,13 +172,13 @@ export default function IndustryBenchmark({ domain, categories }) {
       </div>
 
       {analysis.missing.length > 0 && (
-        <div className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+        <div className="mb-3 rounded-lg border border-border bg-tag-yellow-bg px-3 py-2.5">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-tag-yellow-fg">
             Missing from typical stack ({analysis.missing.length})
           </div>
           <div className="mt-1.5 flex flex-wrap gap-1">
             {analysis.missing.map((tech) => (
-              <span key={tech} className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-400">
+              <span key={tech} className="rounded-full border border-border bg-tag-yellow-bg px-2 py-0.5 text-[10px] text-tag-yellow-fg">
                 {tech}
               </span>
             ))}

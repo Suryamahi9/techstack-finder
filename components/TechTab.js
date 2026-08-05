@@ -160,7 +160,7 @@ export default function TechTab({ data }) {
             className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
               techView === tab.id
                 ? 'bg-accent/10 text-accent shadow-sm'
-                : 'text-muted hover:text-fg hover:bg-white/[0.02]'
+                : 'text-muted hover:text-fg hover:bg-border/40'
             }`}
           >
             <span>{tab.icon}</span>
@@ -188,7 +188,7 @@ export default function TechTab({ data }) {
       {/* Filter + Content */}
       {summary.total === 0 ? (
         <div className="rounded-2xl border border-border bg-elevated p-12 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-border/40">
             <svg className="h-6 w-6 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>

@@ -20,7 +20,7 @@ export default function CategoryGrid() {
   return (
     <section>
       <div className="mb-6">
-        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint backdrop-blur-sm">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-faint">
           Coverage
         </div>
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -36,7 +36,7 @@ export default function CategoryGrid() {
           <Link
             key={cat.name}
             href={`/rules?category=${encodeURIComponent(cat.name)}`}
-            className="group flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] px-3.5 py-3 transition-all duration-300 hover:border-accent/15 hover:bg-accent/[0.03]"
+            className="group flex items-center gap-3 rounded-xl border border-border bg-surface px-3.5 py-3 transition-all duration-300 hover:border-accent/15 hover:bg-accent/[0.03]"
           >
             <svg
               className="h-4 w-4 shrink-0 text-faint transition-colors group-hover:text-accent"

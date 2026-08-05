@@ -16,7 +16,7 @@ const CATEGORY_COLORS = {
   'E-Commerce': 'text-teal-300',
   'Customer Support': 'text-yellow-300',
   Marketing: 'text-fuchsia-300',
-  'Cookie Consent': 'text-stone-300',
+  'Cookie Consent': 'text-muted',
   Security: 'text-red-300',
   Monitoring: 'text-blue-300',
   'Backend Framework': 'text-emerald-400',
@@ -31,7 +31,7 @@ const CATEGORY_COLORS = {
   'API Protocol': 'text-teal-400',
   Advertising: 'text-orange-300',
   Email: 'text-blue-300',
-  'Operating System': 'text-stone-300',
+  'Operating System': 'text-muted',
   'SSL / TLS': 'text-emerald-300',
   'Font Scripts': 'text-indigo-300',
   'Video Players': 'text-rose-400',
@@ -44,7 +44,7 @@ const CATEGORY_COLORS = {
   'Blog / Publishing': 'text-fuchsia-400',
   'Project Management': 'text-cyan-400',
   'Social Feeds': 'text-blue-400',
-  'Design Tools': 'text-stone-400',
+  'Design Tools': 'text-faint',
   'JavaScript Graphics': 'text-purple-400',
   Podcasting: 'text-lime-400',
   Search: 'text-teal-400',
@@ -52,23 +52,23 @@ const CATEGORY_COLORS = {
   'LMS / Education': 'text-green-400',
   Documentation: 'text-sky-400',
   'Business Tools': 'text-indigo-400',
-  Webmail: 'text-blue-400',
-  Captcha: 'text-red-400',
-  'Developer Tools': 'text-yellow-400',
-  'Cache Tools': 'text-slate-400',
-  Infrastructure: 'text-amber-400',
+  Webmail: 'text-tag-blue-fg',
+  Captcha: 'text-tag-red-fg',
+  'Developer Tools': 'text-tag-yellow-fg',
+  'Cache Tools': 'text-muted',
+  Infrastructure: 'text-tag-yellow-fg',
 };
 
 const CONFIDENCE_COLORS = {
-  high: 'bg-accent text-black',
-  medium: 'bg-amber-500 text-black',
-  low: 'bg-red-500 text-white',
+  high: 'bg-accent text-bg',
+  medium: 'bg-tag-yellow-bg text-tag-yellow-fg',
+  low: 'bg-tag-red-bg text-tag-red-fg',
 };
 
 const TYPE_COLORS = {
-  frontend: 'bg-sky-500/10 text-sky-300 border-sky-500/30',
-  backend: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
-  infra: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
+  frontend: 'bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg',
+  backend: 'bg-tag-green-bg text-tag-green-fg border-tag-green-bg',
+  infra: 'bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg',
 };
 
 export default function TechCard({ tech, index = 0 }) {
@@ -103,7 +103,7 @@ export default function TechCard({ tech, index = 0 }) {
           </span>
           <span
             className={`h-2 w-2 shrink-0 rounded-full transition-transform duration-200 group-hover:scale-125 ${
-              tech.confidence === 'high' ? 'bg-accent' : tech.confidence === 'medium' ? 'bg-amber-500' : 'bg-red-500'
+              tech.confidence === 'high' ? 'bg-accent' : tech.confidence === 'medium' ? 'bg-tag-yellow-fg' : 'bg-tag-red-fg'
             }`}
             title={`${tech.confidence} confidence`}
           />
@@ -112,7 +112,7 @@ export default function TechCard({ tech, index = 0 }) {
           </span>
         </div>
       </div>
-      <div className="flex flex-col gap-1.5 border-t border-white/[0.04] pt-2.5">
+      <div className="flex flex-col gap-1.5 border-t border-border pt-2.5">
         <div className="flex items-start gap-1.5 text-xs text-faint">
           <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-faint/70 mt-0.5">via</span>
           <span className="text-muted leading-relaxed">{tech.detectedVia}</span>

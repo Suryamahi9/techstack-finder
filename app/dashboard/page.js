@@ -43,10 +43,6 @@ export default function Dashboard() {
   return (
     <div className="relative min-h-screen">
       <Header />
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="dot-grid-bg absolute inset-0" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-accent/[0.02] via-transparent to-transparent" />
-      </div>
       <main id="main-content" className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-24 sm:px-6">
         <div className="mb-8 flex items-center gap-3">
           <BackButton />
@@ -57,8 +53,8 @@ export default function Dashboard() {
         </div>
 
         {pinned.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-12 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+          <div className="rounded-2xl border border-border bg-surface p-12 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-surface">
               <svg className="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                 <path d="M12 5v14M5 12h14" />
               </svg>
@@ -72,7 +68,7 @@ export default function Dashboard() {
             {pinned.map((widget) => {
               const meta = WIDGET_MAP[widget.id] || { title: widget.title, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', color: '#d97706' };
               return (
-                <div key={widget.id} className="group relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-5 transition-all duration-300 hover:border-white/[0.12]">
+                <div key={widget.id} className="group card-hover relative rounded-xl border border-border bg-surface p-5 transition-all duration-300 hover:border-border-strong">
                   <button onClick={() => removeWidget(widget.id)} className="absolute right-3 top-3 opacity-0 transition-opacity group-hover:opacity-100 text-muted hover:text-red-400">
                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                   </button>
@@ -94,7 +90,7 @@ export default function Dashboard() {
             <h2 className="mb-4 text-lg font-semibold">Recent scans</h2>
             <div className="space-y-2">
               {history.map((item, i) => (
-                <Link key={i} href={`/results?site=${encodeURIComponent(item.domain)}`} className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.02]">
+                <Link key={i} href={`/results?site=${encodeURIComponent(item.domain)}`} className="flex items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 transition-all duration-300 hover:border-accent/20 hover:bg-accent/[0.02]">
                   <img src={item.favicon || `https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} alt="" className="h-5 w-5 rounded" />
                   <span className="flex-1 text-sm font-medium">{item.domain}</span>
                   <span className="text-xs text-muted">{item.total || 0} tech{(item.total || 0) !== 1 ? 's' : ''}</span>
@@ -105,14 +101,14 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="mt-12 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <div className="mt-12 rounded-xl border border-border bg-surface p-6">
           <h3 className="text-sm font-semibold">Available widgets</h3>
           <p className="mt-1 text-xs text-muted">Pin any of these from a scan results page to see it here.</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {Object.entries(WIDGET_MAP).map(([id, meta]) => {
               const isPinned = pinned.some((p) => p.id === id);
               return (
-                <span key={id} className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium ${isPinned ? 'border-accent/20 text-accent' : 'border-white/10 text-muted'}`}>
+                <span key={id} className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium ${isPinned ? 'border-accent/20 text-accent' : 'border-border text-muted'}`}>
                   <svg className="h-3 w-3" style={{ color: meta.color }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d={meta.icon} /></svg>
                   {meta.title}
                   {isPinned && <span className="text-accent">&#183; Pinned</span>}

@@ -2,9 +2,9 @@
 import { useState, useMemo } from 'react';
 
 const TYPE_COLORS = {
-  frontend: '#3b82f6',
-  backend: '#10b981',
-  infra: '#f59e0b',
+  frontend: '#1f6c9f',
+  backend: '#346538',
+  infra: '#956400',
 };
 
 function hashStr(s) {
@@ -53,7 +53,7 @@ export default function StackWordCloud({ categories }) {
         rotation,
         x,
         y,
-        color: TYPE_COLORS[t.type] || '#8b5cf6',
+        color: TYPE_COLORS[t.type] || 'var(--faint)',
       };
     });
   }, [categories]);
@@ -65,12 +65,12 @@ export default function StackWordCloud({ categories }) {
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-faint">Word Cloud</h3>
         <div className="flex items-center gap-3 text-[10px]">
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#3b82f6' }} /> Frontend</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#10b981' }} /> Backend</span>
-          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#f59e0b' }} /> Infra</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#1f6c9f' }} /> Frontend</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#346538' }} /> Backend</span>
+          <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full" style={{ background: '#956400' }} /> Infra</span>
         </div>
       </div>
-      <div className="relative overflow-hidden rounded-xl border border-border bg-[#0a0e1a] p-4" style={{ height: '360px' }}>
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4" style={{ height: '360px' }}>
         {words.map((w, i) => (
           <span
             key={w.name}
@@ -79,7 +79,7 @@ export default function StackWordCloud({ categories }) {
               left: `${w.x}%`,
               top: `${w.y}%`,
               fontSize: `${w.size}px`,
-              color: hovered === i ? '#fff' : w.color,
+              color: hovered === i ? 'var(--fg)' : w.color,
               opacity: hovered !== null && hovered !== i ? 0.3 : 0.85,
               transform: `rotate(${w.rotation}deg) scale(${hovered === i ? 1.15 : 1})`,
               textShadow: hovered === i ? `0 0 12px ${w.color}` : 'none',

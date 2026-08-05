@@ -14,14 +14,14 @@ export default function AuroraWaves() {
 
     const getAccent = () => {
       const s = getComputedStyle(document.documentElement);
-      return s.getPropertyValue('--accent').trim() || '#d97706';
+      return s.getPropertyValue('--accent').trim() || '#c8f24e';
     };
 
     const hexToRgb = (hex) => {
-      if (!hex || typeof hex !== 'string' || hex.length < 7) return { r: 217, g: 119, b: 6 };
-      const r = parseInt(hex.slice(1, 3), 16) || 217;
-      const g = parseInt(hex.slice(3, 5), 16) || 119;
-      const b = parseInt(hex.slice(5, 7), 16) || 6;
+      if (!hex || typeof hex !== 'string' || hex.length < 7) return { r: 200, g: 242, b: 78 };
+      const r = parseInt(hex.slice(1, 3), 16) || 200;
+      const g = parseInt(hex.slice(3, 5), 16) || 242;
+      const b = parseInt(hex.slice(5, 7), 16) || 78;
       return { r, g, b };
     };
 

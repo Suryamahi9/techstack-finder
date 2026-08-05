@@ -134,27 +134,27 @@ export default function AiStackSummary({ domain, categories, summary, company })
 
       {/* Pros & Cons */}
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+        <div className="rounded-xl border border-border-strong bg-tag-green-bg p-3">
+          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-tag-green-fg">
             Strengths ({analysis.pros.length})
           </div>
           <ul className="space-y-1.5">
             {analysis.pros.map((p, i) => (
               <li key={i} className="flex items-start gap-2 text-[11px] text-muted leading-relaxed">
-                <span className="mt-0.5 shrink-0 text-emerald-400">+</span>
+                <span className="mt-0.5 shrink-0 text-tag-green-fg">+</span>
                 {p}
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+        <div className="rounded-xl border border-border-strong bg-tag-yellow-bg p-3">
+          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-tag-yellow-fg">
             Concerns ({analysis.cons.length})
           </div>
           <ul className="space-y-1.5">
             {analysis.cons.map((c, i) => (
               <li key={i} className="flex items-start gap-2 text-[11px] text-muted leading-relaxed">
-                <span className="mt-0.5 shrink-0 text-amber-400">!</span>
+                <span className="mt-0.5 shrink-0 text-tag-yellow-fg">!</span>
                 {c}
               </li>
             ))}

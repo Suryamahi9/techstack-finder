@@ -4,13 +4,13 @@ import TechCard from './TechCard';
 export default function CategorySection({ category, technologies, index }) {
   return (
     <section
-      className="border-t border-white/[0.04] pt-8 pb-4 animate-fade-up"
+      className="border-t border-border pt-8 pb-4 animate-fade-up"
       style={{ animationDelay: `${index * 80}ms` }}
     >
       <div className="grid gap-5 sm:grid-cols-[180px_1fr] sm:gap-8">
         <div className="sticky top-20 self-start">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-accent">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-border/40 text-accent">
               <CategoryIcon category={category} className="h-4 w-4" />
             </span>
             <h3 className="text-base font-semibold tracking-tight">{category}</h3>

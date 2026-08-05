@@ -149,7 +149,7 @@ export default function HistoryPage() {
                   <select
                     value={compareIdx}
                     onChange={(e) => handleCompare(parseInt(e.target.value))}
-                    className="rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-fg focus:border-accent focus:outline-none"
+                    className="rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
                   >
                     {domainHistory.slice(1).map((h, i) => {
                       const d = new Date(h.scannedAt);

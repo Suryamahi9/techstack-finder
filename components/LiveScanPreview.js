@@ -20,7 +20,7 @@ function ConfidenceBar({ confidence, delay }) {
   }, [confidence, delay]);
 
   return (
-    <div className="h-1.5 flex-1 rounded-full bg-white/[0.06] overflow-hidden">
+    <div className="h-1.5 flex-1 rounded-full bg-border/60 overflow-hidden">
       <div
         className="h-full rounded-full transition-all duration-1000 ease-out"
         style={{
@@ -72,16 +72,16 @@ export default function LiveScanPreview() {
   }, [visible]);
 
   return (
-    <div className="w-full rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-[1px] backdrop-blur-sm shadow-diffusion">
-      <div className="rounded-[calc(1rem-1px)] bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-4 sm:p-5">
+    <div className="w-full rounded-lg border border-border bg-surface shadow-sm">
+      <div className="p-4 sm:p-5">
         {/* Header bar */}
         <div className="mb-4 flex items-center gap-2">
           <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+            <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
+            <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
+            <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
           </div>
-          <div className="ml-2 flex-1 rounded-md bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-faint">
+          <div className="ml-2 flex-1 rounded-md bg-border/40 px-3 py-1 font-mono text-[10px] text-faint">
             github.com
           </div>
           <div className="flex items-center gap-1.5">
@@ -107,8 +107,8 @@ export default function LiveScanPreview() {
               key={tech.name}
               className={`group flex items-center gap-3 rounded-lg px-2.5 py-2 transition-all duration-300 ${
                 i === activeIndex
-                  ? 'bg-accent/[0.06] border border-accent/10 shadow-[inset_0_1px_0_rgba(217,119,6,0.05)]'
-                  : 'border border-transparent hover:bg-white/[0.02]'
+                  ? 'bg-accent/[0.06] border border-accent/10 shadow-[inset_0_1px_0_var(--accent-soft)]'
+                  : 'border border-transparent hover:bg-border/40'
               }`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
@@ -132,7 +132,7 @@ export default function LiveScanPreview() {
         </div>
 
         {/* Footer hint */}
-        <div className="mt-4 flex items-center justify-between border-t border-white/[0.04] pt-3">
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
           <span className="font-mono text-[10px] text-faint">
             Detected in 2.1s
           </span>

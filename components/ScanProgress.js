@@ -132,7 +132,7 @@ export default function ScanProgress({ site, onCancel, streamUrl }) {
           </div>
 
           {onCancel && (
-            <button onClick={onCancel} className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-muted transition-all duration-300 hover:border-red-500/30 hover:text-red-400 active:scale-95">
+            <button onClick={onCancel} className="mt-4 w-full rounded-md border border-border bg-surface px-4 py-2 text-sm text-muted transition-all duration-300 hover:border-border-strong hover:text-tag-red-fg active:scale-95">
               Cancel scan
             </button>
           )}

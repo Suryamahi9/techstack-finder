@@ -98,11 +98,11 @@ function PricingCard({ plan, session }) {
       className={`relative flex flex-col rounded-2xl border p-6 transition-all duration-300 ${
         plan.highlight
           ? 'border-accent/30 bg-accent/5 shadow-[0_0_40px_-12px_var(--accent-glow)] scale-[1.02]'
-          : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
+          : 'border-border bg-surface hover:border-border-strong'
       }`}
     >
       {plan.badge && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bg">
           {plan.badge}
         </span>
       )}
@@ -139,8 +139,8 @@ function PricingCard({ plan, session }) {
           href={plan.ctaHref}
           className={`rounded-lg py-2.5 text-center text-sm font-semibold transition-all duration-200 ${
             plan.highlight
-              ? 'bg-accent text-black hover:brightness-110 active:scale-[0.98]'
-              : 'border border-white/10 bg-white/5 text-fg hover:bg-white/10 active:scale-[0.98]'
+              ? 'bg-accent text-bg hover:opacity-90 active:scale-[0.98]'
+              : 'border border-border bg-surface text-fg hover:bg-border/40 active:scale-[0.98]'
           }`}
         >
           {isLoggedIn && session?.user?.tier === 'free' && plan.price > 0 ? 'Upgrade' : plan.cta}
@@ -154,7 +154,7 @@ function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-white/[0.06]">
+    <div className="border-b border-border">
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-fg transition-colors hover:text-accent"
@@ -206,7 +206,7 @@ export default function PricingPage() {
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-5xl px-4 py-20">
         <div className="mb-4">
           <BackButton />

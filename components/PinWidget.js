@@ -33,7 +33,7 @@ export default function PinWidget({ id, title, category }) {
       className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] font-medium transition-all duration-300 active:scale-95 ${
         isPinned
           ? 'border-accent/30 bg-accent/10 text-accent'
-          : 'border-white/10 bg-white/5 text-muted hover:border-accent/20 hover:text-fg'
+          : 'border-border bg-surface text-muted hover:border-accent/20 hover:text-fg'
       }`}
       title={isPinned ? 'Remove from dashboard' : 'Pin to dashboard'}
     >

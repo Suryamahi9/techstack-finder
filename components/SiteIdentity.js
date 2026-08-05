@@ -29,7 +29,7 @@ export default function SiteIdentity({ site, summary, cached }) {
                 {site.title}
               </h2>
               {cached && (
-                <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] text-amber-300">
+                <span className="rounded-md border border-border-strong bg-tag-yellow-bg px-2 py-0.5 font-mono text-[10px] text-tag-yellow-fg">
                   Cached
                 </span>
               )}

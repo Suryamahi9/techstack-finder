@@ -32,11 +32,11 @@ export default function AiInsights({ insights }) {
           <div className="text-[10px] text-faint uppercase tracking-wider">Technologies</div>
         </div>
         <div className="rounded-lg border border-border bg-bg/50 p-2.5 text-center">
-          <div className="font-mono text-lg font-bold text-emerald-400">{insights.frontendCount}</div>
+          <div className="font-mono text-lg font-bold text-tag-green-fg">{insights.frontendCount}</div>
           <div className="text-[10px] text-faint uppercase tracking-wider">Frontend</div>
         </div>
         <div className="rounded-lg border border-border bg-bg/50 p-2.5 text-center">
-          <div className="font-mono text-lg font-bold text-amber-400">{insights.infraCount}</div>
+          <div className="font-mono text-lg font-bold text-tag-yellow-fg">{insights.infraCount}</div>
           <div className="text-[10px] text-faint uppercase tracking-wider">Infra</div>
         </div>
       </div>

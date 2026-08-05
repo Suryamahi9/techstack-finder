@@ -3,7 +3,7 @@ export default function GdprAudit({ gdpr }) {
 
   const { consentManagers, trackers, trackerCategories, totalTrackers, cmpBanner, complianceScore, trackerOrder } = gdpr;
 
-  const scoreColor = complianceScore >= 80 ? '#22c55e' : complianceScore >= 50 ? '#eab308' : '#ef4444';
+  const scoreColor = complianceScore >= 80 ? 'var(--tag-green-fg)' : complianceScore >= 50 ? 'var(--tag-yellow-fg)' : 'var(--tag-red-fg)';
   const scoreLabel = complianceScore >= 80 ? 'Good' : complianceScore >= 50 ? 'Needs Review' : 'Non-Compliant';
 
   const categoryLabels = {
@@ -49,7 +49,7 @@ export default function GdprAudit({ gdpr }) {
       {consentManagers.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-1.5">
           {consentManagers.map((cm, i) => (
-            <span key={i} className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 text-[11px] font-semibold text-emerald-400">
+            <span key={i} className="inline-flex items-center gap-1 rounded-full border border-border-strong bg-tag-green-bg px-2.5 py-1 text-[11px] font-semibold text-tag-green-fg">
               <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -101,16 +101,16 @@ export default function GdprAudit({ gdpr }) {
 
       <div className={`rounded-lg border p-3 ${
         trackerOrder.compliant
-          ? 'border-emerald-500/20 bg-emerald-500/5'
+          ? 'border-border-strong bg-tag-green-bg'
           : trackerOrder.status === 'partial_deferred'
-            ? 'border-yellow-500/20 bg-yellow-500/5'
-            : 'border-red-500/20 bg-red-500/5'
+            ? 'border-border-strong bg-tag-yellow-bg'
+            : 'border-border-strong bg-tag-red-bg'
       }`}>
         <div className="flex items-center gap-2 mb-1">
           <svg className={`h-3 w-3 shrink-0 ${
-            trackerOrder.compliant ? 'text-emerald-400' :
-            trackerOrder.status === 'partial_deferred' ? 'text-yellow-400' :
-            'text-red-400'
+            trackerOrder.compliant ? 'text-tag-green-fg' :
+            trackerOrder.status === 'partial_deferred' ? 'text-tag-yellow-fg' :
+            'text-tag-red-fg'
           }`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             {trackerOrder.compliant ? (
               <polyline points="20 6 9 17 4 12" />
@@ -119,9 +119,9 @@ export default function GdprAudit({ gdpr }) {
             )}
           </svg>
           <span className={`text-[11px] font-semibold ${
-            trackerOrder.compliant ? 'text-emerald-400' :
-            trackerOrder.status === 'partial_deferred' ? 'text-yellow-400' :
-            'text-red-400'
+            trackerOrder.compliant ? 'text-tag-green-fg' :
+            trackerOrder.status === 'partial_deferred' ? 'text-tag-yellow-fg' :
+            'text-tag-red-fg'
           }`}>
             {trackerOrder.message}
           </span>

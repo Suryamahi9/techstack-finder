@@ -152,7 +152,7 @@ export default function BacklinksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-4">
           <BackButton />
@@ -201,7 +201,7 @@ export default function BacklinksPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter sites..."
-              className="rounded-lg border border-border bg-elevated px-3 py-2 text-sm text-fg placeholder:text-dim focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30"
+              className="rounded-lg border border-border bg-elevated px-3 py-2 text-sm text-fg placeholder:text-faint focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30"
             />
             <button onClick={selectAll} className="rounded-lg border border-border bg-elevated px-3 py-2 text-xs text-muted hover:text-fg transition-colors">
               {selectedSites.size === sortedSites.length ? 'Deselect All' : 'Select All'}
@@ -229,9 +229,9 @@ export default function BacklinksPage() {
               onChange={(e) => setManualUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addManualSite()}
               placeholder="Enter domain (e.g. example.com)"
-              className="flex-1 rounded-lg border border-border bg-base px-3 py-2 text-sm text-fg placeholder:text-dim focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30"
+              className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg placeholder:text-faint focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30"
             />
-            <button onClick={addManualSite} className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-black hover:bg-accent/90 transition-colors">
+            <button onClick={addManualSite} className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-bg hover:bg-accent/90 active:scale-[0.97] transition-colors">
               Add
             </button>
           </div>
@@ -285,7 +285,7 @@ export default function BacklinksPage() {
                             {site.favicon ? (
                               <Image src={site.favicon} alt="" width={16} height={16} className="h-4 w-4 rounded" unoptimized onError={(e) => { e.target.style.display = 'none'; }} />
                             ) : (
-                              <div className="h-4 w-4 rounded bg-border flex items-center justify-center text-[8px] font-bold text-dim">{site.domain[0]?.toUpperCase()}</div>
+                              <div className="h-4 w-4 rounded bg-border flex items-center justify-center text-[8px] font-bold text-faint">{site.domain[0]?.toUpperCase()}</div>
                             )}
                             <div>
                               <a href={site.url || `https://${site.domain}`} target="_blank" rel="noopener noreferrer" className="font-medium text-fg hover:text-accent transition-colors">
@@ -308,9 +308,9 @@ export default function BacklinksPage() {
                                 {t.name}
                               </span>
                             ))}
-                            {techs.length > 5 && <span className="text-[10px] text-dim">+{techs.length - 5}</span>}
+                            {techs.length > 5 && <span className="text-[10px] text-faint">+{techs.length - 5}</span>}
                           </div>
-                          <div className="mt-1 flex gap-2 text-[10px] text-dim">
+                          <div className="mt-1 flex gap-2 text-[10px] text-faint">
                             {fe > 0 && <span>{fe} FE</span>}
                             {be > 0 && <span>{be} BE</span>}
                             {inf > 0 && <span>{inf} INF</span>}

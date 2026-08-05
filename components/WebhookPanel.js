@@ -54,7 +54,7 @@ export default function WebhookPanel({ data }) {
           value={webhookUrl}
           onChange={(e) => setWebhookUrl(e.target.value)}
           placeholder={platform === 'slack' ? 'https://hooks.slack.com/services/...' : platform === 'discord' ? 'https://discord.com/api/webhooks/...' : 'https://your-webhook-url.com/...'}
-          className="w-full rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none"
+          className="w-full rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
         />
         <button onClick={send} disabled={sending || !webhookUrl.trim()} className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-bg hover:brightness-110 disabled:opacity-40">
           {sending ? 'Sending...' : 'Send Scan Results'}

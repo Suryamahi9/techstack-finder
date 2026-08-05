@@ -164,12 +164,12 @@ export default function MonitorPage() {
               onChange={(e) => setNewUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addMonitor()}
               placeholder="e.g. https://vercel.com"
-              className="flex-1 min-w-[200px] rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none"
+              className="flex-1 min-w-[200px] rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
             />
             <select
               value={interval}
               onChange={(e) => setInterval_(e.target.value)}
-              className="rounded-xl border border-border bg-bg px-3 py-2.5 text-sm text-fg focus:border-accent focus:outline-none"
+              className="rounded-xl border border-border bg-bg px-3 py-2.5 text-sm text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
             >
               <option value="hourly">Hourly</option>
               <option value="daily">Daily</option>

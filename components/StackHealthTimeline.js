@@ -39,7 +39,7 @@ export default function StackHealthTimeline({ history }) {
           <h3 className="text-sm font-semibold">Health Score Over Time</h3>
           <p className="text-xs text-faint">
             {history.length} scans &middot;
-            <span className={trend >= 0 ? 'text-emerald-400' : 'text-red-400'}> {trend >= 0 ? '+' : ''}{Math.round(trend)} trend</span>
+            <span className={trend >= 0 ? 'text-tag-green-fg' : 'text-tag-red-fg'}> {trend >= 0 ? '+' : ''}{Math.round(trend)} trend</span>
           </p>
         </div>
       </div>

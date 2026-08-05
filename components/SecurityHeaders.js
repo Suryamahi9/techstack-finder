@@ -6,9 +6,9 @@ function HeaderBadge({ label, value, recommendation }) {
         <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${present ? 'bg-accent' : 'bg-faint/40'}`} />
         <span className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</span>
         {present ? (
-          <span className="ml-auto rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">Present</span>
+          <span className="ml-auto rounded-full bg-tag-green-bg px-1.5 py-0.5 text-[9px] font-semibold text-tag-green-fg">Present</span>
         ) : (
-          <span className="ml-auto rounded-full bg-red-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-red-400">Missing</span>
+          <span className="ml-auto rounded-full bg-tag-red-bg px-1.5 py-0.5 text-[9px] font-semibold text-tag-red-fg">Missing</span>
         )}
       </div>
       {present ? (
@@ -19,7 +19,7 @@ function HeaderBadge({ label, value, recommendation }) {
         <p className="mt-1 font-mono text-[10px] italic text-faint/60">Not set</p>
       )}
       {!present && recommendation && (
-        <p className="mt-1 text-[10px] text-amber-400/70 leading-relaxed">{recommendation}</p>
+        <p className="mt-1 text-[10px] text-tag-yellow-fg/70 leading-relaxed">{recommendation}</p>
       )}
     </div>
   );
@@ -43,10 +43,10 @@ export default function SecurityHeaders({ security }) {
   const score = Math.round((present / total) * 100);
 
   const gradeColors = {
-    90: 'text-emerald-400',
-    70: 'text-amber-400',
-    40: 'text-orange-400',
-    0: 'text-red-400',
+    90: 'text-tag-green-fg',
+    70: 'text-tag-yellow-fg',
+    40: 'text-tag-yellow-fg',
+    0: 'text-tag-red-fg',
   };
   const gradeColor = Object.entries(gradeColors)
     .sort((a, b) => b[0] - a[0])
@@ -81,7 +81,7 @@ export default function SecurityHeaders({ security }) {
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             <span className="font-mono text-[10px] uppercase tracking-wider text-faint">CORS</span>
-            <span className="ml-auto rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">Present</span>
+            <span className="ml-auto rounded-full bg-tag-green-bg px-1.5 py-0.5 text-[9px] font-semibold text-tag-green-fg">Present</span>
           </div>
           <p className="mt-1 font-mono text-[11px] text-muted break-all">Allow-Origin: {security.cors.allowOrigin}</p>
           {security.cors.allowMethods && <p className="mt-0.5 font-mono text-[10px] text-faint">Methods: {security.cors.allowMethods}</p>}
@@ -89,14 +89,14 @@ export default function SecurityHeaders({ security }) {
       )}
 
       {recommendations.length > 0 && (
-        <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+        <div className="mt-4 rounded-xl border border-border bg-tag-yellow-bg p-3">
+          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-tag-yellow-fg">
             Recommendations ({recommendations.length})
           </div>
           <ul className="space-y-1.5">
             {recommendations.map((rec, i) => (
               <li key={i} className="flex items-start gap-2 text-[11px] text-muted leading-relaxed">
-                <span className="mt-0.5 shrink-0 text-amber-400">→</span>
+                <span className="mt-0.5 shrink-0 text-tag-yellow-fg">→</span>
                 {rec}
               </li>
             ))}

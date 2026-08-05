@@ -12,3 +12,7 @@ node_modules/
 .claude/
 *.backup
 *.bak
+
+# Local dev artifacts
+*.log
+homepage-redesign-desktop.png

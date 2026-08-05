@@ -47,11 +47,11 @@ export default function AdsTxtPanel({ adsTxt }) {
       </div>
 
       {(summary.hasHeaderBidding || summary.hasPrebid) && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2">
-          <svg className="h-3.5 w-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-border-strong bg-tag-yellow-bg px-3 py-2">
+          <svg className="h-3.5 w-3.5 text-tag-yellow-fg shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
-          <span className="text-[11px] font-semibold text-amber-400">
+          <span className="text-[11px] font-semibold text-tag-yellow-fg">
             Header Bidding Active
             {summary.hasPrebid && ' (Prebid.js)'}
           </span>

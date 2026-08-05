@@ -1,77 +1,167 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { NAV } from '../lib/site-nav';
 
+function Caret({ open }) {
+  return (
+    <svg
+      className={`h-3 w-3 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
 
-const HOME_NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/browse', label: 'Browse' },
-];
-
-const FULL_NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/bookmarks', label: 'Bookmarks' },
-  { href: '/compare', label: 'Compare' },
-  { href: '/trends', label: 'Trends' },
-  { href: '/rules', label: 'Rules' },
-  { href: '/api-keys', label: 'API' },
-  { href: '/bulk', label: 'Bulk' },
-  { href: '/history', label: 'History' },
-  { href: '/digest', label: 'Digest' },
-  { href: '/monitor', label: 'Monitor' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/backlinks', label: 'Backlinks' },
-  { href: '/browse', label: 'Browse' },
-  { href: '/radar', label: 'Radar' },
-];
-
-function NavLink({ item, isActive }) {
-  const ref = useRef(null);
-
-  const handleMouseMove = useCallback((e) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-    el.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-  }, []);
+function DropdownPanel({ item, onNavigate }) {
+  // The outer absolutely-positioned wrapper sits at `top-full` with no margin,
+  // so the whole area between the trigger and the panel (including the visual
+  // gap) is covered by a descendant — moving the cursor down into the panel
+  // never leaves the hover region and the menu stays open.
+  if (item.panel === 'mega') {
+    return (
+      <div className="absolute left-0 top-full z-50 pt-2">
+        <div className="w-[620px] rounded-lg border border-border bg-surface p-6 shadow-sm">
+          <div className="grid grid-cols-3 gap-8">
+            {item.columns.map((col) => (
+              <div key={col.heading}>
+                <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.2em] text-faint">{col.heading}</p>
+                <ul className="space-y-3">
+                  {col.items.map((it) => (
+                    <li key={`${it.href}-${it.label}`}>
+                      <Link href={it.href} onClick={onNavigate} className="group block">
+                        <span className="text-[12px] font-medium text-fg transition-colors group-hover:text-accent">{it.label}</span>
+                        {it.desc && (
+                          <span className="mt-0.5 block text-[11px] leading-snug text-muted">{it.desc}</span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Link
-      ref={ref}
-      href={item.href}
-      onMouseMove={handleMouseMove}
-      className={`nav-spotlight relative flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.95] ${
-        isActive
-          ? 'border border-accent/25 bg-accent/10 text-accent shadow-[0_0_12px_-3px_var(--accent-glow)]'
-          : 'border border-white/5 bg-white/5 text-muted hover:border-accent/15 hover:text-fg'
-      }`}
-    >
-      {isActive && (
-        <span className="absolute -left-0.5 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-accent logo-dot" />
-      )}
-      {item.label}
+    <div className="absolute left-0 top-full z-50 pt-2">
+      <div className="w-60 rounded-lg border border-border bg-surface py-2 shadow-sm">
+        {item.items.map((it) => (
+          <Link
+            key={`${it.href}-${it.label}`}
+            href={it.href}
+            onClick={onNavigate}
+            className="block px-4 py-2 text-[12px] text-muted transition-colors hover:bg-border/40 hover:text-fg"
+          >
+            {it.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Logo() {
+  return (
+    <Link href="/" className="flex shrink-0 items-center gap-2.5">
+      <span className="flex h-6 w-6 items-center justify-center rounded-[5px] border border-border-strong">
+        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-fg" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M4 7l8-4 8 4-8 4-8-4z" />
+          <path d="M4 12l8 4 8-4M4 17l8 4 8-4" opacity="0.5" />
+        </svg>
+      </span>
+      <span className="text-[14px] font-semibold tracking-tight text-fg">
+        TechStack<span className="text-muted">Finder</span>
+      </span>
     </Link>
   );
 }
 
-export default function Header() {
+function GitHubLink() {
+  return (
+    <a
+      href="https://github.com"
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-fg"
+    >
+      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.694.801.576C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+      </svg>
+      Source
+    </a>
+  );
+}
+
+function UserMenu({ session }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const onClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('click', onClickOutside);
+    return () => document.removeEventListener('click', onClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 rounded-md border border-border px-2.5 py-1.5 text-[12px] font-medium text-fg transition-colors hover:border-border-strong"
+      >
+        {session.user?.image ? (
+          <Image src={session.user.image} alt="" width={20} height={20} className="h-5 w-5 rounded-full" unoptimized />
+        ) : (
+          <span className="flex h-5 w-5 items-center justify-center rounded-full border border-border-strong text-[10px] font-semibold">
+            {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
+          </span>
+        )}
+        <span className="hidden xl:inline">{session.user?.name || session.user?.email?.split('@')[0]}</span>
+        <Caret open={open} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-border bg-surface py-1.5 shadow-sm">
+          <div className="mb-1.5 border-b border-border px-3 pb-2">
+            <div className="truncate text-[12px] font-medium text-fg">{session.user?.name || 'User'}</div>
+            <div className="truncate text-[11px] text-faint">{session.user?.email}</div>
+            {session.user?.tier && session.user.tier !== 'free' && (
+              <span className="mt-1 inline-block rounded-full border border-border-strong px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted">{session.user.tier}</span>
+            )}
+          </div>
+          <Link href="/settings" onClick={() => setOpen(false)} className="block px-3 py-1.5 text-[12px] text-muted transition-colors hover:bg-border/40 hover:text-fg">Settings</Link>
+          <Link href="/api-keys" onClick={() => setOpen(false)} className="block px-3 py-1.5 text-[12px] text-muted transition-colors hover:bg-border/40 hover:text-fg">API Keys</Link>
+          <Link href="/history" onClick={() => setOpen(false)} className="block px-3 py-1.5 text-[12px] text-muted transition-colors hover:bg-border/40 hover:text-fg">Scan History</Link>
+          <Link href="/dashboard" onClick={() => setOpen(false)} className="block px-3 py-1.5 text-[12px] text-muted transition-colors hover:bg-border/40 hover:text-fg">Dashboard</Link>
+          {session.user?.tier === 'free' && (
+            <Link href="/pricing" onClick={() => setOpen(false)} className="block px-3 py-1.5 text-[12px] font-medium text-fg transition-colors hover:bg-border/40">Upgrade Plan</Link>
+          )}
+          <button onClick={() => { setOpen(false); signOut({ callbackUrl: '/' }); }} className="w-full px-3 py-1.5 text-left text-[12px] text-tag-red-fg transition-colors hover:bg-border/40">Sign out</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [accordion, setAccordion] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-  const userMenuRef = useRef(null);
-
-  const isHome = pathname === '/';
-  const navItems = isHome ? HOME_NAV_ITEMS : FULL_NAV_ITEMS;
+  const navRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -80,181 +170,127 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (mobileOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [open]);
+  }, [mobileOpen]);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setOpen(false);
+      if (window.innerWidth >= 1024) setMobileOpen(false);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') { setActiveMenu(null); setMobileOpen(false); } };
+    const onClickOutside = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) setActiveMenu(null);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClickOutside);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClickOutside);
+    };
+  }, []);
+
+  const closeAll = () => setActiveMenu(null);
+
   return (
     <>
-      {/* Desktop nav — animated pill bar */}
-      <header className="fixed left-0 right-0 top-0 z-50 hidden lg:block">
-        <div className="mx-auto w-max max-w-[calc(100vw-2rem)] pt-6">
-          <nav
-            aria-label="Main navigation"
-            className={`header-pill header-border-glow nav-spotlight flex items-center gap-1.5 overflow-x-auto rounded-full border px-4 py-2 backdrop-blur-2xl transition-all duration-500 xl:gap-2 xl:px-5 ${
-              scrolled
-                ? 'border-white/[0.08] bg-bg/80 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)]'
-                : 'border-white/[0.06] bg-bg/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
-            }`}
-            onMouseMove={(e) => {
-              const el = e.currentTarget;
-              const rect = el.getBoundingClientRect();
-              el.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-              el.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-            }}
-          >
-            {/* Logo */}
-            <Link href="/" className="group mr-2 flex shrink-0 items-center gap-2.5">
-              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center">
-                <span className="absolute inset-0 rounded-lg bg-accent/15 transition-all duration-300 group-hover:bg-accent/25 group-hover:shadow-[0_0_16px_-2px_var(--accent-glow)]" />
-                <svg viewBox="0 0 24 24" className="relative h-4 w-4 text-accent" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 7l8-4 8 4-8 4-8-4z" />
-                  <path d="M4 12l8 4 8-4M4 17l8 4 8-4" opacity="0.5" />
-                </svg>
-              </span>
-              <span className="text-[15px] font-semibold tracking-tight">
-                TechStack<span className="text-accent">Finder</span>
-              </span>
-            </Link>
+      {/* Desktop nav — mega menus */}
+      <header className={`fixed left-0 right-0 top-0 z-50 hidden border-b transition-colors duration-300 lg:block ${
+        scrolled ? 'border-border bg-bg/95' : 'border-border/60 bg-bg/85'
+      }`}>
+        <nav ref={navRef} aria-label="Main navigation" className="mx-auto flex h-14 max-w-6xl items-center gap-5 px-6">
+          <Logo />
 
-            {/* Separator */}
-            <span className="h-4 w-px shrink-0 bg-white/[0.08]" />
-
-            {/* Nav links */}
-            {navItems.map((item) => (
-              <NavLink
-                key={item.href}
-                item={item}
-                isActive={pathname === item.href}
-              />
-            ))}
-
-            {/* Separator */}
-            <span className="h-4 w-px shrink-0 bg-white/[0.08]" />
-
-            {/* Source */}
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="nav-spotlight flex shrink-0 items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted transition-all duration-300 hover:border-accent/15 hover:text-fg active:scale-[0.95]"
-            >
-              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.694.801.576C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
-              </svg>
-              Source
-            </a>
-
-              {session ? (
-                <div className="relative" ref={userMenuRef}>
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-medium text-muted transition-all hover:border-accent/20 hover:text-fg"
-                  >
-                    {session.user?.image ? (
-                      <Image src={session.user.image} alt="" width={20} height={20} className="h-5 w-5 rounded-full" unoptimized />
-                    ) : (
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/20 text-[9px] font-bold text-accent">
-                        {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
-                      </span>
-                    )}
-                    <span className="hidden xl:inline">{session.user?.name || session.user?.email?.split('@')[0]}</span>
-                  </button>
-                  {userMenuOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
-                      <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-border bg-elevated p-1.5 shadow-xl">
-                        <div className="px-3 py-2 text-xs text-faint border-b border-border mb-1">
-                          <div className="font-medium text-fg truncate">{session.user?.name || 'User'}</div>
-                          <div className="truncate text-faint">{session.user?.email}</div>
-                          {session.user?.tier && session.user.tier !== 'free' && (
-                            <span className="mt-1 inline-block rounded-full bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold text-accent uppercase">{session.user.tier}</span>
-                          )}
-                        </div>
-                        <Link href="/settings" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">Settings</Link>
-                        <Link href="/api-keys" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">API Keys</Link>
-                        <Link href="/history" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-border/50 hover:text-fg">Scan History</Link>
-                        {session.user?.tier === 'free' && (
-                          <Link href="/pricing" onClick={() => setUserMenuOpen(false)} className="block rounded-lg px-3 py-1.5 text-xs font-medium text-accent hover:bg-accent/10">Upgrade Plan</Link>
-                        )}
-                        <button onClick={() => { setUserMenuOpen(false); signOut({ callbackUrl: '/' }); }} className="w-full rounded-lg px-3 py-1.5 text-left text-xs text-red-400 hover:bg-red-500/10">Sign out</button>
-                      </div>
-                    </>
-                  )}
-                </div>
+          <div className="flex items-center gap-0.5">
+            {NAV.map((item) =>
+              item.href ? (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className="relative shrink-0 px-2.5 py-1.5 text-[12px] font-medium text-muted transition-colors hover:text-fg"
+                >
+                  {item.label}
+                </Link>
               ) : (
-                <div className="flex items-center gap-1.5">
-                  <Link href="/login" className="nav-spotlight flex shrink-0 items-center rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted transition-all hover:border-accent/15 hover:text-fg active:scale-[0.95]">
-                    Sign in
-                  </Link>
-                  <Link href="/signup" className="nav-spotlight flex shrink-0 items-center rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1 text-[11px] font-medium text-accent transition-all hover:bg-accent/20 active:scale-[0.95]">
-                    Sign up
-                  </Link>
+                <div
+                  key={item.key}
+                  className="relative"
+                  onMouseEnter={() => setActiveMenu(item.key)}
+                  onMouseLeave={() => setActiveMenu(null)}
+                >
+                  <button
+                    type="button"
+                    aria-expanded={activeMenu === item.key}
+                    aria-haspopup="true"
+                    onClick={() => setActiveMenu(activeMenu === item.key ? null : item.key)}
+                    onFocus={() => setActiveMenu(item.key)}
+                    className={`relative flex shrink-0 items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium transition-colors ${
+                      activeMenu === item.key ? 'text-fg' : 'text-muted hover:text-fg'
+                    }`}
+                  >
+                    {item.label}
+                    <Caret open={activeMenu === item.key} />
+                  </button>
+                  {activeMenu === item.key && <DropdownPanel item={item} onNavigate={closeAll} />}
                 </div>
-              )}
-            </nav>
-        </div>
+              )
+            )}
+          </div>
+
+          <div className="ml-auto flex items-center gap-4">
+            <GitHubLink />
+            {session ? (
+              <UserMenu session={session} />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/login" className="rounded-md border border-border px-3 py-1.5 text-[12px] font-medium text-muted transition-colors hover:border-border-strong hover:text-fg">
+                  Sign in
+                </Link>
+                <Link href="/signup" className="rounded-md bg-accent px-3 py-1.5 text-[12px] font-medium text-bg transition-opacity hover:opacity-90">
+                  Sign up
+                </Link>
+              </div>
+            )}
+          </div>
+        </nav>
       </header>
 
-      {/* Mobile + tablet nav — animated bar */}
-      <header className="fixed left-0 right-0 top-0 z-50 lg:hidden">
-        <div className={`header-mobile-bar flex items-center justify-between border-b px-4 py-2.5 backdrop-blur-2xl transition-all duration-300 ${
-          scrolled
-            ? 'border-white/[0.08] bg-bg/85 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]'
-            : 'border-white/[0.04] bg-bg/60'
-        }`}>
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
-              <span className="absolute inset-0 rounded-md bg-accent/15" />
-              <svg viewBox="0 0 24 24" className="relative h-4 w-4 text-accent" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 7l8-4 8 4-8 4-8-4z" />
-                <path d="M4 12l8 4 8-4M4 17l8 4 8-4" opacity="0.5" />
-              </svg>
-            </span>
-            <span className="text-[15px] font-semibold tracking-tight">
-              TechStack<span className="text-accent">Finder</span>
-            </span>
-          </Link>
+      {/* Mobile + tablet nav */}
+      <header className={`fixed left-0 right-0 top-0 z-50 border-b lg:hidden ${
+        scrolled ? 'border-border bg-bg/95' : 'border-border/60 bg-bg/85'
+      }`}>
+        <div className="flex items-center justify-between px-4 py-3">
+          <Logo />
           <div className="flex items-center gap-2">
             {session ? (
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted"
-              >
-                {session.user?.image ? (
-                  <Image src={session.user.image} alt="" width={24} height={24} className="h-6 w-6 rounded-full" unoptimized />
-                ) : (
-                  <span className="text-xs font-bold text-accent">{(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}</span>
-                )}
-              </button>
+              <Link href="/settings" className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-[12px] font-semibold text-fg">
+                {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
+              </Link>
             ) : (
-              <Link href="/login" className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1 text-[11px] font-medium text-accent">
+              <Link href="/login" className="rounded-md border border-border px-3 py-1.5 text-[12px] font-medium text-fg">
                 Sign in
               </Link>
             )}
             <button
-              onClick={() => setOpen(!open)}
-              className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted transition-all duration-300 hover:text-fg hover:border-accent/20 active:scale-95"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-fg transition-colors hover:border-border-strong"
               aria-label="Toggle menu"
             >
-              <span className={`absolute h-4 w-4 transition-all duration-300 ${open ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`}>
+              <span className={`relative h-4 w-4 transition-all duration-300 ${mobileOpen ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`}>
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </span>
-              <span className={`absolute h-4 w-4 transition-all duration-300 ${open ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`}>
+              <span className={`absolute h-4 w-4 transition-all duration-300 ${mobileOpen ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`}>
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -264,56 +300,82 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile menu overlay — slide down with stagger */}
-      {open && (
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-fg/20 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 right-0 top-[52px] max-h-[calc(100vh-52px)] overflow-y-auto border-b border-white/[0.06] bg-bg/95 px-4 py-4 backdrop-blur-2xl">
-            <div className="space-y-1">
-              {navItems.map((item, i) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-300 hover:bg-white/[0.04] hover:text-fg ${
-                    pathname === item.href
-                      ? 'border-accent/15 bg-accent/[0.05] text-accent'
-                      : 'border-transparent text-muted'
-                  }`}
-                  style={{ animationDelay: `${i * 0.03}s` }}
-                >
-                  {pathname === item.href && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent logo-dot" />
-                  )}
-                  {item.label}
-                </Link>
-              ))}
+          <div className="absolute left-0 right-0 top-[49px] max-h-[calc(100vh-49px)] overflow-y-auto border-b border-border bg-bg px-4 py-4">
+            <div className="flex flex-col">
+              {NAV.map((item, i) =>
+                item.href ? (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center justify-between border-b border-border/50 px-1 py-3 text-sm font-medium transition-colors ${
+                      pathname === item.href ? 'text-fg' : 'text-muted hover:text-fg'
+                    }`}
+                    style={{ animationDelay: `${i * 0.03}s` }}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <div key={item.key} className="border-b border-border/50">
+                    <button
+                      onClick={() => setAccordion(accordion === item.key ? null : item.key)}
+                      className="flex w-full items-center justify-between px-1 py-3 text-sm font-medium text-muted hover:text-fg"
+                      aria-expanded={accordion === item.key}
+                    >
+                      {item.label}
+                      <Caret open={accordion === item.key} />
+                    </button>
+                    {accordion === item.key && (
+                      <div className="pb-3 pl-3">
+                        {(item.panel === 'mega' ? item.columns.flatMap((c) => c.items) : item.items).map((it) => (
+                          <Link
+                            key={`${it.href}-${it.label}`}
+                            href={it.href}
+                            onClick={() => setMobileOpen(false)}
+                            className="block py-2 text-[13px] text-muted transition-colors hover:text-fg"
+                          >
+                            {it.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-sm font-medium text-muted transition-all hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-fg"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 px-1 py-3 text-sm font-medium text-muted hover:text-fg"
               >
-                <svg className="h-4 w-4 shrink-0 text-faint" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.06c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.93 10.93 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.68 5.38-5.24 5.67.42.36.79 1.08.79 2.18v3.23c0 .31.21.694.801.576C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
                 </svg>
                 Source
               </a>
               {session ? (
-                <>
-                  <div className="border-t border-white/[0.06] pt-2 mt-2">
-                    <div className="px-4 py-2 text-xs text-faint">{session.user?.name || session.user?.email}</div>
-                    <button onClick={() => { setOpen(false); signOut({ callbackUrl: '/' }); }} className="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-sm font-medium text-red-400 transition-all hover:bg-red-500/10">Sign out</button>
-                  </div>
-                </>
+                <div className="mt-2 flex flex-col gap-1 border-t border-border pt-3">
+                  <div className="px-1 pb-1 text-xs text-faint">{session.user?.name || session.user?.email}</div>
+                  <button onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/' }); }} className="px-1 py-2 text-left text-sm font-medium text-tag-red-fg">
+                    Sign out
+                  </button>
+                </div>
               ) : (
-                <div className="flex gap-2 px-4 pt-3 border-t border-white/[0.06] mt-2">
-                  <Link href="/login" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-medium text-fg hover:border-accent/30">Sign in</Link>
-                  <Link href="/signup" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-accent py-2.5 text-center text-sm font-medium text-white hover:bg-accent/90">Sign up</Link>
+                <div className="mt-2 flex gap-2 border-t border-border pt-3">
+                  <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1 rounded-md border border-border py-2 text-center text-sm font-medium text-fg">
+                    Sign in
+                  </Link>
+                  <Link href="/signup" onClick={() => setMobileOpen(false)} className="flex-1 rounded-md bg-accent py-2 text-center text-sm font-medium text-bg">
+                    Sign up
+                  </Link>
                 </div>
               )}
             </div>

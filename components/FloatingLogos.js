@@ -30,7 +30,7 @@ function FloatingItem({ logo, index }) {
       }}
     >
       <div
-        className="flex items-center gap-1.5 rounded-full border border-white/[0.04] bg-white/[0.02] px-2.5 py-1 backdrop-blur-sm"
+        className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 backdrop-blur-sm"
         style={{ animation: `driftSide ${duration * 0.3}s ease-in-out ${delay}s infinite alternate` }}
       >
         <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke={logo.color} strokeWidth="1.5" opacity="0.5">

@@ -57,13 +57,13 @@ export default function MultiPageScan({ domain }) {
         onChange={(e) => setPages(e.target.value)}
         rows={4}
         placeholder={'/about\n/blog\n/pricing\n/contact\n/api/docs'}
-        className="mb-3 w-full rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none resize-none"
+        className="mb-3 w-full rounded-xl border border-border bg-bg px-4 py-2.5 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 resize-none"
       />
       <button onClick={scan} disabled={scanning} className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-bg hover:brightness-110 disabled:opacity-40">
         {scanning ? 'Scanning pages...' : `Scan ${pages.split('\n').filter((p) => p.trim()).length} pages`}
       </button>
 
-      {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-3 text-xs text-tag-red-fg">{error}</p>}
 
       {results && (
         <div className="mt-4 space-y-4">
@@ -72,7 +72,7 @@ export default function MultiPageScan({ domain }) {
             <div className="space-y-1.5">
               {results.map((r, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
-                  <span className={`inline-block h-2 w-2 rounded-full ${r.success ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                  <span className={`inline-block h-2 w-2 rounded-full ${r.success ? 'bg-tag-green-fg' : 'bg-tag-red-fg'}`} />
                   <span className="font-mono text-muted truncate max-w-[200px]">{r.path}</span>
                   <span className="ml-auto text-faint">{r.success ? `${r.total} techs` : r.error}</span>
                 </div>

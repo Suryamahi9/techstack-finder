@@ -2,16 +2,16 @@ export default function CompanyEnrichment({ company }) {
   if (!company) return null;
 
   const budgetColor = {
-    'Very High': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    High: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    Medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    Low: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    'Very High': 'bg-tag-green-bg text-tag-green-fg border-border-strong',
+    High: 'bg-tag-blue-bg text-tag-blue-fg border-border-strong',
+    Medium: 'bg-tag-yellow-bg text-tag-yellow-fg border-border-strong',
+    Low: 'bg-tag-red-bg text-tag-red-fg border-border-strong',
     Unknown: 'bg-faint/10 text-faint border-border',
   };
 
   const sourceBadge = {
     known: 'bg-accent/10 text-accent border-accent/20',
-    'partial match': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    'partial match': 'bg-tag-blue-bg text-tag-blue-fg border-border-strong',
     estimated: 'bg-faint/10 text-faint border-border',
   };
 

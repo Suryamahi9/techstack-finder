@@ -22,8 +22,8 @@ export default function IndustryBadge({ industry }) {
           {industry.primary}
         </span>
         <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-          industry.confidence === 'high' ? 'bg-emerald-500/10 text-emerald-400' :
-          industry.confidence === 'medium' ? 'bg-blue-500/10 text-blue-400' :
+          industry.confidence === 'high' ? 'bg-tag-green-bg text-tag-green-fg' :
+          industry.confidence === 'medium' ? 'bg-tag-blue-bg text-tag-blue-fg' :
           'bg-faint/10 text-faint'
         }`}>
           {industry.confidence} confidence

@@ -41,8 +41,8 @@ function AdoptionChart({ data, name }) {
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
         <defs>
           <linearGradient id={`adopt-${name.replace(/[^a-zA-Z0-9]/g, '')}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isGrowing ? '#d97706' : '#ef4444'} stopOpacity="0.2" />
-            <stop offset="100%" stopColor={isGrowing ? '#d97706' : '#ef4444'} stopOpacity="0" />
+            <stop offset="0%" stopColor={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -58,10 +58,10 @@ function AdoptionChart({ data, name }) {
         })}
 
         <path d={areaD} fill={`url(#adopt-${name.replace(/[^a-zA-Z0-9]/g, '')})`} />
-        <path d={pathD} fill="none" stroke={isGrowing ? '#d97706' : '#ef4444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
-        <circle cx={points[0].x} cy={points[0].y} r="2.5" fill="var(--bg)" stroke={isGrowing ? '#d97706' : '#ef4444'} strokeWidth="1.5" />
-        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" fill={isGrowing ? '#d97706' : '#ef4444'} />
+        <circle cx={points[0].x} cy={points[0].y} r="2.5" fill="var(--bg)" stroke={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} strokeWidth="1.5" />
+        <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" fill={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} />
 
         <text x={points[0].x} y={pad.top + innerH + 12} textAnchor="middle" className="fill-faint" fontSize="7" fontFamily="var(--font-mono)">{firstYear}</text>
         <text x={points[points.length - 1].x} y={pad.top + innerH + 12} textAnchor="middle" className="fill-faint" fontSize="7" fontFamily="var(--font-mono)">{lastYear}</text>
@@ -69,7 +69,7 @@ function AdoptionChart({ data, name }) {
 
       <div className="mt-1.5 flex items-center justify-between text-[9px] text-faint">
         <span>{shares[0]}% &rarr; {shares[shares.length - 1]}%</span>
-        <span className={`font-semibold ${isGrowing ? 'text-emerald-400' : 'text-red-400'}`}>
+        <span className={`font-semibold ${isGrowing ? 'text-tag-green-fg' : 'text-tag-red-fg'}`}>
           {isGrowing ? '+' : ''}{(shares[shares.length - 1] - shares[0]).toFixed(1)}% total
         </span>
       </div>

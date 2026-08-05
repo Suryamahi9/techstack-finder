@@ -24,15 +24,15 @@ export default function SectionGroup({
 
   return (
     <div
-      className={`overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.015] transition-all duration-300 hover:border-white/[0.1] ${className}`}
+      className={`overflow-hidden rounded-xl border border-border bg-surface transition-all duration-300 hover:border-border-strong ${className}`}
     >
       <button
         onClick={handleToggle}
-        className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-white/[0.02]"
+        className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-border/40"
         aria-expanded={open}
       >
         {icon && (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted transition-colors group-hover:border-accent/20 group-hover:text-accent">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-border/40 text-muted transition-colors group-hover:border-accent/20 group-hover:text-accent">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
               {icon}
             </svg>

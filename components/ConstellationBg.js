@@ -16,7 +16,7 @@ export default function ConstellationBg() {
 
     const getAccent = () => {
       const s = getComputedStyle(document.documentElement);
-      return s.getPropertyValue('--accent').trim() || '#d97706';
+      return s.getPropertyValue('--accent').trim() || '#c8f24e';
     };
 
     const resize = () => {

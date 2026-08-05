@@ -54,7 +54,7 @@ function ResetForm() {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="New password (min 8 chars)"
         required
-        className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
+        className="rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
       />
       <input
         type="password"
@@ -62,12 +62,12 @@ function ResetForm() {
         onChange={(e) => setConfirm(e.target.value)}
         placeholder="Confirm new password"
         required
-        className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
+        className="rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/30 focus:ring-1 focus:ring-accent/20 placeholder:text-faint"
       />
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-accent py-2.5 text-sm font-semibold text-black hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+        className="rounded-md bg-accent py-2.5 text-sm font-semibold text-bg hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
       >
         {loading ? 'Resetting...' : 'Reset Password'}
       </button>
@@ -78,7 +78,7 @@ function ResetForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="text-xl font-bold text-fg">Reset Password</h1>

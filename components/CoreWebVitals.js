@@ -3,9 +3,9 @@ import { useState, useCallback } from 'react';
 
 function VitalCard({ label, value, unit, rating, description, threshold }) {
   const ratingColors = {
-    good: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', dot: 'bg-emerald-400' },
-    needsImprovement: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', dot: 'bg-amber-400' },
-    poor: { bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400', dot: 'bg-red-400' },
+    good: { bg: 'bg-tag-green-bg', border: 'border-border-strong', text: 'text-tag-green-fg', dot: 'bg-tag-green-fg' },
+    needsImprovement: { bg: 'bg-tag-yellow-bg', border: 'border-border-strong', text: 'text-tag-yellow-fg', dot: 'bg-tag-yellow-fg' },
+    poor: { bg: 'bg-tag-red-bg', border: 'border-border-strong', text: 'text-tag-red-fg', dot: 'bg-tag-red-fg' },
   };
   const r = ratingColors[rating] || ratingColors.good;
 
@@ -150,8 +150,8 @@ export default function CoreWebVitals({ url }) {
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-          <p className="text-xs text-red-400">{error}</p>
+        <div className="rounded-xl border border-border bg-tag-red-bg p-4 text-center">
+          <p className="text-xs text-tag-red-fg">{error}</p>
           <button onClick={measureVitals} className="mt-2 text-[10px] text-accent hover:underline">
             Try again
           </button>

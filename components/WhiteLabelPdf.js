@@ -84,18 +84,18 @@ export default function WhiteLabelPdf({ data }) {
       <div className="space-y-3">
         <div>
           <label className="mb-1 block text-[10px] uppercase tracking-wider text-faint">Brand Name</label>
-          <input value={brandName} onChange={(e) => setBrandName(e.target.value)} placeholder="Your Agency" className="w-full rounded-xl border border-border bg-bg px-4 py-2 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none" />
+          <input value={brandName} onChange={(e) => setBrandName(e.target.value)} placeholder="Your Agency" className="w-full rounded-xl border border-border bg-bg px-4 py-2 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30" />
         </div>
         <div>
           <label className="mb-1 block text-[10px] uppercase tracking-wider text-faint">Accent Color</label>
           <div className="flex items-center gap-3">
             <input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="h-8 w-8 cursor-pointer rounded-lg border border-border" />
-            <input value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="flex-1 rounded-xl border border-border bg-bg px-4 py-2 font-mono text-sm text-fg focus:border-accent focus:outline-none" />
+            <input value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="flex-1 rounded-xl border border-border bg-bg px-4 py-2 font-mono text-sm text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30" />
           </div>
         </div>
         <div>
           <label className="mb-1 block text-[10px] uppercase tracking-wider text-faint">Logo URL (optional)</label>
-          <input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://your-logo.com/logo.png" className="w-full rounded-xl border border-border bg-bg px-4 py-2 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none" />
+          <input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://your-logo.com/logo.png" className="w-full rounded-xl border border-border bg-bg px-4 py-2 text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30" />
         </div>
         <button onClick={generate} className="w-full rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-bg hover:brightness-110">
           Generate White-Label Report

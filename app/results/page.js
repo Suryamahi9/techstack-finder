@@ -64,7 +64,7 @@ import ReverseLookup from '../../components/ReverseLookup';
 import SectionGroup from '../../components/SectionGroup';
 import ResultsTabs from '../../components/ResultsTabs';
 import CompareDropZone from '../../components/CompareDropZone';
-import { saveScanTrend } from '../trends/page';
+import { saveScanTrend } from '../../lib/scan-trends';
 import { saveScanSnapshot } from '../../lib/scan-history';
 
 function ResultsContent() {
@@ -196,7 +196,7 @@ function ResultsContent() {
 
       <main id="main-content" className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pt-24">
         <div className="mb-6 flex items-center gap-3">
-          <button onClick={() => router.push('/')} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted transition-all duration-300 hover:border-accent/20 hover:text-fg active:scale-95" aria-label="Back to home">
+          <button onClick={() => router.push('/')} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-muted transition-all duration-300 hover:border-accent/20 hover:text-fg active:scale-95" aria-label="Back to home">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
           </button>
           <div className="flex-1">

@@ -205,7 +205,7 @@ export default function DependencyGraph({ categories }) {
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
-        ctx.strokeStyle = 'rgba(100,116,139,0.25)';
+        ctx.strokeStyle = 'rgba(148,163,184,0.25)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -217,7 +217,7 @@ export default function DependencyGraph({ categories }) {
         ctx.lineTo(mx - 4 * Math.cos(angle) + 4 * Math.cos(angle + Math.PI / 2), my - 4 * Math.sin(angle) + 4 * Math.sin(angle + Math.PI / 2));
         ctx.lineTo(mx - 4 * Math.cos(angle) - 4 * Math.cos(angle + Math.PI / 2), my - 4 * Math.sin(angle) - 4 * Math.sin(angle + Math.PI / 2));
         ctx.closePath();
-        ctx.fillStyle = 'rgba(100,116,139,0.4)';
+        ctx.fillStyle = 'rgba(152,160,176,0.4)';
         ctx.fill();
       });
 
@@ -239,7 +239,7 @@ export default function DependencyGraph({ categories }) {
         ctx.lineWidth = isHovered ? 2.5 : 1.5;
         ctx.stroke();
 
-        ctx.fillStyle = isHovered ? '#f8fafc' : '#e2e8f0';
+        ctx.fillStyle = 'var(--fg)';
         ctx.font = `${isHovered ? 'bold ' : ''}${isHovered ? 11 : 10}px "Space Grotesk", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

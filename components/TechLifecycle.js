@@ -20,10 +20,10 @@ export default function TechLifecycle({ lifecycle }) {
 
       <div className="mb-4 grid grid-cols-4 gap-2">
         {[
-          { label: 'Growing', count: phases.growing.length, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Mature', count: phases.mature.length, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'Declining', count: phases.declining.length, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-          { label: 'Deprecated', count: phases.deprecated.length, color: 'text-red-400', bg: 'bg-red-500/10' },
+          { label: 'Growing', count: phases.growing.length, color: 'text-tag-green-fg', bg: 'bg-tag-green-bg' },
+          { label: 'Mature', count: phases.mature.length, color: 'text-tag-blue-fg', bg: 'bg-tag-blue-bg' },
+          { label: 'Declining', count: phases.declining.length, color: 'text-tag-yellow-fg', bg: 'bg-tag-yellow-bg' },
+          { label: 'Deprecated', count: phases.deprecated.length, color: 'text-tag-red-fg', bg: 'bg-tag-red-bg' },
         ].map(s => (
           <div key={s.label} className={`${s.bg} rounded-lg p-2 text-center`}>
             <div className={`text-lg font-bold font-mono ${s.color}`}>{s.count}</div>
@@ -35,7 +35,7 @@ export default function TechLifecycle({ lifecycle }) {
       {warnings.length > 0 && (
         <div className="mb-4 space-y-1.5">
           {warnings.map((w, i) => (
-            <div key={i} className="rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-[11px] text-red-400">
+            <div key={i} className="rounded-lg border border-border bg-tag-red-bg px-3 py-2 text-[11px] text-tag-red-fg">
               {w}
             </div>
           ))}
@@ -53,7 +53,7 @@ export default function TechLifecycle({ lifecycle }) {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span className="text-[10px] text-faint">{t.trend === 'growing' ? '↑' : t.trend === 'declining' ? '↓' : '→'} {t.trend}</span>
-              {t.eol && <span className="text-[9px] text-red-400 font-semibold">EOL {t.eol}</span>}
+              {t.eol && <span className="text-[9px] text-tag-red-fg font-semibold">EOL {t.eol}</span>}
             </div>
           </div>
         ))}

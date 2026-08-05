@@ -84,7 +84,7 @@ export default function PageWeightAnalysis({ pageMetadata, categories, seo }) {
           <div className="text-[10px] uppercase tracking-wider text-faint">Images</div>
           <div className="mt-0.5 font-mono text-xs font-semibold text-fg">
             {totalImages} total
-            {missingAlt > 0 && <span className="ml-1 text-red-400">({missingAlt} no alt)</span>}
+            {missingAlt > 0 && <span className="ml-1 text-tag-red-fg">({missingAlt} no alt)</span>}
           </div>
         </div>
         <div className="rounded-lg border border-border bg-bg/50 px-3 py-2">

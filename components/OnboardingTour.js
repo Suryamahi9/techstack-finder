@@ -69,9 +69,9 @@ export default function OnboardingTour() {
 
   return (
     <>
-      <div className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm" onClick={handleSkip} />
+      <div className="fixed inset-0 z-[9998] bg-fg/40 backdrop-blur-sm" onClick={handleSkip} />
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-        <div className="animate-fade-up mx-auto w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#0c0c10] p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] sm:p-8">
+        <div className="animate-fade-up mx-auto w-full max-w-md rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
           <div className="mb-6 flex items-center justify-between">
             <span className="text-xs font-medium text-muted">Step {step + 1} of {STEPS.length}</span>
             <button onClick={handleSkip} className="text-xs text-muted hover:text-fg">Skip</button>
@@ -79,7 +79,7 @@ export default function OnboardingTour() {
 
           <div className="mb-1 flex gap-1">
             {STEPS.map((_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-accent' : 'bg-white/10'}`} />
+              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-accent' : 'bg-border'}`} />
             ))}
           </div>
 

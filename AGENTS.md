@@ -2,8 +2,8 @@
 
 ## Commands
 ```bash
-npm run dev      # Dev server at port 3000
-npm run build    # Runs `prisma generate && next build` — schema changes auto-generate client
+npm run dev      # Dev server at port 3000 (hot-reloads; a running instance can be left up)
+npm run build    # Runs `prisma generate && next build` — do NOT run while `npm run dev` is active (Prisma DLL lock EPERM)
 npm run start    # Production server
 npm run lint     # next lint (ESLint via next/core-web-vitals)
 ```
@@ -15,14 +15,16 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - First build: `npx prisma migrate dev --name init` (or `npx prisma db push` for local), then `npm run build`.
 
 ## Architecture
-- **Next.js 14.2.35 App Router** (no TypeScript, React 18) — ~24 pages, 22 API routes, ~64 components
+- **Next.js 14.2.35 App Router** (no TypeScript, React 18) — 50 pages, 26 API routes, 110 components, 34 lib files
+- **`app/layout.js` has no global Header/Footer** — every page renders `Header` + `Footer` itself; omitting them is an easy silent bug
+- **Nav source of truth** — `lib/site-nav.js` `NAV` array; every `href` must resolve to a real page route
 - **`jsconfig.json`** maps `@/*` → `./*`
 - **Single fixed dark navy theme** (`:root` CSS vars in `globals.css`). No theme switching. No `[data-theme]` selectors beyond the hardcoded `data-theme="warm"` on `<html>`.
 - **CSS vars** (`--bg`, `--elevated`, `--surface`, `--fg`, `--muted`, `--faint`, `--border`, `--accent`, `--secondary`, etc.) drive all Tailwind colors via `var(--)`. Never hardcode hex colors.
-- **No test suite** — manual verification only.
+- **No test suite** — manual + Playwright verification (see Verification below).
 
 ## Detection system
-- **1,870 hand-crafted rules** in `lib/detect.js` (7,179 lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB, lazy-loaded via `readFileSync` + `process.cwd()`)
+- **1,870 hand-crafted rules** in `lib/detect.js` (7,092 lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB, lazy-loaded via `readFileSync` + `process.cwd()`)
 - Generated rules use `{p: "pattern", f: "flags"}` → `new RegExp(p, f)` at load time
 - Regex patterns use `new RegExp("...","i")`, never `/regex/i` literals (avoids `/` conflicts in names like `@headlessui/react`)
 - **`confidence` is a string** (`"high"`, `"medium"`) — components convert via `CONF_MAP` for display
@@ -57,12 +59,29 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **No `opencode.json`** in repo root — no repo-local OpenCode config.
 
 ## Key components
-- `lib/detect.js` — Main detection engine (7,494 lines)
+- `lib/detect.js` — Main detection engine (7,092 lines)
 - `lib/deep-scan.js` — CSS/JS fetching, path probing, Playwright scanning
 - `lib/auth.js` — NextAuth config with Google/GitHub/Credentials providers
 - `lib/scan-history.js` — Dual-mode (localStorage + server) scan history
+- `lib/scan-trends.js` — localStorage scan-trend helpers (`saveScanTrend`, `getScanTrends`); `results/page.js` writes here (do NOT import from a page component to reuse a helper — extract to `lib/`)
+- `lib/trends-data.js` — Trends hub data: 65-tech directory (live + India site counts), spotlight techs, 5 taxonomy groups, country math
 - `app/api/scan/route.js` — Main scan API endpoint
 - `app/results/page.js` — 5-tab results page (wraps in Suspense)
+
+## Homepage (`app/page.js`)
+- Client component, **9 sections**: split hero (left editorial / right `ScanConsole`) → tech ticker ribbon → stats (count-up + self-drawing `stat-accent` lines) → features (6 `SpotlightCard` cursor-follow cards) → how-it-works expandable steps with progress rail (`.steps-rail`) → `FeaturedStacks` → testimonials → pricing (popular tier = `gradient-border`) → bottom CTA (`cta-glow` breathing pulse)
+- **`components/ScanConsole.js`** — the signature hero piece: fake browser window that types a URL, sweeps a CSS scan beam (`.scan-beam`), then reveals 12 tech rows one-by-one (`.scan-row` / `.scan-row-fill` confidence bars), loops on a ~7s cycle; honors `prefers-reduced-motion` (renders final state, beam static)
+- **`RevealHeadline`** — hero headline splits into `.word-mask` / `.word-inner` masked word-by-word stagger; keep a `{' '}` text node between emphasized parts so `innerText`/screen readers get a real space
+- **`SpotlightCard`** — sets `--mx`/`--my` CSS vars on `onMouseMove` for the `.spotlight-card` radial glow; content wrapper must stay `relative z-[2]` above the `::before`
+- Motion CSS lives in the `HOMEPAGE — SCAN CONSOLE + MOTION SYSTEM` block at the end of `globals.css`; marquee reuses existing `.data-ticker` / `tickerScroll`
+- No WebGL/canvas on the homepage (HeroScene3D/TiltCard/ScrollImageReel deleted). A one-off `Extra attributes from the server: style` console warning during dev hot-reload on the SearchBar input is a compile artifact, not a bug
+
+## Trends feature (market-data hub)
+- `app/trends/page.js` — `'use client'` BuiltWith-style hub: country selector (`TrendsCountryBar`), Spotlight cards, Technology Groups tag filter (`TechGroupFilter`), Popular Technologies directory (`TechDirectoryList`), plus the personal "Your Scan Trends" localStorage analytics
+- `app/trends/[slug]/page.js` — **server component** detail pages: `generateStaticParams()` from `allTechSlugs()`, `dynamicParams = true`, `notFound()` on unknown slugs; per-tech stats, country breakdown, market-share YoY badge (`lib/market-share.js`), related techs, working CTAs
+- Directory renders **sorted by `liveSites` descending** — the sort lives in `TechDirectoryList.js`, not in the data file
+- `countrySites(tech, code)`: `IN` → `indianSites`; US/GB/DE/CA/AU/BR/JP → deterministic multiplier of `liveSites`; other codes → `null`
+- `relatedTechs()` matches on the tech's **first tag** — keep primary tags overlapping across entries or the related section stays empty
 
 ## API Scan endpoint (`/api/scan`)
 - Tier-based rate limits: free=10/min, pro=100/min, enterprise=500/min
@@ -71,6 +90,14 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - Returns `rateLimit: { tier, remaining, limit }` in response
 - In-memory TTL cache: 10 min, max 2,000 entries
 - `maxDuration = 60` (Vercel serverless timeout)
+
+## Verification (Playwright)
+- `playwright` / `playwright-core` are installed in project `node_modules`; `chromium.launch()` works headless
+- Scripts outside the repo (e.g. temp files) can't `require('playwright')` — run with `$env:NODE_PATH = "<repo>\node_modules"` or put the script inside the repo
+- **First request to a route while the dev server is compiling** makes `text=`/`:has-text` locators transiently return 0 — prefer `waitForSelector` with a timeout over instant `.count()`
+- `a.href` inside `evaluateAll` resolves to an absolute URL while the DOM attribute stays relative — use `getAttribute('href')` when building click selectors
+- `console` errors like `[next-auth][error][CLIENT_FETCH_ERROR] ... /api/auth/session` during Playwright runs are navigation-abort test artifacts, not real bugs
+- Playwright reads the running dev server at `http://localhost:3000`; don't run `npm run build` concurrently (Prisma `EPERM` lock)
 
 ## Hetzner Cloud Deployment
 ```bash

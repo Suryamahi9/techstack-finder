@@ -118,7 +118,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
   return (
     <form onSubmit={handleSubmit} className="relative w-full">
       <div
-        className={`group relative flex items-center gap-2 rounded-2xl border bg-elevated transition-all duration-300 ${
+        className={`group relative flex items-center gap-2 rounded-lg border bg-elevated transition-all duration-300 ${
           focused
             ? 'border-accent/50 shadow-[0_0_0_4px_var(--accent-soft)]'
             : 'border-border hover:border-border-strong'
@@ -157,7 +157,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
         />
         <button
           type="submit"
-          className={`shrink-0 rounded-xl bg-accent font-medium text-black transition-all hover:brightness-110 active:scale-[0.97] ${
+          className={`shrink-0 rounded-md bg-accent font-medium text-bg transition-all hover:opacity-90 active:scale-[0.97] ${
             isLarge ? 'px-5 py-2.5 text-sm' : 'px-4 py-2 text-xs'
           }`}
         >
@@ -169,14 +169,14 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
       {showSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-white/[0.08] bg-elevated shadow-[0_12px_40px_-8px_rgba(0,0,0,0.5)]"
+          className="absolute left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-lg border border-border bg-elevated shadow-[0_8px_30px_-12px_rgba(0,0,0,0.15)]"
           style={{ animation: 'suggestionsSlideIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)' }}
         >
           {isValidInput && (
             <button
               type="button"
               onMouseDown={handleSubmit}
-              className="flex w-full items-center gap-3 border-b border-white/[0.06] px-4 py-3 text-left text-sm font-mono transition-colors hover:bg-white/[0.03]"
+              className="flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left text-sm font-mono transition-colors hover:bg-border/40"
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                 <svg className="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -198,7 +198,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
                   className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-mono transition-colors ${
                     i === selectedIndex
                       ? 'bg-accent/10 text-accent'
-                      : 'text-muted hover:bg-white/[0.03] hover:text-fg'
+                      : 'text-muted hover:bg-border/40 hover:text-fg'
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -223,17 +223,17 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 border-t border-white/[0.06] px-4 py-2">
+          <div className="flex items-center justify-end gap-3 border-t border-border px-4 py-2">
             <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">↑↓</kbd>
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-border bg-surface px-1 text-[9px] text-faint">↑↓</kbd>
               navigate
             </span>
             <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">Enter</kbd>
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-border bg-surface px-1 text-[9px] text-faint">Enter</kbd>
               scan
             </span>
             <span className="flex items-center gap-1 text-[10px] text-faint font-mono">
-              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-white/[0.08] bg-white/[0.03] px-1 text-[9px] text-faint">Esc</kbd>
+              <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-border bg-surface px-1 text-[9px] text-faint">Esc</kbd>
               close
             </span>
           </div>
@@ -257,7 +257,7 @@ export default function SearchBar({ initialValue = '', size = 'large' }) {
           </svg>
           Advanced
         </button>
-        <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1 font-mono text-[10px] text-faint">
+        <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2 py-1 font-mono text-[10px] text-faint">
           <span className="text-[9px]">/</span> to focus
         </kbd>
       </div>

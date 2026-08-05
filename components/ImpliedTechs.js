@@ -2,9 +2,9 @@ export default function ImpliedTechs({ implied }) {
   if (!implied || implied.length === 0) return null;
 
   const confidenceColors = {
-    high: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-    medium: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
-    low: { bg: 'bg-faint/10', text: 'text-faint', border: 'border-faint/20' },
+    high: { bg: 'bg-tag-green-bg', text: 'text-tag-green-fg', border: 'border-border-strong' },
+    medium: { bg: 'bg-tag-blue-bg', text: 'text-tag-blue-fg', border: 'border-border-strong' },
+    low: { bg: 'bg-faint/10', text: 'text-faint', border: 'border-border' },
   };
 
   return (

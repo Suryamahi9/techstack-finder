@@ -5,12 +5,12 @@ import { getMarketShare, getTrendDirection } from '../lib/market-share';
 
 const TREND_ICON = {
   up: (
-    <svg className="h-3 w-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg className="h-3 w-3 text-tag-green-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M12 19V5M5 12l7-7 7 7" />
     </svg>
   ),
   down: (
-    <svg className="h-3 w-3 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg className="h-3 w-3 text-tag-red-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M12 5v14M19 12l-7 7-7-7" />
     </svg>
   ),
@@ -22,8 +22,8 @@ const TREND_ICON = {
 };
 
 const TREND_COLOR = {
-  up: 'text-emerald-400',
-  down: 'text-red-400',
+  up: 'text-tag-green-fg',
+  down: 'text-tag-red-fg',
   flat: 'text-faint',
 };
 
@@ -50,17 +50,17 @@ function Sparkline({ data, width = 120, height = 32 }) {
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
       <defs>
         <linearGradient id={`spark-${isGrowing ? 'up' : 'down'}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={isGrowing ? '#22c55e' : '#ef4444'} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={isGrowing ? '#22c55e' : '#ef4444'} stopOpacity="0" />
+          <stop offset="0%" stopColor={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} stopOpacity="0.25" />
+          <stop offset="100%" stopColor={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} stopOpacity="0" />
         </linearGradient>
       </defs>
       <polygon points={fillPoints} fill={`url(#spark-${isGrowing ? 'up' : 'down'})`} />
-      <polyline points={points} fill="none" stroke={isGrowing ? '#22c55e' : '#ef4444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={points} fill="none" stroke={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       {shares.map((v, i) => {
         const x = (i / (shares.length - 1)) * width;
         const y = height - ((v - min) / range) * (height - 6) - 3;
         if (i === 0 || i === shares.length - 1) {
-          return <circle key={i} cx={x} cy={y} r="2" fill={isGrowing ? '#22c55e' : '#ef4444'} />;
+          return <circle key={i} cx={x} cy={y} r="2" fill={isGrowing ? 'var(--tag-green-fg)' : 'var(--tag-red-fg)'} />;
         }
         return null;
       })}
@@ -173,8 +173,8 @@ export default function MarketTrends({ technologies }) {
           <h3 className="text-sm font-semibold">Market Trends</h3>
           <p className="text-xs text-faint">
             {matched.length} technologies with market data
-            {growing > 0 && <span className="text-emerald-400"> &middot; {growing} growing</span>}
-            {declining > 0 && <span className="text-red-400"> &middot; {declining} declining</span>}
+            {growing > 0 && <span className="text-tag-green-fg"> &middot; {growing} growing</span>}
+            {declining > 0 && <span className="text-tag-red-fg"> &middot; {declining} declining</span>}
           </p>
         </div>
       </div>

@@ -76,9 +76,9 @@ const CATEGORY_ICONS = {
 };
 
 const RISK_COLORS = {
-  low: 'bg-emerald-500/10 text-emerald-400',
-  medium: 'bg-amber-500/10 text-amber-400',
-  high: 'bg-red-500/10 text-red-400',
+  low: 'bg-tag-green-bg text-tag-green-fg',
+  medium: 'bg-tag-yellow-bg text-tag-yellow-fg',
+  high: 'bg-tag-red-bg text-tag-red-fg',
 };
 
 function ServiceBadge({ name, service }) {
@@ -139,7 +139,7 @@ export default function ThirdPartyAnalysis({ categories, pageMetadata }) {
           {analysis.highRisk > 0 && (
             <>
               <span>·</span>
-              <span className="text-red-400">{analysis.highRisk} high-risk</span>
+              <span className="text-tag-red-fg">{analysis.highRisk} high-risk</span>
             </>
           )}
         </div>
@@ -163,8 +163,8 @@ export default function ThirdPartyAnalysis({ categories, pageMetadata }) {
       </div>
 
       {analysis.highRisk > 0 && (
-        <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/5 p-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-red-400">
+        <div className="mt-4 rounded-xl border border-border bg-tag-red-bg p-3">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-tag-red-fg">
             Privacy Note
           </div>
           <p className="mt-1 text-[11px] text-muted leading-relaxed">
