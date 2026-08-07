@@ -11,7 +11,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 ## Setup
 - Copy `.env` → set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
 - PostgreSQL required. Local: `docker compose up -d db` (see `docker-compose.yml`).
-- OAuth (`GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET`), Stripe, Email (Resend), Browserless (`BROWSERLESS_API_KEY`) — all optional.
+- OAuth (`GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET`), Stripe, Email (Resend), Browserless (`BROWSERLESS_API_KEY`), AI chat (`AI_CHAT_API_KEY`, see AI chat agent section) — all optional.
 - First build: `npx prisma migrate dev --name init` (or `npx prisma db push` for local), then `npm run build`.
 
 ## Architecture
@@ -57,6 +57,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **Animations** defined in `tailwind.config.js` (13 animations). Components set per-item `animationDelay` via inline style.
 - **Vercel-aware** — `process.env.VERCEL` skips local Playwright, CSS/JS deep fetch, and path probes on serverless. Fetch timeout reduced to 25s.
 - **No `opencode.json`** in repo root — no repo-local OpenCode config.
+- **Frosted-glass panel rule fights `position: fixed`** — `globals.css` `[class~="rounded-2xl"][class*="bg-elevated"]` used to set `position: relative` (spec (0,2,0), beats `.fixed`), which silently pushed the chat widget's `fixed` dialog into page flow at the document end. Now guarded with `:not(.fixed)` — keep that guard; add a similar `:not(.fixed)` if you style-position any new generic utility selector.
 
 ## Key components
 - `lib/detect.js` — Main detection engine (7,092 lines)
@@ -97,6 +98,16 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - Query params: `?tech=<name|slug>` (detail: market-share series + related + country breakdown), `?search=`, `?category=` (exact tag), `?sort=liveSites|name`, `?limit=` (1–100, default 50)
 - Reuses `lib/trends-data.js` + `lib/market-share.js` directly — no DB
 - IP rate limit: 60 req/min (in-memory)
+
+## AI chat agent (`/api/chat` + `components/ChatWidget.js`)
+- Global floating chat widget (`layout.js`, lazy `ssr:false`) wired to `POST /api/chat`
+- `lib/chat-agent.js` = thin OpenAI-compatible chat-completions wrapper + in-process tools (`scan_website`, `get_tech_trends`, `list_technologies`, `compare_stacks`) that call `lib/detect.js` + `lib/trends-data.js` + `lib/market-share.js` directly
+- Env: `AI_CHAT_API_KEY` (required to enable), `AI_CHAT_PROVIDER` (`groq` default — free tier; `openrouter` free models, `openai`, `deepseek`, `nvidia`), `AI_CHAT_MODEL`, `AI_CHAT_BASE_URL`
+- **NVIDIA provider** (`nvidia` → `minimaxai/minimax-m3`): minimax-m3 "thinks" by default (adds 20-90s latency). The agent sends `chat_template_kwargs: { thinking_mode: 'disabled' }` for this provider only
+- **Resilience (never 500s):** free-tier LLM latency is wildly variable (measured 3.5s–84s per round). `callLLM` aborts each round (12s first for URL/tech/category queries, 20s + one retry for general chat, 10s follow-up); on timeout or transient `429/5xx`, the agent falls back to a **templated factual reply** built from tool results (`templateToolOutput`), or a local-data answer when the very first round fails (`fallbackForUser`: scans URLs directly, answers tech trends from `findTechInText`, lists top tools by category via `categoryFromText`, and handles greetings/capability questions — so only truly unanswerable queries get the "model busy" message). Follow-up LLM rounds are skipped once >15s have elapsed. Vercel `maxDuration = 60` + 50s budget
+- `lib/detect.js` `detectTechnologies` accepts `{ fast: true }` for the chat tools: skips browser fallbacks, CSS/JS deep fetch, path probes, DNS+TLS and ads.txt scans (~7-9s instead of 20s+)
+- With no key the endpoint returns a graceful `setupRequired` reply (no LLM call)
+- IP rate limit 20 req/min in-memory; non-streaming replies (client shows typing dots)
 
 ## MCP server (`mcp/`)
 - Standalone Node MCP package (own `package.json`; `node_modules/` gitignored). Thin client over the site's HTTP API — **it cannot run as a Vercel function**, run the process anywhere (local, Hetzner VPS, pm2, Render/Fly)

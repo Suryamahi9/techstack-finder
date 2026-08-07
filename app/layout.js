@@ -1,5 +1,13 @@
 import './globals.css';
 import SessionProvider from '../components/SessionProvider';
+import dynamic from 'next/dynamic';
+
+const ScrollWebGLBackground = dynamic(
+  () => import('../components/ScrollWebGLBackground'),
+  { ssr: false, loading: () => null }
+);
+
+const ChatWidget = dynamic(() => import('../components/ChatWidget'), { ssr: false, loading: () => null });
 
 export const metadata = {
   title: 'TechStack Finder — What is any website built with?',
@@ -42,10 +50,15 @@ export default function RootLayout({ children }) {
           }}
         />
         <SessionProvider>
+          {/* Scroll-driven WebGL image backdrop (Active Theory style) — fixed
+              at z-index -1, painted before the aurora so both sit behind content */}
+          <ScrollWebGLBackground />
           {/* Aurora orbs behind every route — the color the frosted glass blurs */}
           <div className="aurora" />
           <div className="noise-overlay" />
           {children}
+          {/* Global AI chat widget */}
+          <ChatWidget />
         </SessionProvider>
       </body>
     </html>

@@ -39,13 +39,10 @@ export default function OnboardingTour() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const done = localStorage.getItem('tsf-onboarding-done');
-    if (!done) {
-      const timer = setTimeout(() => {
-        setStep(0);
-        setVisible(true);
-      }, 1500);
-      return () => clearTimeout(timer);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tour') === '1') {
+      setStep(0);
+      setVisible(true);
     }
   }, []);
 

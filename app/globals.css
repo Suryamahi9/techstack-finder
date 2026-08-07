@@ -3,8 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --bg is now translucent (the WebGL backdrop shows through page sections),
+   but it's also used as *text* color on accent surfaces — keep those solid. */
+.text-bg {
+  color: #06070c;
+}
+
 :root {
-  --bg: #06070c;                    /* page background — deeper cinematic black-navy */
+  --bg: rgba(6, 7, 12, 0.78);       /* page background — deep black-navy, translucent so the fixed WebGL image field shows through */
   --surface: #0c0f17;               /* panels, inputs */
   --elevated: #11151f;              /* raised cards */
   --fg: #eceef3;                    /* primary text */
@@ -39,13 +45,15 @@
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* Depth + hover sheen for large glass panels (the rounded-2xl report cards). */
-[class~="rounded-2xl"][class*="bg-elevated"] {
+/* Depth + hover sheen for large glass panels (the rounded-2xl report cards).
+   The :not(.fixed) guard keeps position utilities (e.g. the chat widget's
+   fixed dialog) from being overridden by the relative here. */
+[class~="rounded-2xl"][class*="bg-elevated"]:not(.fixed) {
   position: relative;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 48px -20px rgba(0, 0, 0, 0.75);
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-[class~="rounded-2xl"][class*="bg-elevated"]::after {
+[class~="rounded-2xl"][class*="bg-elevated"]:not(.fixed)::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -55,11 +63,36 @@
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
-[class~="rounded-2xl"][class*="bg-elevated"]:hover {
+[class~="rounded-2xl"][class*="bg-elevated"]:not(.fixed):hover {
   border-color: var(--border-strong);
 }
-[class~="rounded-2xl"][class*="bg-elevated"]:hover::after {
+[class~="rounded-2xl"][class*="bg-elevated"]:not(.fixed):hover::after {
   opacity: 1;
+}
+
+/* Fixed WebGL site background — the scroll-driven image field behind every
+   route. Negative z-index (like .aurora) so it paints above the page canvas
+   background but below all content. */
+.webgl-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.webgl-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Dark vignette keeps text readable over the imagery without hiding it. */
+.webgl-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 92% 82% at 50% 44%, transparent 46%, rgba(6, 7, 12, 0.52) 100%),
+    linear-gradient(to bottom, rgba(6, 7, 12, 0.32) 0%, transparent 16%, transparent 76%, rgba(6, 7, 12, 0.55) 100%);
 }
 
 /* Fixed aurora orbs layer — gives the glass colored light to blur. */
@@ -70,6 +103,7 @@
   pointer-events: none;
   overflow: hidden;
 }
+
 .aurora::before,
 .aurora::after {
   content: '';
@@ -143,7 +177,7 @@ h1, h2, h3 {
 
 ::selection {
   background: var(--fg);
-  color: var(--bg);
+  color: #06070c;
 }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -823,7 +857,7 @@ html {
 /* Selection styling */
 ::selection {
   background: var(--fg);
-  color: var(--bg);
+  color: #06070c;
 }
 
 /* Focus ring */

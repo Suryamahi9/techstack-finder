@@ -245,7 +245,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-fg">Reset onboarding tour</p>
                 <p className="mt-1 text-xs text-muted">Re-trigger the step-by-step walkthrough on the homepage.</p>
               </div>
-              <Button onClick={() => { localStorage.removeItem('tsf-onboarding-done'); window.location.href = '/'; }}>
+              <Button onClick={() => { localStorage.removeItem('tsf-onboarding-done'); window.location.href = '/?tour=1'; }}>
                 Restart Tour
               </Button>
             </div>
