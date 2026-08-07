@@ -6,7 +6,6 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import OnboardingTour from '../components/OnboardingTour';
 import FeaturedStacks from '../components/FeaturedStacks';
-import ScrollScrubCinematic from '../components/ScrollScrubCinematic';
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -220,7 +219,6 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <ScrollScrubCinematic />
       <Header />
 
       {/* ═══ 1. HERO ═══ */}

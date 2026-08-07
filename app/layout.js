@@ -7,6 +7,8 @@ const ScrollWebGLBackground = dynamic(
   { ssr: false, loading: () => null }
 );
 
+const ScrollScrubCinematic = dynamic(() => import('../components/ScrollScrubCinematic'), { ssr: false, loading: () => null });
+
 const AuroraBackground = dynamic(() => import('../components/AuroraBackground'), { ssr: false, loading: () => null });
 
 const ChatWidget = dynamic(() => import('../components/ChatWidget'), { ssr: false, loading: () => null });
@@ -52,6 +54,8 @@ export default function RootLayout({ children }) {
           }}
         />
         <SessionProvider>
+          {/* Homepage scroll-scrub cinematic — deepest layer, only on "/" */}
+          <ScrollScrubCinematic />
           {/* Scroll-driven WebGL image backdrop (Active Theory style) — fixed
               at z-index -1, painted before the aurora so both sit behind content */}
           <ScrollWebGLBackground />

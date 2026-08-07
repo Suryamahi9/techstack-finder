@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 /* Homepage scroll-scrub background: 130 pre-rendered frames played as a flip
    book driven by the page scroll. A fixed fullscreen canvas at z-index -1 sits
@@ -16,6 +17,8 @@ const FRAME_COUNT = 130;
 const PAD = (n) => String(n).padStart(3, '0');
 
 export default function ScrollScrubCinematic() {
+  const pathname = usePathname();
+  const isHome = pathname === '/';
   const canvasRef = useRef(null);
   const [orientation, setOrientation] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(orientation: portrait)').matches ? 'portrait' : 'landscape'
@@ -34,6 +37,7 @@ export default function ScrollScrubCinematic() {
   }, []);
 
   useEffect(() => {
+    if (!isHome) return undefined;
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
     const ctx = canvas.getContext('2d');
@@ -71,8 +75,12 @@ export default function ScrollScrubCinematic() {
       const img = imgs[current];
       if (!img || !img.complete || img.naturalWidth === 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      // Size against the canvas's actual CSS box (the fixed full-screen layer),
+      // not window.innerHeight — on mobile the URL-bar/toolbar changes can leave
+      // innerHeight different from the box, which would distort or gap the film.
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(rect.width, 1);
+      const h = Math.max(rect.height, 1);
       const pw = Math.round(w * dpr);
       const ph = Math.round(h * dpr);
       if (canvas.width !== pw || canvas.height !== ph) {
@@ -81,14 +89,13 @@ export default function ScrollScrubCinematic() {
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const { dw, dh, dy } = fitCover(img, w, h);
-      const zoom = 1.1 - p * 0.08; // subtle pull-back, always >= 1 so cover is never broken
+      // Static centered cover with a guaranteed overscan band: the zoom never
+      // drops below 1.05, so the image always extends past every screen edge.
+      // No lateral pan — the framing stays rock-steady while the film plays.
+      const zoom = 1.1 - p * 0.05;
       const scw = dw * zoom;
       const sch = dh * zoom;
-      // Dynamic side pan: sweep the visible crop left-to-right as scroll advances,
-      // so the frame's sides change with the scroll instead of sitting in a fixed
-      // center crop (which reads as a static box on tall phone screens).
-      const excess = scw - w;
-      const scx = excess > 0 ? -excess * p : (w - scw) / 2;
+      const scx = (w - scw) / 2;
       const scy = (h - sch) / 2 + dy * zoom;
       ctx.drawImage(img, scx, scy, scw, sch);
     };
@@ -147,7 +154,9 @@ export default function ScrollScrubCinematic() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
-  }, [orientation]);
+  }, [orientation, isHome]);
+
+  if (!isHome) return null;
 
   return (
     <div className="swcin-bg" aria-hidden="true">

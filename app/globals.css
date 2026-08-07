@@ -168,6 +168,10 @@ body {
   text-rendering: optimizeLegibility;
   min-height: 100vh;
   overflow-x: hidden;
+  /* clip (not hidden) keeps the horizontal-overflow guard WITHOUT breaking
+     position:fixed on iOS Safari (overflow-x:hidden on body makes fixed
+     elements scroll away with content). Unknown values fall back to hidden. */
+  overflow-x: clip;
 }
 
 h1, h2, h3 {
