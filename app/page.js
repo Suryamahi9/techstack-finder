@@ -462,7 +462,7 @@ export default function Home() {
       </section>
 
       {/* ═══ 9. BOTTOM CTA ═══ */}
-      <section className="relative overflow-hidden py-24 sm:py-28">
+      <section className="relative overflow-hidden bg-bg/55 py-24 sm:py-28">
         <div className="cta-glow" aria-hidden="true" />
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
           <FadeIn>
