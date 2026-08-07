@@ -13,9 +13,10 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - PostgreSQL required. Local: `docker compose up -d db` (see `docker-compose.yml`).
 - OAuth (`GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET`), Stripe, Email (Resend), Browserless (`BROWSERLESS_API_KEY`), AI chat (`AI_CHAT_API_KEY`, see AI chat agent section) — all optional.
 - First build: `npx prisma migrate dev --name init` (or `npx prisma db push` for local), then `npm run build`.
+- **`.env` is gitignored** — deployed environments (Vercel dashboard → Settings → Environment Variables, or Hetzner `/var/www/techstack-finder/.env`) need env vars set in the platform's own config + a redeploy. A missing `AI_CHAT_API_KEY` is the usual cause of the live chat replying "not turned on yet" while working locally.
 
 ## Architecture
-- **Next.js 14.2.35 App Router** (no TypeScript, React 18) — 50 pages, 26 API routes, 110 components, 34 lib files
+- **Next.js 14.2.35 App Router** (no TypeScript, React 18) — 51 pages, 28 API routes, 110 components, 35 lib files
 - **`app/layout.js` has no global Header/Footer** — every page renders `Header` + `Footer` itself; omitting them is an easy silent bug
 - **Nav source of truth** — `lib/site-nav.js` `NAV` array; every `href` must resolve to a real page route
 - **`jsconfig.json`** maps `@/*` → `./*`
@@ -24,7 +25,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **No test suite** — manual + Playwright verification (see Verification below).
 
 ## Detection system
-- **1,870 hand-crafted rules** in `lib/detect.js` (7,092 lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB, lazy-loaded via `readFileSync` + `process.cwd()`)
+- **1,870 hand-crafted rules** in `lib/detect.js` (7,096 lines) + **8,384 generated rules** loaded at runtime from `scripts/_generated_rules.json` (3.3MB, lazy-loaded via `readFileSync` + `process.cwd()`, runtime-loaded not bundled)
 - Generated rules use `{p: "pattern", f: "flags"}` → `new RegExp(p, f)` at load time
 - Regex patterns use `new RegExp("...","i")`, never `/regex/i` literals (avoids `/` conflicts in names like `@headlessui/react`)
 - **`confidence` is a string** (`"high"`, `"medium"`) — components convert via `CONF_MAP` for display
@@ -76,7 +77,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - **`RevealHeadline`** — hero headline ("Every website leaves a fingerprint.") splits into `.word-mask` / `.word-inner` masked word-by-word stagger; keep a `{' '}` text node between emphasized parts so `innerText`/screen readers get a real space
 - **`SpotlightCard`** — sets `--mx`/`--my` CSS vars on `onMouseMove` for the `.spotlight-card` radial glow; content wrapper must stay `relative z-[2]` above the `::before`
 - Motion CSS lives in the `HOMEPAGE — SCAN CONSOLE + MOTION SYSTEM` + `HOMEPAGE — STACK FINGERPRINT` blocks at the end of `globals.css`; marquee reuses existing `.data-ticker` / `tickerScroll`
-- No WebGL/canvas on the homepage (HeroScene3D/TiltCard/ScrollImageReel deleted; ScanConsole also deleted when the fingerprint replaced it). A one-off `Extra attributes from the server: style` console warning during dev hot-reload on the SearchBar input is a compile artifact, not a bug
+- **WebGL/canvas is global, not per-page** — `components/ScrollWebGLBackground.js` (fullscreen 3D line field: streaming perspective grid + faint verticals that travel forward on scroll) is mounted in `app/layout.js` via `dynamic({ ssr: false })` at `position: fixed; z-index: -1`. The homepage itself has no hero WebGL canvas (HeroScene3D/TiltCard/ScrollImageReel/ScanConsole deleted when the fingerprint replaced them). A one-off `Extra attributes from the server: style` console warning during dev hot-reload on the SearchBar input is a compile artifact, not a bug
 
 ## Trends feature (market-data hub)
 - `app/trends/page.js` — `'use client'` BuiltWith-style hub: Spotlight cards, Technology Groups tag filter (`TechGroupFilter`), Popular Technologies directory (`TechDirectoryList`, fixed India counts), plus the personal "Your Scan Trends" localStorage analytics
@@ -108,6 +109,7 @@ npm run lint     # next lint (ESLint via next/core-web-vitals)
 - `lib/detect.js` `detectTechnologies` accepts `{ fast: true }` for the chat tools: skips browser fallbacks, CSS/JS deep fetch, path probes, DNS+TLS and ads.txt scans (~7-9s instead of 20s+)
 - With no key the endpoint returns a graceful `setupRequired` reply (no LLM call)
 - IP rate limit 20 req/min in-memory; non-streaming replies (client shows typing dots)
+- **ChatWidget auto-opens 3s after mount and plays a two-tone Web Audio chime** (`playChime`, no audio file). Browser autoplay policy: on a fresh visit the context stays suspended until the first `pointerdown`/`keydown` (it's primed on first interaction, then the chime plays); the FAB open click always chimes. Playwright's `--autoplay-policy=no-user-gesture-required` hides the block — headless tests can't reproduce the real-browser first-visit silence.
 
 ## MCP server (`mcp/`)
 - Standalone Node MCP package (own `package.json`; `node_modules/` gitignored). Thin client over the site's HTTP API — **it cannot run as a Vercel function**, run the process anywhere (local, Hetzner VPS, pm2, Render/Fly)

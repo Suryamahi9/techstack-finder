@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const SUGGESTIONS = [
   'Scan example.com',
@@ -27,6 +27,86 @@ export default function ChatWidget() {
   const [error, setError] = useState(null);
   const listRef = useRef(null);
   const inputRef = useRef(null);
+  const openRef = useRef(false);
+  const audioRef = useRef(null);
+  const unlockedRef = useRef(false);
+
+  const playChime = useCallback(function playChime() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioRef.current) audioRef.current = new Ctx();
+      const ctx = audioRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+        if (!unlockedRef.current) {
+          const unlock = () => {
+            unlockedRef.current = true;
+            window.removeEventListener('pointerdown', unlock);
+            window.removeEventListener('keydown', unlock);
+            ctx
+              .resume()
+              .then(() => {
+                if (ctx.state === 'running') playChime();
+              })
+              .catch(() => {});
+          };
+          window.addEventListener('pointerdown', unlock);
+          window.addEventListener('keydown', unlock);
+        }
+        return;
+      }
+      if (ctx.state !== 'running') return;
+      const now = ctx.currentTime;
+      const note = (freq, at, dur, vol, type) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + at);
+        gain.gain.exponentialRampToValueAtTime(vol, now + at + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + at + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + at);
+        osc.stop(now + at + dur + 0.05);
+      };
+      note(523.25, 0, 0.16, 0.07, 'sine');
+      note(783.99, 0.12, 0.24, 0.05, 'sine');
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  useEffect(() => {
+    const prime = () => {
+      window.removeEventListener('pointerdown', prime);
+      window.removeEventListener('keydown', prime);
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx || audioRef.current) return;
+      const ctx = new Ctx();
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      audioRef.current = ctx;
+    };
+    window.addEventListener('pointerdown', prime);
+    window.addEventListener('keydown', prime);
+    return () => {
+      window.removeEventListener('pointerdown', prime);
+      window.removeEventListener('keydown', prime);
+    };
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!openRef.current) {
+        setOpen(true);
+        playChime();
+      }
+    }, 3000);
+    return () => clearTimeout(t);
+  }, [playChime]);
 
   useEffect(() => {
     if (open && inputRef.current) inputRef.current.focus();
@@ -203,7 +283,11 @@ export default function ChatWidget() {
       )}
 
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          const next = !open;
+          setOpen(next);
+          if (next) playChime();
+        }}
         aria-label={open ? 'Close AI assistant' : 'Open AI assistant'}
         className={`fixed bottom-5 right-5 z-[70] flex h-14 w-14 items-center justify-center rounded-full border border-accent/40 bg-elevated text-accent shadow-[0_0_24px_rgba(200,242,78,0.25)] transition-transform hover:scale-105 active:scale-95 ${open ? 'rotate-90' : ''}`}
       >

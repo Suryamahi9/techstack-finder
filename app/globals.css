@@ -70,7 +70,7 @@
   opacity: 1;
 }
 
-/* Fixed WebGL site background — the scroll-driven image field behind every
+/* Fixed WebGL site background — the scroll-driven 3D line field behind every
    route. Negative z-index (like .aurora) so it paints above the page canvas
    background but below all content. */
 .webgl-bg {

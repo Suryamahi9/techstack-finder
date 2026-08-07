@@ -21,7 +21,7 @@ export default function AskPage() {
         <div className="mx-auto max-w-6xl px-6 pt-28 sm:pt-32">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-faint">Products</p>
           <h1 className="mt-5 max-w-3xl font-serif text-4xl font-normal tracking-tight text-fg sm:text-5xl">
-            BuiltWith Ask
+            TechStack Finder
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted">
             Ask questions about any site or market in plain English — the detection engine answers with the
