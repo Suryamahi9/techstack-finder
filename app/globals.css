@@ -1418,3 +1418,34 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   .stack-fingerprint .fp-orbit { animation: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   HOMEPAGE — SCROLL-SCRUB CINEMATIC (sparks flip book background)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Fixed background layer behind the full homepage. Same stacking recipe as
+   .webgl-bg / .aurora: negative z-index paints above the page background but
+   below all content, and never intercepts clicks. The film plays through the
+   translucent body background and frosted-glass panels as the page scrolls. */
+.swcin-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.swcin-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Readability vignette — darkens edges + a bottom gradient so text and cards
+   stay legible over bright frames without hiding the film. */
+.swcin-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 92% 82% at 50% 44%, transparent 44%, rgba(6, 7, 12, 0.55) 100%),
+    linear-gradient(to bottom, rgba(6, 7, 12, 0.38) 0%, transparent 18%, transparent 72%, rgba(6, 7, 12, 0.6) 100%);
+}
+

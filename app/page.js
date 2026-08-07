@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import OnboardingTour from '../components/OnboardingTour';
 import FeaturedStacks from '../components/FeaturedStacks';
-import FingerprintWhorl from '../components/FingerprintWhorl';
+import ScrollScrubCinematic from '../components/ScrollScrubCinematic';
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -220,6 +220,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      <ScrollScrubCinematic />
       <Header />
 
       {/* ═══ 1. HERO ═══ */}
@@ -228,8 +229,8 @@ export default function Home() {
         <div className="gradient-mesh absolute inset-0" aria-hidden="true" />
         <div className="hero-glow absolute inset-0" aria-hidden="true" />
 
-        <main id="main-content" className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-28">
-          <div className="max-w-xl">
+        <main id="main-content" className="relative z-10 mx-auto grid max-w-3xl items-center gap-12 px-6 py-20 text-center sm:py-24 lg:py-28">
+          <div className="mx-auto max-w-xl">
             <FadeIn>
               <div className="hero-eyebrow inline-flex items-center gap-2.5 rounded-full border border-border-strong/70 bg-surface/50 px-3.5 py-2">
                 <span className="relative flex h-2 w-2">
@@ -245,7 +246,7 @@ export default function Home() {
             </div>
 
             <FadeIn delay={0.25}>
-              <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
+              <p className="mx-auto mt-6 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
                 TechStack Finder reads the frameworks, CMS, analytics, hosting,
                 and infrastructure behind any URL — in seconds.
               </p>
@@ -257,7 +258,7 @@ export default function Home() {
                   <SearchBar />
                 </SpotlightCard>
               </div>
-              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-faint">
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[10px] text-faint">
                 <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-tag-green-fg" /> No signup required</span>
                 <span className="h-3 w-px bg-border" />
                 <span>2,347+ detection rules</span>
@@ -266,13 +267,6 @@ export default function Home() {
               </div>
             </FadeIn>
           </div>
-
-          <FadeIn delay={0.18} className="lg:pl-2">
-            <FingerprintWhorl />
-            <p className="mt-3 text-center font-mono text-[10px] text-faint">
-              A deterministic fingerprint of stripe.com&apos;s stack · hover to rescan
-            </p>
-          </FadeIn>
         </main>
       </section>
 

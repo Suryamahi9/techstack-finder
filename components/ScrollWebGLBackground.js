@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 /* Scroll-driven fullscreen 3D line field: a perspective grid of streaming
@@ -114,12 +114,19 @@ function buildVerticals(rnd) {
 
 export default function ScrollWebGLBackground() {
   const canvasRef = useRef(null);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
+    /* The homepage is a fullscreen scroll-scrubbed film (ScrollScrubCinematic)
+       that covers the viewport — no need to run the WebGL field behind it. */
+    setHidden(window.location.pathname === '/');
+  }, []);
+
+  useEffect(() => {
+    if (hidden) return undefined;
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
     if (typeof window === 'undefined') return undefined;
-
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -249,8 +256,9 @@ export default function ScrollWebGLBackground() {
       });
       renderer.dispose();
     };
-  }, []);
+  }, [hidden]);
 
+  if (hidden) return null;
   return <div className="webgl-bg" aria-hidden="true"><canvas ref={canvasRef} /></div>;
 }
 

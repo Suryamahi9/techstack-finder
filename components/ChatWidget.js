@@ -99,6 +99,7 @@ export default function ChatWidget() {
   }, []);
 
   useEffect(() => {
+    if (window.location.pathname === '/') return undefined; // fullscreen cinematic homepage — no auto-open
     const t = setTimeout(() => {
       if (!openRef.current) {
         setOpen(true);
