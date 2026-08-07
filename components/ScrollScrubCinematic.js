@@ -58,13 +58,13 @@ export default function ScrollScrubCinematic() {
         canvas.height = ph;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const zoom = 1.06 - p * 0.06; // slow cinematic pull-back across the film
-      const cw = w / zoom;
-      const ch = h / zoom;
-      const { dw, dh, dx, dy } = fitCover(img, cw, ch);
-      const ox = (cw - w) / 2;
-      const oy = (ch - h) / 2;
-      ctx.drawImage(img, dx - ox, dy - oy, dw, dh);
+      const { dw, dh, dx, dy } = fitCover(img, w, h);
+      const zoom = 1.1 - p * 0.08; // subtle pull-back, always >= 1 so cover is never broken
+      const scw = dw * zoom;
+      const sch = dh * zoom;
+      const scx = (w - w * zoom) / 2 + dx * zoom;
+      const scy = (h - h * zoom) / 2 + dy * zoom;
+      ctx.drawImage(img, scx, scy, scw, sch);
     };
 
     const request = () => {
