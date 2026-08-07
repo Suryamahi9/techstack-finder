@@ -1,13 +1,13 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-/* Homepage scroll-scrub background: 65 pre-rendered frames (public/frames/)
+/* Homepage scroll-scrub background: 130 pre-rendered frames (public/frames/)
    played as a flip book driven by the page scroll. A fixed fullscreen canvas at
    z-index -1 sits behind the whole homepage; scrolling down advances frames,
    reverse-scrolling replays them. The page's own content provides the scroll
    length (no spacer track), so the film paces across the full homepage. */
 
-const FRAME_COUNT = 65;
+const FRAME_COUNT = 130;
 const PAD = (n) => String(n).padStart(3, '0');
 const frameSrc = (i) => `/frames/frame-${PAD(i + 1)}.jpg`;
 
@@ -25,7 +25,7 @@ export default function ScrollScrubCinematic() {
       const img = new Image();
       img.src = frameSrc(i);
       img.decoding = 'async';
-      img.fetchPriority = i === 0 ? 'high' : 'low';
+      if (i < 3) img.fetchPriority = 'high';
       imgs.push(img);
     }
 
