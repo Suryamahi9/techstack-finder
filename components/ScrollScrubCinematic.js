@@ -80,12 +80,16 @@ export default function ScrollScrubCinematic() {
         canvas.height = ph;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const { dw, dh, dx, dy } = fitCover(img, w, h);
+      const { dw, dh, dy } = fitCover(img, w, h);
       const zoom = 1.1 - p * 0.08; // subtle pull-back, always >= 1 so cover is never broken
       const scw = dw * zoom;
       const sch = dh * zoom;
-      const scx = (w - w * zoom) / 2 + dx * zoom;
-      const scy = (h - h * zoom) / 2 + dy * zoom;
+      // Dynamic side pan: sweep the visible crop left-to-right as scroll advances,
+      // so the frame's sides change with the scroll instead of sitting in a fixed
+      // center crop (which reads as a static box on tall phone screens).
+      const excess = scw - w;
+      const scx = excess > 0 ? -excess * p : (w - scw) / 2;
+      const scy = (h - sch) / 2 + dy * zoom;
       ctx.drawImage(img, scx, scy, scw, sch);
     };
 
@@ -122,6 +126,7 @@ export default function ScrollScrubCinematic() {
     if (reduceMotion) {
       window.removeEventListener('scroll', onScroll);
       current = FRAME_COUNT - 1;
+      p = 1;
       const still = setInterval(() => {
         if (imgs[current] && imgs[current].complete) {
           request();
