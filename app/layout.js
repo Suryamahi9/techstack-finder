@@ -7,6 +7,8 @@ const ScrollWebGLBackground = dynamic(
   { ssr: false, loading: () => null }
 );
 
+const AuroraBackground = dynamic(() => import('../components/AuroraBackground'), { ssr: false, loading: () => null });
+
 const ChatWidget = dynamic(() => import('../components/ChatWidget'), { ssr: false, loading: () => null });
 
 export const metadata = {
@@ -54,7 +56,7 @@ export default function RootLayout({ children }) {
               at z-index -1, painted before the aurora so both sit behind content */}
           <ScrollWebGLBackground />
           {/* Aurora orbs behind every route — the color the frosted glass blurs */}
-          <div className="aurora" />
+          <AuroraBackground />
           <div className="noise-overlay" />
           {children}
           {/* Global AI chat widget */}

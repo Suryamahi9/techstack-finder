@@ -24,6 +24,8 @@ export default function ScrollScrubCinematic() {
     for (let i = 0; i < FRAME_COUNT; i += 1) {
       const img = new Image();
       img.src = frameSrc(i);
+      img.decoding = 'async';
+      img.fetchPriority = i === 0 ? 'high' : 'low';
       imgs.push(img);
     }
 
