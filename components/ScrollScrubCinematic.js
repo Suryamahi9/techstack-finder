@@ -1,18 +1,37 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-/* Homepage scroll-scrub background: 130 pre-rendered frames (public/frames/)
-   played as a flip book driven by the page scroll. A fixed fullscreen canvas at
-   z-index -1 sits behind the whole homepage; scrolling down advances frames,
-   reverse-scrolling replays them. The page's own content provides the scroll
-   length (no spacer track), so the film paces across the full homepage. */
+/* Homepage scroll-scrub background: 130 pre-rendered frames played as a flip
+   book driven by the page scroll. A fixed fullscreen canvas at z-index -1 sits
+   behind the whole homepage; scrolling down advances frames, reverse-scrolling
+   replays them. The page's own content provides the scroll length.
+
+   Two frame sets live in /public/frames/:
+     - landscape/ (960x540) for landscape/desktop screens
+     - portrait/  (480x854) for portrait/mobile screens
+   The set is picked from the live screen orientation and swapped dynamically
+   on rotate/resize, so the film always fills the viewport with full coverage. */
 
 const FRAME_COUNT = 130;
 const PAD = (n) => String(n).padStart(3, '0');
-const frameSrc = (i) => `/frames/frame-${PAD(i + 1)}.jpg`;
 
 export default function ScrollScrubCinematic() {
   const canvasRef = useRef(null);
+  const [orientation, setOrientation] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(orientation: portrait)').matches ? 'portrait' : 'landscape'
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(orientation: portrait)');
+    const update = () => setOrientation(mq.matches ? 'portrait' : 'landscape');
+    update();
+    mq.addEventListener('change', update);
+    window.addEventListener('resize', update);
+    return () => {
+      mq.removeEventListener('change', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,6 +39,7 @@ export default function ScrollScrubCinematic() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return undefined;
 
+    const frameSrc = (i) => `/frames/${orientation}/frame-${PAD(i + 1)}.jpg`;
     const imgs = [];
     for (let i = 0; i < FRAME_COUNT; i += 1) {
       const img = new Image();
@@ -122,7 +142,7 @@ export default function ScrollScrubCinematic() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
-  }, []);
+  }, [orientation]);
 
   return (
     <div className="swcin-bg" aria-hidden="true">
